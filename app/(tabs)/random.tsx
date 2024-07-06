@@ -6,7 +6,7 @@ import MultiSlider from '@ptomasroos/react-native-multi-slider';
 
 export default function Random(){
 
-    const { boulders, fetchBoulders, isLoading } = useContext(GlobalStateContext);
+    const { boulders, fetchBoulders, isLoading, settings } = useContext(GlobalStateContext);
     const [bouldersInRange, setBouldersInRange] = useState([]);
     const [nBouldersInRange, setNBouldersInRange] = useState(0);
     const [gradeRange, setGradeRange] = useState([0, 53]);
@@ -38,12 +38,16 @@ export default function Random(){
         const [minGrade, maxGrade] = gradeRange;
         const chosenBoulders = boulders.filter(boulder => {
                 const boulderGrade = boulder.grade;
-                return boulderGrade >= minGrade && boulderGrade <= maxGrade;
+                const boulderAngle = boulder.angle;
+                return boulderGrade >= minGrade && boulderGrade <= maxGrade && boulderAngle === settings.angle;
             });
         setBouldersInRange(chosenBoulders);
         setNBouldersInRange(chosenBoulders.length);
     }
 
+    useEffect(() => {
+        filterBoulders();
+    }, [boulders, settings.angle]);
 
     return (
         <SafeAreaView style={{flex:1,backgroundColor:"white"}}>
@@ -67,9 +71,9 @@ export default function Random(){
                 <Button title="Get Random Boulder" onPress={() => {
                         const randomBoulder = getRandomBoulder(boulders, gradeRange);
                         if (nBouldersInRange === 0) {
-                        alert('No boulders found in this grade range');
+                            alert('No boulders found in this grade range');
                         } else {
-                        alert('Random boulder: ' + randomBoulder.name);
+                            alert('Random boulder: ' + randomBoulder.name);
                         }
                     }
                 }></Button>

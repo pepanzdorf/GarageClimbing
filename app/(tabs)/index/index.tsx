@@ -5,39 +5,39 @@ import { GlobalStateContext } from '../../context';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Home(){
-  const { boulders, fetchBoulders, isLoading } = useContext(GlobalStateContext);
-  const router = useRouter();
+    const { boulders, fetchBoulders, isLoading } = useContext(GlobalStateContext);
+    const router = useRouter();
 
-  const renderBoulder = ({item}) => {
+    const renderBoulder = ({item}) => {
+        return (
+            <TouchableOpacity onPress={() => router.push(`${item.id}`)}>
+                <View style={{margin:10,borderWidth:0.5,padding:10}}>
+                    <Text style={{color:"black",fontSize:16,fontWeight:"bold"}}>
+                        {item.name}
+                    </Text>
+                </View>
+            </TouchableOpacity>
+        )
+    }
+
     return (
-        <TouchableOpacity onPress={() => router.push(`${item.id}`)}>
-          <View style={{margin:10,borderWidth:0.5,padding:10}}>
-            <Text style={{color:"black",fontSize:16,fontWeight:"bold"}}>
-              {item.name}
-            </Text>
-          </View>
-        </TouchableOpacity>
-    )
-  }
+        <SafeAreaView style={{flex:1}}>
+            <TouchableOpacity onPress={() => fetchBoulders()}>
+                <View style={{margin:10,borderWidth:0.5,padding:10}}>
+                    <Text style={{color:"black",fontSize:16,fontWeight:"bold"}}>
+                        Refresh
+                    </Text>
+                </View>
+            </TouchableOpacity>
 
-  return (
-      <SafeAreaView style={{flex:1}}>
-        <TouchableOpacity onPress={() => fetchBoulders()}>
-            <View style={{margin:10,borderWidth:0.5,padding:10}}>
-                <Text style={{color:"black",fontSize:16,fontWeight:"bold"}}>
-                Refresh
-                </Text>
+            <View style={{backgroundColor:"white"}}>
+                { isLoading ? ( <ActivityIndicator size="large" color="black" /> ) : (
+                     <FlatList
+                        data={boulders}
+                        renderItem={renderBoulder}
+                    />
+                ) }
             </View>
-        </TouchableOpacity>
-
-      <View style={{backgroundColor:"white"}}>
-          { isLoading ? ( <ActivityIndicator size="large" color="black" /> ) : (
-                 <FlatList
-                data={boulders}
-                renderItem={renderBoulder}
-                />
-            ) }
-      </View>
         </SafeAreaView>
-  )
+    )
 }

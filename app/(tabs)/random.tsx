@@ -4,6 +4,7 @@ import { GlobalStateContext } from '../context';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import { useRouter } from 'expo-router';
+import { gradeIdToGradeName } from '../../scripts/utils';
 
 export default function Random(){
     const { boulders, fetchBoulders, isLoading, settings } = useContext(GlobalStateContext);
@@ -13,12 +14,7 @@ export default function Random(){
     const [randomBoulder, setRandomBoulder] = useState(null);
     const router = useRouter();
 
-    const gradeIdToGradeName = (gradeId) => {
-        const gradeNumber = Math.floor(gradeId / 3);
-        const gradeSign = gradeId % 3;
-        const gradeSigns = ['-', '', '+'];
-        return 'V' + gradeNumber + gradeSigns[gradeSign];
-    }
+
 
     const multiSliderValuesChange = values => {setGradeRange(values); filterBoulders();};
 

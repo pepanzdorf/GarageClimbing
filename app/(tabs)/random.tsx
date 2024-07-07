@@ -3,13 +3,15 @@ import {View, Text, ActivityIndicator, Button} from 'react-native';
 import { GlobalStateContext } from '../context';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
+import { useRouter } from 'expo-router';
 
 export default function Random(){
-
     const { boulders, fetchBoulders, isLoading, settings } = useContext(GlobalStateContext);
     const [bouldersInRange, setBouldersInRange] = useState([]);
     const [nBouldersInRange, setNBouldersInRange] = useState(0);
     const [gradeRange, setGradeRange] = useState([0, 53]);
+    const [randomBoulder, setRandomBoulder] = useState(null);
+    const router = useRouter();
 
     const gradeIdToGradeName = (gradeId) => {
         const gradeNumber = Math.floor(gradeId / 3);
@@ -32,8 +34,6 @@ export default function Random(){
         return bouldersInRange[randomIndex];
     }
 
-
-
     function filterBoulders() {
         const [minGrade, maxGrade] = gradeRange;
         const chosenBoulders = boulders.filter(boulder => {
@@ -44,6 +44,15 @@ export default function Random(){
         setBouldersInRange(chosenBoulders);
         setNBouldersInRange(chosenBoulders.length);
     }
+
+    function showRandomBoulder(boulder) {
+        if (boulder === null) {
+            alert('No boulders found in this grade range');
+        } else {
+            alert(boulder.name);
+        }
+    }
+
 
     useEffect(() => {
         filterBoulders();
@@ -69,14 +78,21 @@ export default function Random(){
                 <Text>To: {gradeIdToGradeName(gradeRange[1])}</Text>
                 <Text>Number of boulders in range: {nBouldersInRange}</Text>
                 <Button title="Get Random Boulder" onPress={() => {
-                        const randomBoulder = getRandomBoulder(boulders, gradeRange);
+                        const rBoulder = getRandomBoulder(boulders, gradeRange);
                         if (nBouldersInRange === 0) {
-                            alert('No boulders found in this grade range');
+                            alert('Žádný boulder nenalezen v tomto rozmezí obtížnosti');
                         } else {
-                            alert('Random boulder: ' + randomBoulder.name);
+                            setRandomBoulder(rBoulder);
                         }
                     }
                 }></Button>
+            </View>
+            <View style={{backgroundColor:"white"}}>
+                <Text>{randomBoulder?.name ?? "žádný"}</Text>
+                {
+                    randomBoulder &&
+                    <Button title="Jít na boulder" onPress={() => router.push(`${randomBoulder.id}`)}></Button>
+                }
             </View>
         </SafeAreaView>
     )

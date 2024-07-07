@@ -5,30 +5,30 @@ export default function TabLayout() {
     return (
         <Tabs screenOptions={{ tabBarActiveTintColor: 'blue', headerShown: false}}>
             <Tabs.Screen
-                name="index/index"
+                name="(boulders)/index"
                 options={{
-                title: 'Home',
-                tabBarIcon: ({ color }) => <FontAwesome size={28} name="home" color={color} />,
+                    title: 'Home',
+                    tabBarIcon: ({ color }) => <FontAwesome size={28} name="home" color={color} />,
                 }}
             />
             <Tabs.Screen
                 name="random"
                 options={{
-                title: 'Random',
-                tabBarIcon: ({ color }) => <FontAwesome5 size={28} name="dice" color={color} />,
+                    title: 'Random',
+                    tabBarIcon: ({ color }) => <FontAwesome5 size={28} name="dice" color={color} />,
                 }}
             />
             <Tabs.Screen
-                name="index/[id]"
+                name="(boulders)/[id]"
                 options={{
-                href: null,
+                    href: null,
                 }}
             />
             <Tabs.Screen
                 name="settings"
                 options={{
-                title: 'Settings',
-                tabBarIcon: ({ color }) => <FontAwesome size={28} name="cog" color={color} />,
+                    title: 'Settings',
+                    tabBarIcon: ({ color }) => <FontAwesome size={28} name="cog" color={color} />,
                 }}
             />
         </Tabs>

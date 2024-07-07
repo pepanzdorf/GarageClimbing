@@ -127,5 +127,4 @@ const styles = StyleSheet.create({
     svgContainer: {
 
     }
-
 });

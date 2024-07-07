@@ -7,6 +7,7 @@ export const GlobalStateProvider = ({ children }) => {
     const defaultSettings = {
         angle: 20,
         user: 'John Doe',
+        sortby: 1
     }
 
     const [boulders,setBoulders] = useState([]);
@@ -16,13 +17,20 @@ export const GlobalStateProvider = ({ children }) => {
     const [holds, setHolds] = useState([]);
 
 
-    const fetchBoulders = (ang) => {
+    const executeInOrder = async () => {
         setIsLoading(true);
+        await loadSettings();
+        await fetchBoulders(settings.angle);
+        await fetchHolds();
+        await fetchBoulderingWallImage();
+        setIsLoading(false);
+    }
+
+    const fetchBoulders = (ang) => {
         fetch(`http://192.168.1.113:5000/climbing/boulders/${ang}`)
             .then(response => response.json())
             .then(jsonResponse => setBoulders(jsonResponse))
             .catch(error => console.log(error))
-            .finally(() => setIsLoading(false))
     };
 
     const fetchHolds = () => {
@@ -30,7 +38,6 @@ export const GlobalStateProvider = ({ children }) => {
         .then(response => response.json())
         .then(jsonResponse => setHolds(jsonResponse))
         .catch(error => console.log(error))
-        .finally(() => setIsLoading(false))
     };
 
     const loadSettings = async () => {
@@ -65,7 +72,6 @@ export const GlobalStateProvider = ({ children }) => {
             .then(response => response.text())
             .then(textResponse => setWallImage(textResponse))
             .catch(error => console.log(error))
-            .finally(() => setIsLoading(false))
     };
 
     const reloadAll = () => {
@@ -75,10 +81,7 @@ export const GlobalStateProvider = ({ children }) => {
     }
 
     useEffect(()=>{
-        loadSettings();
-        fetchBoulders(settings.angle);
-        fetchHolds();
-        fetchBoulderingWallImage();
+        executeInOrder();
     },[]);
 
     return (

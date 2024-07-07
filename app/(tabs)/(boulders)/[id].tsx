@@ -4,7 +4,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GlobalStateContext } from '../../context';
-import { Svg, Circle, Image as SvgImage, Path } from 'react-native-svg'
+import { Svg, Circle, Image as SvgImage, Path, Rect, Mask, ClipPath, Defs, G, Use } from 'react-native-svg'
 
 
 export default function DetailsScreen() {
@@ -12,7 +12,7 @@ export default function DetailsScreen() {
     const [details, setDetails] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [modalVisible, setModalVisible] = useState(false);
-    const { wallImage } = useContext(GlobalStateContext);
+    const { wallImage, holds } = useContext(GlobalStateContext);
 
     useEffect(() => {
         fetchBoulderDetail();
@@ -25,7 +25,6 @@ export default function DetailsScreen() {
             .catch(error => console.log(error))
             .finally(() => setIsLoading(false))
     };
-
 
     return (
         <SafeAreaView style={{flex: 1}}>
@@ -40,15 +39,24 @@ export default function DetailsScreen() {
                 </View>
                 <View style={styles.smallImageContainer}>
                     <TouchableOpacity onPress={() => setModalVisible(true)}>
-                        <Image style={styles.image} source={{uri: `data:image/png;base64,${wallImage}`}}/>
+                        <ImageBackground style={styles.backgroundImage} source={{uri: `data:image/png;base64,${wallImage}`}}>
+                            <Svg style={styles.svgContainer} height="100%" width="100%" viewBox="0 0 793.75 1058.3334">
+                                {holds.map((hold) => (
+                                    <Path
+                                        key={hold.id}
+                                        onPress={() => handlePress(hold.id)}
+                                        fill="none"
+                                        stroke="#ff0000"
+                                        strokeWidth="5"
+                                        d={hold.path}
+                                    />
+                                ))}
+                            </Svg>
+                        </ImageBackground>
                     </TouchableOpacity>
                 </View>
             </View>
             <Modal visible={modalVisible}>
-                <View style={{flex:1}}>
-                    <View style={{margin:10,padding:10,alignItems:'center'}}>
-                        <Text style={{fontWeight:'bold',fontSize:24}}>{details ? details.name : 'Loading...'}</Text>
-                    </View>
                     <ReactNativeZoomableView
                         maxZoom={20}
                         minZoom={1}
@@ -56,21 +64,42 @@ export default function DetailsScreen() {
                         initialZoom={1}
                         bindToBorders={true}
                         onZoomAfter={this.logOutZoomState}
-                        style={{
-                            flex: 1,
-                        }}
+                        style={{flex: 1}}
                     >
-                    <ImageBackground style={styles.backgroundImage} source={{uri: `data:image/png;base64,${wallImage}`}}>
-                    <Svg style={styles.svgContainer} height="100%" width="100%" viewBox="0 0 793.75 1058.3334" transform="translate(285,355)">
-                        <Path
-                               fill="none" stroke="#ff0000" strokeWidth="5"
-                               d="m 64.178039,35.493115 c -7.05803,-4.558878 -11.713227,-10.569354 -11.620767,-19.447981 -0.853867,-12.3272404 3.513157,-15.45988087 7.558541,-19.1589662 14.915267,-0.6216478 25.141386,4.7463091 26.777754,21.0862432 -1.845131,7.737702 -7.008564,14.375928 -22.715528,17.520704 z"
-                        />
-                    </Svg>
-                    </ImageBackground>
+                        <ImageBackground style={styles.backgroundImage} source={{uri: `data:image/png;base64,${wallImage}`}}>
+                            <Svg style={styles.svgContainer} height="100%" width="100%" viewBox="0 0 793.75 1058.3334">
+                                <Defs>
+                                    <G id="all_paths">
+                                        {holds.map((hold) => (
+                                          <Path
+                                            key={hold.id}
+                                            onPress={() => handlePress(hold.id)}
+                                            fill="none"
+                                            stroke="#ff0000"
+                                            strokeWidth="5"
+                                            d={hold.path}
+                                          />
+                                        ))}
+                                    </G>
+                                </Defs>
+                                <G clipPath="url(#clip)">
+                                <Rect
+                                    x="0" y="0" width="793.75" height="1058.3334"
+                                    opacity="0.4"
+                                    fill="black"
+                                />
+                                </G>
+                                <ClipPath id="clip">
+                                    <Rect x="0" y="0" width="793.75" height="1058.3334" fill="white" />
+                                    <Use href="#all_paths" />
+                                </ClipPath>
+                                <Use href="#all_paths" />
+                            </Svg>
+                        </ImageBackground>
                     </ReactNativeZoomableView>
-                    <Button title="Zavřít" onPress={() => setModalVisible(false)} />
-                </View>
+                    <View>
+                        <Button title="Zavřít" onPress={() => setModalVisible(false)} />
+                    </View>
             </Modal>
         </SafeAreaView>
     );
@@ -82,7 +111,6 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     smallImageContainer: {
-        flex: 1,
         borderWidth: 0.5,
     },
     image: {
@@ -91,8 +119,10 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     backgroundImage: {
+        resizeMode:'contain',
         width: '100%',
-        height: '100%',
+        height: undefined,
+        aspectRatio: 793.75 / 1058.3334,
     },
     svgContainer: {
 

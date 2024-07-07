@@ -7,7 +7,7 @@ import { gradeIdToGradeName } from '../../../scripts/utils';
 
 
 export default function Home(){
-    const { boulders, fetchBoulders, isLoading } = useContext(GlobalStateContext);
+    const { boulders, isLoading, reloadAll } = useContext(GlobalStateContext);
     const router = useRouter();
 
     const renderBoulder = ({item}) => {
@@ -30,7 +30,7 @@ export default function Home(){
 
     return (
         <SafeAreaView style={{flex:1}}>
-            <TouchableOpacity onPress={() => fetchBoulders()}>
+            <TouchableOpacity onPress={() => reloadAll()}>
                 <View style={{margin:10,borderWidth:0.5,padding:10}}>
                     <Text style={{color:"black",fontSize:16,fontWeight:"bold"}}>
                         Refresh

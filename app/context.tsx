@@ -13,6 +13,7 @@ export const GlobalStateProvider = ({ children }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [settings, setSettings] = useState(defaultSettings);
     const [wallImage, setWallImage] = useState(null);
+    const [holds, setHolds] = useState([]);
 
 
     const fetchBoulders = (ang) => {
@@ -22,6 +23,14 @@ export const GlobalStateProvider = ({ children }) => {
             .then(jsonResponse => setBoulders(jsonResponse))
             .catch(error => console.log(error))
             .finally(() => setIsLoading(false))
+    };
+
+    const fetchHolds = () => {
+        fetch("http://192.168.1.113:5000/climbing/holds")
+        .then(response => response.json())
+        .then(jsonResponse => setHolds(jsonResponse))
+        .catch(error => console.log(error))
+        .finally(() => setIsLoading(false))
     };
 
     const loadSettings = async () => {
@@ -59,14 +68,21 @@ export const GlobalStateProvider = ({ children }) => {
             .finally(() => setIsLoading(false))
     };
 
+    const reloadAll = () => {
+        fetchBoulders(settings.angle);
+        fetchHolds();
+        fetchBoulderingWallImage();
+    }
+
     useEffect(()=>{
         loadSettings();
         fetchBoulders(settings.angle);
+        fetchHolds();
         fetchBoulderingWallImage();
     },[]);
 
     return (
-        <GlobalStateContext.Provider value={{ boulders, fetchBoulders, isLoading, settings, setSettings, saveSettings, loadSettings, wallImage }}>
+        <GlobalStateContext.Provider value={{ boulders, fetchBoulders, isLoading, settings, setSettings, saveSettings, loadSettings, wallImage, holds, reloadAll }}>
             {children}
         </GlobalStateContext.Provider>
     );

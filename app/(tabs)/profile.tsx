@@ -33,11 +33,11 @@ export default function Profile(){
 
     const whoami = async () => {
         fetch(`${apiURL}/climbing/whoami`, {
-            method: 'POST',
+            method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token,
             },
-            body: JSON.stringify({ token: token }),
             }
         )
             .then(response => response.json())

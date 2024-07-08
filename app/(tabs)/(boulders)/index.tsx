@@ -1,5 +1,6 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { View, Text, FlatList, ActivityIndicator, TouchableOpacity, StyleSheet } from 'react-native';
+import { SearchBar } from 'react-native-elements';
 import { useRouter } from 'expo-router';
 import { GlobalStateContext } from '../../context';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -11,7 +12,19 @@ import { StarRating } from '../../../components/StarRating';
 
 export default function Home(){
     const { settings, boulders, isLoading, reloadAll } = useContext(GlobalStateContext);
+    const [ search, setSearch ] = useState('');
+    const [ filteredBoulders, setFilteredBoulders ] = useState([]);
     const router = useRouter();
+
+    const handleSearch = (text) => {
+        setSearch(text);
+        if (text === '') {
+            setFilteredBoulders(boulders);
+        }
+        else {
+            setFilteredBoulders(boulders.filter(boulder => boulder.name.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "").replace(" ", "").includes(text.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "").replace(" ", ""))));
+        }
+    }
 
     const renderBoulder = ({item}) => {
         return (
@@ -48,19 +61,29 @@ export default function Home(){
                             </Text>
                         </View>
                     </TouchableOpacity>
+                    <View style={styles.search}>
+                        <SearchBar
+                            placeholder="Vyhledat"
+                            value={search}
+                            onChangeText={handleSearch}
+                            containerStyle={styles.searchContainer}
+                            inputContainerStyle={styles.searchInputContainer}
+                        />
+                    </View>
                 </View>
             <View style={styles.boulders}>
                 { isLoading ? ( <ActivityIndicator size="large" color="black" /> ) : (
                      <FlatList
                         data={
                                 filterBoulders(
-                                    sortBoulderBy(settings.sortby, boulders),
+                                    sortBoulderBy(settings.sortby, filteredBoulders),
                                     true,
                                     settings.lowerGrade,
                                     settings.upperGrade
                                 )
                             }
                         renderItem={renderBoulder}
+                        keyExtractor={item => item.id}
                     />
                 ) }
             </View>
@@ -85,10 +108,10 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 10,
         borderWidth: 1,
+        backgroundColor: 'white',
     },
-    sort: {
-        flexDirection: 'row',
-        alignItems: 'center',
+    search: {
+        width: "70%",
     },
     boulder: {
         marginTop: 10,
@@ -101,7 +124,7 @@ const styles = StyleSheet.create({
     },
     boulders: {
         backgroundColor: Colors.theme.backgroundColor,
-        paddingBottom: 70
+        paddingBottom: 90
     },
     row: {
         flexDirection:"row",
@@ -110,6 +133,16 @@ const styles = StyleSheet.create({
     },
     description: {
         maxWidth: "70%",
-    }
+    },
+    searchContainer: {
+        backgroundColor: 'transparent',
+        borderTopWidth: 0,
+        borderBottomWidth: 0,
+    },
+    searchInputContainer: {
+        borderWidth: 1,
+        borderRadius: 10,
+        backgroundColor: 'white',
+    },
 });
 

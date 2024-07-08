@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { View, Text, FlatList, ActivityIndicator, TouchableOpacity, StyleSheet } from 'react-native';
 import { SearchBar } from 'react-native-elements';
 import { useRouter } from 'expo-router';
@@ -16,15 +16,12 @@ export default function Home(){
     const [ filteredBoulders, setFilteredBoulders ] = useState([]);
     const router = useRouter();
 
-    const handleSearch = (text) => {
-        setSearch(text);
-        if (text === '') {
-            setFilteredBoulders(boulders);
-        }
-        else {
-            setFilteredBoulders(boulders.filter(boulder => boulder.name.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "").replace(" ", "").includes(text.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "").replace(" ", ""))));
-        }
+
+    useEffect(() => {
+        setFilteredBoulders(boulders.filter(boulder => boulder.name.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "").replace(" ", "").includes(search.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "").replace(" ", ""))));
     }
+    , [search, boulders]);
+
 
     const renderBoulder = ({item}) => {
         return (
@@ -35,7 +32,7 @@ export default function Home(){
                             {item.name}
                         </Text>
                         <Text style={Fonts.h3}>
-                            {gradeIdToGradeName(item.grade)}
+                            {gradeIdToGradeName(item.average_grade)}
                         </Text>
                     </View>
                     <View style={styles.row}>
@@ -44,7 +41,7 @@ export default function Home(){
                                 {item.description}
                             </Text>
                         </View>
-                        <StarRating rating={3.6} maxStars={5} size={20}/>
+                        <StarRating rating={item.average_rating} maxStars={5} size={20}/>
                     </View>
                 </View>
             </TouchableOpacity>
@@ -65,7 +62,7 @@ export default function Home(){
                         <SearchBar
                             placeholder="Vyhledat"
                             value={search}
-                            onChangeText={handleSearch}
+                            onChangeText={setSearch}
                             containerStyle={styles.searchContainer}
                             inputContainerStyle={styles.searchInputContainer}
                         />

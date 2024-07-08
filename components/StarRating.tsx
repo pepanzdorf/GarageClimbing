@@ -1,11 +1,19 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
 const StarRating = props => {
     const filledStars = Math.floor(props.rating);
     const halfStar = props.rating - filledStars >= 0.5;
     const emptyStars = props.maxStars - filledStars - (halfStar ? 1 : 0);
+
+    if (props.rating === -1) {
+        return (
+            <View style={{flexDirection: 'row', height: props.size, width: props.maxStars*props.size}}>
+                <Text>Nehodnoceno</Text>
+            </View>
+        );
+    }
 
     return (
         <View style={{flexDirection: 'row', height: props.size, width: props.maxStars*props.size}}>

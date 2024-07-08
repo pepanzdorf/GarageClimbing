@@ -4,7 +4,8 @@ import { GlobalStateContext } from '../context';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import { useRouter } from 'expo-router';
-import { gradeIdToGradeName } from '../../scripts/utils';
+import { gradeIdToGradeName, filterBoulders } from '../../scripts/utils';
+
 
 export default function Random(){
     const { boulders, fetchBoulders, isLoading, settings } = useContext(GlobalStateContext);
@@ -19,8 +20,6 @@ export default function Random(){
     const multiSliderValuesChange = values => {setGradeRange(values)};
 
     function getRandomBoulder() {
-        filterBoulders();
-
         if (bouldersInRange.length === 0) {
             return null;
         }
@@ -30,12 +29,10 @@ export default function Random(){
         return bouldersInRange[randomIndex];
     }
 
-    function filterBoulders() {
+    function handleFilter() {
         const [minGrade, maxGrade] = gradeRange;
-        const chosenBoulders = boulders.filter(boulder => {
-                const boulderGrade = boulder.grade;
-                return boulderGrade >= minGrade && boulderGrade <= maxGrade;
-            });
+        const chosenBoulders = filterBoulders(boulders, false, minGrade, maxGrade);
+
         setBouldersInRange(chosenBoulders);
         setNBouldersInRange(chosenBoulders.length);
     }
@@ -50,7 +47,7 @@ export default function Random(){
 
 
     useEffect(() => {
-        filterBoulders();
+        handleFilter();
     }, [boulders, settings.angle]);
 
     return (

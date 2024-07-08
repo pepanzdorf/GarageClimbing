@@ -10,11 +10,11 @@ export const gradeIdToGradeName = (gradeId) => {
 
 export const sortBoulderBy = (sorter, boulders) => {
     if(sorter == 1){
-        return boulders.sort((a,b) => b.grade - a.grade);
+        return boulders.sort((a,b) => b.average_grade - a.average_grade);
     } else if(sorter == 2){
         return boulders.sort((a,b) => a.name.localeCompare(b.name));
     } else if(sorter == 3){
-        return boulders.sort((a,b) => a.grade - b.grade);
+        return boulders.sort((a,b) => a.average_grade - b.average_grade);
     } else if(sorter == 4){
         return boulders.sort((a,b) => b.name.localeCompare(a.name));
     } else if(sorter == 5){
@@ -28,7 +28,7 @@ export const sortBoulderBy = (sorter, boulders) => {
 
 export const filterBoulders = (boulders, withOpen, lowerGrade, upperGrade) => {
     const chosenBoulders = boulders.filter(boulder => {
-            const boulderGrade = boulder.grade;
+            const boulderGrade = boulder.average_grade;
             return (boulderGrade >= lowerGrade && boulderGrade <= upperGrade) || (withOpen && boulderGrade === -1);
         });
     return chosenBoulders;

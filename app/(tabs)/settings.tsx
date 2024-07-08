@@ -5,24 +5,30 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import { SelectList } from 'react-native-dropdown-select-list'
 import { FontAwesome } from '@expo/vector-icons';
-
+import { gradeIdToGradeName } from '../../scripts/utils';
 
 
 export default function Settings(){
     const { settings, setSettings, saveSettings, loadSettings } = useContext(GlobalStateContext);
     const [ angle, setAngle ] = useState(settings.angle);
     const [ selectedSort, setSelectedSort ] = useState(settings.sortby);
+    const [ gradeRange, setGradeRange ] = useState([0, 53]);
+
     const options = [
             {key:'1', value: 'Obtížnost (↓)'},
             {key:'2', value: 'Jméno (↓)'},
             {key:'3', value: 'Obtížnost (↑)'},
-            {key:'4', value: 'Jméno (↑)'}
+            {key:'4', value: 'Jméno (↑)'},
+            {key:'5', value: 'Nejnovější'},
+            {key:'6', value: 'Nejstarší'}
         ];
 
     const savePress = () => {
-        setSettings({...settings, angle: angle, sortby: selectedSort});
         saveSettings(settings);
+        alert(`Nastavení bylo uloženo!\n Úhel: ${settings.angle}˚\n Seřadit podle: ${options.find(option => option.key == selectedSort).value}\n Obtížnosti: ${gradeIdToGradeName(gradeRange[0])} až ${gradeIdToGradeName(gradeRange[1])}`)
     }
+
+    const multiSliderValuesChange = values => {setGradeRange(values);};
 
     return (
         <SafeAreaView style={{flex:1}}>
@@ -52,11 +58,30 @@ export default function Settings(){
                     </Text>
                     <SelectList
                         setSelected={setSelectedSort}
+                        onSelect={() => setSettings({...settings, sortby: selectedSort})}
                         placeholder="Vyberte..."
                         data={options}
                         save="key"
                         search={false}
                     />
+                </View>
+                <View style={styles.grade}>
+                    <MultiSlider
+                        values={[0, 53]}
+                        sliderLength={280}
+                        onValuesChange={multiSliderValuesChange}
+                        onValuesChangeFinish={values => setSettings({...settings, upperGrade: gradeRange[1], lowerGrade: gradeRange[0]})}
+                        min={0}
+                        max={53}
+                        step={1}
+                        snapped
+                        allowOverlap
+                        markerStyle={{height: 20, width: 20}}
+                        touchDimensions={{height: 60, width: 60, borderRadius: 20, slipDisplacement: 200}}
+                    ></MultiSlider>
+                    <Text>Grade Range</Text>
+                    <Text>From: {gradeIdToGradeName(gradeRange[0])}</Text>
+                    <Text>To: {gradeIdToGradeName(gradeRange[1])}</Text>
                 </View>
             </View>
             <Button title="Uložit nastavení" onPress={() => savePress()} />

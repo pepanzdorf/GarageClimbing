@@ -7,7 +7,9 @@ export const GlobalStateProvider = ({ children }) => {
     const defaultSettings = {
         angle: 20,
         user: 'John Doe',
-        sortby: 1
+        sortby: 1,
+        upperGrade: 53,
+        lowerGrade: 0
     }
 
     const [boulders,setBoulders] = useState([]);

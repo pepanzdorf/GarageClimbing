@@ -35,7 +35,7 @@ export default function Random(){
         const chosenBoulders = boulders.filter(boulder => {
                 const boulderGrade = boulder.grade;
                 const boulderAngle = boulder.angle;
-                return boulderGrade >= minGrade && boulderGrade <= maxGrade && boulderAngle === settings.angle;
+                return boulderGrade >= minGrade && boulderGrade <= maxGrade;
             });
         setBouldersInRange(chosenBoulders);
         setNBouldersInRange(chosenBoulders.length);

@@ -12,30 +12,45 @@ export default function Home(){
 
     const sortBoulderBy = () => {
         if(settings.sortby == 1){
-            return boulders.sort((a,b) => a.grade - b.grade);
+            return boulders.sort((a,b) => b.grade - a.grade);
         } else if(settings.sortby == 2){
             return boulders.sort((a,b) => a.name.localeCompare(b.name));
         } else if(settings.sortby == 3){
-            return boulders.sort((a,b) => b.grade - a.grade);
+            return boulders.sort((a,b) => a.grade - b.grade);
         } else if(settings.sortby == 4){
             return boulders.sort((a,b) => b.name.localeCompare(a.name));
+        } else if(settings.sortby == 5){
+            return boulders.sort((a,b) => b.build_time - a.build_time);
+        } else if(settings.sortby == 6){
+            return boulders.sort((a,b) => a.build_time - b.build_time);
         } else {
-            return boulders.sort((a,b) => b.name.localeCompare(a.name));
+            return boulders;
         }
+    }
+
+    const filterBoulders = () => {
+        const chosenBoulders = boulders.filter(boulder => {
+                const boulderGrade = boulder.grade;
+                const boulderAngle = boulder.angle;
+                return (boulderGrade >= settings.lowerGrade && boulderGrade <= settings.upperGrade) || boulderGrade === -1;
+            });
+        return chosenBoulders;
     }
 
     const renderBoulder = ({item}) => {
         return (
             <TouchableOpacity onPress={() => router.push(`${item.id}`)}>
                 <View style={{margin:10,borderWidth:0.5,padding:10}}>
-                    <Text style={{color:"black",fontSize:16,fontWeight:"bold"}}>
-                        {item.name}
-                    </Text>
+                    <View style={{flexDirection:"row",justifyContent:"space-between"}}>
+                        <Text style={{color:"black",fontSize:16,fontWeight:"bold"}}>
+                            {item.name}
+                        </Text>
+                        <Text style={{color:"black",fontSize:16}}>
+                            {gradeIdToGradeName(item.grade)}
+                        </Text>
+                    </View>
                     <Text style={{color:"black",fontSize:16}}>
                         {item.description}
-                    </Text>
-                    <Text style={{color:"black",fontSize:16}}>
-                        {gradeIdToGradeName(item.grade)}
                     </Text>
                 </View>
             </TouchableOpacity>
@@ -56,7 +71,7 @@ export default function Home(){
             <View style={{backgroundColor:"white",paddingBottom:60}}>
                 { isLoading ? ( <ActivityIndicator size="large" color="black" /> ) : (
                      <FlatList
-                        data={sortBoulderBy(boulders)}
+                        data={filterBoulders(sortBoulderBy(boulders))}
                         renderItem={renderBoulder}
                     />
                 ) }

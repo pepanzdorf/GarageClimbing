@@ -19,12 +19,25 @@ export default function DetailsScreen() {
     }, [id]);
 
     const fetchBoulderDetail = () => {
-        fetch(`http://192.168.1.113:5000/climbing/boulders/${id}`)
+        fetch(`http://192.168.1.113:5000/climbing/boulders/detail/${id}`)
             .then(response => response.json())
             .then(jsonResponse => setDetails(jsonResponse))
             .catch(error => console.log(error))
-            .finally(() => setIsLoading(false))
+            .finally(() => setIsLoading(false));
     };
+
+    const numberToColor = (num) => {
+        switch(num){
+            case 0:
+                return "red";
+            case 1:
+                return "blue";
+            case 2:
+                return "green";
+            case 3:
+                return "yellow";
+        }
+    }
 
     return (
         <SafeAreaView style={{flex: 1}}>
@@ -36,21 +49,24 @@ export default function DetailsScreen() {
                     <Text style={{color:"black",fontSize:16}}>
                         {details ? details.name : 'Loading...'}
                     </Text>
+                    <Text style={{color:"black",fontSize:16}}>
+                        {details ? new Date(details.build_time).toLocaleString(): 'Loading...'}
+                    </Text>
                 </View>
                 <View style={styles.smallImageContainer}>
                     <TouchableOpacity onPress={() => setModalVisible(true)}>
                         <ImageBackground style={styles.backgroundImage} source={{uri: `data:image/png;base64,${wallImage}`}}>
                             <Svg style={styles.svgContainer} height="100%" width="100%" viewBox="0 0 793.75 1058.3334">
-                                {holds.map((hold) => (
+                                {details ? (details.map((hold) => (
                                     <Path
-                                        key={hold.id}
-                                        onPress={() => handlePress(hold.id)}
+                                        key={hold.hold_id}
+                                        onPress={() => handlePress(hold.hold_id)}
                                         fill="none"
-                                        stroke="#ff0000"
                                         strokeWidth="5"
+                                        stroke={numberToColor(hold.hold_type)}
                                         d={hold.path}
                                     />
-                                ))}
+                                ))): null}
                             </Svg>
                         </ImageBackground>
                     </TouchableOpacity>

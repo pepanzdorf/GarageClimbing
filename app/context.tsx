@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { apiURL } from '../constants/Other';
 
 export const GlobalStateContext = createContext();
 
@@ -17,11 +18,13 @@ export const GlobalStateProvider = ({ children }) => {
     const [settings, setSettings] = useState(defaultSettings);
     const [wallImage, setWallImage] = useState(null);
     const [holds, setHolds] = useState([]);
+    const [token, setToken] = useState('token');
 
 
     const executeInOrder = async () => {
         setIsLoading(true);
         await loadSettings();
+        await loadToken();
         await fetchBoulders(settings.angle);
         await fetchHolds();
         await fetchBoulderingWallImage();
@@ -56,9 +59,31 @@ export const GlobalStateProvider = ({ children }) => {
         }
     }
 
+    const loadToken = async () => {
+        try {
+            const persistentToken = await AsyncStorage.getItem("token");
+            if (persistentToken !== null) {
+                setToken(persistentToken);
+            } else {
+                setToken('token');
+            }
+        } catch (error) {
+            console.log(error);
+            setToken('token');
+        }
+    }
+
     const saveSettings = async () => {
         try {
             await AsyncStorage.setItem("settings", JSON.stringify(settings));
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const saveToken = async (token) => {
+        try {
+            await AsyncStorage.setItem("token", token);
         } catch (error) {
             console.log(error);
         }
@@ -70,7 +95,7 @@ export const GlobalStateProvider = ({ children }) => {
     }
 
     const fetchBoulderingWallImage = () => {
-        fetch("http://192.168.1.113:5000/climbing/wall")
+        fetch(`${apiURL}/climbing/wall`)
             .then(response => response.text())
             .then(textResponse => setWallImage(textResponse))
             .catch(error => console.log(error))
@@ -87,7 +112,7 @@ export const GlobalStateProvider = ({ children }) => {
     },[]);
 
     return (
-        <GlobalStateContext.Provider value={{ boulders, fetchBoulders, isLoading, settings, setSettings, saveSettings, loadSettings, wallImage, holds, reloadAll }}>
+        <GlobalStateContext.Provider value={{ boulders, fetchBoulders, isLoading, settings, setSettings, saveSettings, loadSettings, wallImage, holds, reloadAll, setToken, token, saveToken }}>
             {children}
         </GlobalStateContext.Provider>
     );

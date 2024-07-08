@@ -96,6 +96,7 @@ const styles = StyleSheet.create({
         paddingRight: 20,
         paddingTop: 10,
         paddingBottom: 10,
+        flex: 1,
     },
     sort: {
         flexDirection: 'row',

@@ -5,7 +5,7 @@ import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-vi
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GlobalStateContext } from '../../context';
 import { Svg, Circle, Image as SvgImage, Path, Rect, Mask, ClipPath, Defs, G, Use } from 'react-native-svg'
-
+import { apiURL } from '../../../constants/Other';
 
 export default function DetailsScreen() {
     const { id } = useLocalSearchParams();
@@ -19,7 +19,7 @@ export default function DetailsScreen() {
     }, [id]);
 
     const fetchBoulderDetail = () => {
-        fetch(`http://192.168.1.113:5000/climbing/boulders/detail/${id}`)
+        fetch(`${apiURL}/climbing/boulders/detail/${id}`)
             .then(response => response.json())
             .then(jsonResponse => setDetails(jsonResponse))
             .catch(error => console.log(error))

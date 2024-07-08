@@ -16,7 +16,7 @@ export default function Random(){
 
 
 
-    const multiSliderValuesChange = values => {setGradeRange(values); filterBoulders();};
+    const multiSliderValuesChange = values => {setGradeRange(values)};
 
     function getRandomBoulder() {
         filterBoulders();
@@ -34,7 +34,6 @@ export default function Random(){
         const [minGrade, maxGrade] = gradeRange;
         const chosenBoulders = boulders.filter(boulder => {
                 const boulderGrade = boulder.grade;
-                const boulderAngle = boulder.angle;
                 return boulderGrade >= minGrade && boulderGrade <= maxGrade;
             });
         setBouldersInRange(chosenBoulders);
@@ -61,6 +60,7 @@ export default function Random(){
                     values={[0, 53]}
                     sliderLength={280}
                     onValuesChange={multiSliderValuesChange}
+                    onValuesChangeFinish={filterBoulders}
                     min={0}
                     max={53}
                     step={1}

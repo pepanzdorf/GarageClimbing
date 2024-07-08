@@ -7,3 +7,29 @@ export const gradeIdToGradeName = (gradeId) => {
     const gradeSigns = ['-', '', '+'];
     return 'V' + gradeNumber + gradeSigns[gradeSign];
 }
+
+export const sortBoulderBy = (sorter, boulders) => {
+    if(sorter == 1){
+        return boulders.sort((a,b) => b.grade - a.grade);
+    } else if(sorter == 2){
+        return boulders.sort((a,b) => a.name.localeCompare(b.name));
+    } else if(sorter == 3){
+        return boulders.sort((a,b) => a.grade - b.grade);
+    } else if(sorter == 4){
+        return boulders.sort((a,b) => b.name.localeCompare(a.name));
+    } else if(sorter == 5){
+        return boulders.sort((a,b) => b.build_time - a.build_time);
+    } else if(sorter == 6){
+        return boulders.sort((a,b) => a.build_time - b.build_time);
+    } else {
+        return boulders;
+    }
+}
+
+export const filterBoulders = (boulders, withOpen, lowerGrade, upperGrade) => {
+    const chosenBoulders = boulders.filter(boulder => {
+            const boulderGrade = boulder.grade;
+            return (boulderGrade >= lowerGrade && boulderGrade <= upperGrade) || (withOpen && boulderGrade === -1);
+        });
+    return chosenBoulders;
+}

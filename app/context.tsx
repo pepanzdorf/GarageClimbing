@@ -14,7 +14,7 @@ export const GlobalStateProvider = ({ children }) => {
         darkening: 0.5,
         darkenPreview: false,
         showUnsent: false,
-        showFavorites: false,
+        showFavourites: false,
     }
 
     const [boulders,setBoulders] = useState([]);
@@ -36,7 +36,7 @@ export const GlobalStateProvider = ({ children }) => {
     }
 
     const fetchBoulders = (ang) => {
-        fetch(`${apiULR}/climbing/boulders/${ang}`,
+        fetch(`${apiURL}/climbing/boulders/${ang}`,
             {
                 method: 'GET',
                 headers: {
@@ -121,6 +121,11 @@ export const GlobalStateProvider = ({ children }) => {
     useEffect(()=>{
         executeInOrder();
     },[]);
+
+    useEffect(() => {
+        reloadAll();
+    }
+    , [token]);
 
     return (
         <GlobalStateContext.Provider value={{ boulders, fetchBoulders, isLoading, settings, setSettings, saveSettings, loadSettings, wallImage, holds, reloadAll, setToken, token, saveToken }}>

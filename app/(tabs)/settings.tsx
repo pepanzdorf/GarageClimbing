@@ -16,7 +16,7 @@ export default function Settings(){
     const [ darkening, setDarkening ] = useState(settings.darkening);
     const [ darkenPreview, setDarkenPreview ] = useState(settings.darkenPreview);
     const [ showUnsent, setShowUnsent ] = useState(settings.showUnsent);
-    const [ showFavorites, setShowFavorites ] = useState(settings.showFavorites);
+    const [ showFavourites, setShowFavourites ] = useState(settings.showFavourites);
 
     const options = [
             {key:'1', value: 'Nejtěžší'},
@@ -30,7 +30,7 @@ export default function Settings(){
         ];
 
     const savePress = () => {
-        setSettings({...settings, darkenPreview: darkenPreview, showUnsent: showUnsent, showFavorites: showFavorites});
+        setSettings({...settings, darkenPreview: darkenPreview, showUnsent: showUnsent, showFavourites: showFavourites});
         saveSettings(settings);
         alert(`Nastavení bylo uloženo!\n Úhel: ${settings.angle}˚\n Seřadit podle: ${options.find(option => option.key == selectedSort).value}\n Obtížnosti: ${gradeIdToGradeName(gradeRange[0])} až ${gradeIdToGradeName(gradeRange[1])}\n Ztmavení: ${settings.darkening}`)
     }
@@ -140,8 +140,8 @@ export default function Settings(){
                       trackColor={{false: '#767577', true: '#81b0ff'}}
                       thumbColor={darkenPreview ? '#f5dd4b' : '#f4f3f4'}
                       ios_backgroundColor="#3e3e3e"
-                      onValueChange={setShowFavorites}
-                      value={showFavorites}
+                      onValueChange={setShowFavourites}
+                      value={showFavourites}
                     />
                 </View>
             </ScrollView>

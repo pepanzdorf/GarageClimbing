@@ -4,24 +4,39 @@ import { SearchBar } from 'react-native-elements';
 import { useRouter } from 'expo-router';
 import { GlobalStateContext } from '../../context';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { gradeIdToGradeName, sortBoulderBy, filterBoulders } from '../../../scripts/utils';
+import { gradeIdToGradeName, sortBoulderBy, filterBoulders, filterBySearch } from '../../../scripts/utils';
 import { Colors } from '../../../constants/Colors'
 import { Fonts } from '../../../constants/Fonts'
 import { StarRating } from '../../../components/StarRating';
+import { FontAwesome } from '@expo/vector-icons';
 
 
 export default function Home(){
     const { settings, boulders, isLoading, reloadAll } = useContext(GlobalStateContext);
     const [ search, setSearch ] = useState('');
     const [ filteredBoulders, setFilteredBoulders ] = useState([]);
+    const [ numberOfBoulders, setNumberOfBoulders ] = useState(0);
     const router = useRouter();
 
 
     useEffect(() => {
-        setFilteredBoulders(boulders.filter(boulder => boulder.name.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "").replace(" ", "").includes(search.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "").replace(" ", ""))));
+        setFilteredBoulders(
+            filterBoulders(
+                sortBoulderBy(settings.sortby, filterBySearch(boulders, search)),
+                true,
+                settings.lowerGrade,
+                settings.upperGrade,
+                settings.showUnsent,
+                settings.showFavourites
+            )
+        );
     }
-    , [search, boulders]);
+    , [search, boulders, settings]);
 
+    useEffect(() => {
+        setNumberOfBoulders(filteredBoulders.length);
+    }
+    , [filteredBoulders]);
 
     const renderBoulder = ({item}) => {
         return (
@@ -31,9 +46,18 @@ export default function Home(){
                         <Text style={Fonts.h3}>
                             {item.name}
                         </Text>
-                        <Text style={Fonts.h3}>
-                            {gradeIdToGradeName(item.average_grade)}
-                        </Text>
+                        <View style={styles.row}>
+                            <Text style={Fonts.h3}>
+                                {gradeIdToGradeName(item.average_grade)}
+                            </Text>
+                            {
+                                item.sent ? (
+                                    <FontAwesome name="check" size={24} color="green" />
+                                ) : (
+                                    <FontAwesome name="times" size={24} color="red" />
+                                )
+                            }
+                        </View>
                     </View>
                     <View style={styles.row}>
                         <View style={styles.description}>
@@ -56,6 +80,9 @@ export default function Home(){
                             <Text style={{color:"black",fontSize:16,fontWeight:"bold"}}>
                                 Refresh
                             </Text>
+                            <Text>
+                                { numberOfBoulders } boulderů
+                            </Text>
                         </View>
                     </TouchableOpacity>
                     <View style={styles.search}>
@@ -71,14 +98,7 @@ export default function Home(){
             <View style={styles.boulders}>
                 { isLoading ? ( <ActivityIndicator size="large" color="black" /> ) : (
                      <FlatList
-                        data={
-                                filterBoulders(
-                                    sortBoulderBy(settings.sortby, filteredBoulders),
-                                    true,
-                                    settings.lowerGrade,
-                                    settings.upperGrade
-                                )
-                            }
+                        data={ filteredBoulders }
                         renderItem={renderBoulder}
                         keyExtractor={item => item.id}
                     />

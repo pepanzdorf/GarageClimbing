@@ -30,12 +30,16 @@ export const sortBoulderBy = (sorter, boulders) => {
     }
 }
 
-export const filterBoulders = (boulders, withOpen, lowerGrade, upperGrade) => {
+export const filterBoulders = (boulders, withOpen, lowerGrade, upperGrade, sent, favourite) => {
     const chosenBoulders = boulders.filter(boulder => {
             const boulderGrade = boulder.average_grade;
-            return (boulderGrade >= lowerGrade && boulderGrade <= upperGrade) || (withOpen && boulderGrade === -1);
+            return ((boulderGrade >= lowerGrade && boulderGrade <= upperGrade) || (withOpen && boulderGrade === -1)) && (!sent || !boulder.sent) && (!favourite || boulder.favourite);
         });
     return chosenBoulders;
+}
+
+export const filterBySearch = (boulders, search) => {
+    return boulders.filter(boulder => boulder.name.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "").replace(" ", "").includes(search.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "").replace(" ", "")));
 }
 
 export const attemptIdToAttemptName = (attemptId) => {

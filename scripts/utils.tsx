@@ -48,3 +48,16 @@ export const attemptIdToAttemptName = (attemptId) => {
     if (attemptId === 11) return "25+";
     return attemptId;
 }
+
+export const numberToColor = (num) => {
+    switch(num){
+        case 0:
+            return "red";
+        case 1:
+            return "blue";
+        case 2:
+            return "green";
+        case 3:
+            return "yellow";
+    }
+}

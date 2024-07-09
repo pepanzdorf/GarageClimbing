@@ -1,58 +1,78 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Modal, TouchableOpacity, Image, ImageBackground, Button, ScrollView } from 'react-native';
+import { FlatList, View, Text, StyleSheet, ActivityIndicator, Modal, TouchableOpacity, Image, ImageBackground, Button, ScrollView, Dimensions } from 'react-native';
 import { useRouter, useLocalSearchParams, Stack } from 'expo-router';
 import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GlobalStateContext } from '../../context';
 import { Svg, Circle, Image as SvgImage, Path, Rect, Mask, ClipPath, Defs, G, Use } from 'react-native-svg'
 import { apiURL } from '../../../constants/Other';
+import { StarRating } from '../../../components/StarRating';
+import { gradeIdToGradeName, sortBoulderBy, filterBoulders, filterBySearch } from '../../../scripts/utils';
+import { Colors } from '../../../constants/Colors'
+import { Fonts } from '../../../constants/Fonts'
 
 export default function DetailsScreen() {
     const { id } = useLocalSearchParams();
-    const [details, setDetails] = useState(null);
+    const [holds, setHolds] = useState([]);
+    const [sends, setSends] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [modalVisible, setModalVisible] = useState(false);
-    const { wallImage, holds, settings, token, currentBoulder } = useContext(GlobalStateContext);
+    const { wallImage, settings, token, currentBoulder } = useContext(GlobalStateContext);
     const router = useRouter();
+    const windowAspectRatio = Dimensions.get('window').width / Dimensions.get('window').height;
+    const imageAspectRatio = 793.75 / 1058.3334;
+    const isImageWider = windowAspectRatio < imageAspectRatio;
 
     useEffect(() => {
         setIsLoading(true);
-        fetchBoulderDetail();
+        fetchBoulderHolds();
     }, [id]);
 
-    const fetchBoulderDetail = () => {
-        fetch(`${apiURL}/climbing/boulders/detail/${id}`,
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({angle: settings.angle})
-            }
-        )
+    const fetchBoulderHolds = () => {
+        fetch(`${apiURL}/climbing/boulders/holds/${id}`)
             .then(response => response.json())
-            .then(jsonResponse => setDetails(jsonResponse))
+            .then(jsonResponse => setHolds(jsonResponse))
             .catch(error => console.log(error))
             .finally(() => setIsLoading(false));
     };
 
-    const numberToColor = (num) => {
-        switch(num){
-            case 0:
-                return "red";
-            case 1:
-                return "blue";
-            case 2:
-                return "green";
-            case 3:
-                return "yellow";
-        }
+    const fetchSends = () => {
+        fetch(`${apiURL}/climbing/boulders/sends/${id}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json'
+                    },
+                method: 'POST',
+                body: JSON.stringify({
+                    angle: settings.angle,
+                })
+            })
+            .then(response => response.json())
+            .then(jsonResponse => setSends(jsonResponse))
+            .catch(error => console.log(error))
+            .finally(() => setIsLoading(false));
     }
+
+    const renderSend = ({item}) => {
+        return (
+            <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', margin: 10}}>
+                <Text style={{color:"black",fontSize:16}}>
+                    {item.date}
+                </Text>
+                <StarRating rating={item.rating} maxStars={5} size={20}/>
+            </View>
+        );
+    }
+
+
+    useEffect(() => {
+        fetchSends();
+    }, [id]);
+
 
     return (
         <SafeAreaView style={{flex: 1}}>
-            <ScrollView style={styles.container}>
+            <ScrollView contentContainerStyle={styles.container}>
                 <View style={styles.smallImageContainer}>
                     <TouchableOpacity onPress={() => setModalVisible(true)}>
                         <ImageBackground style={styles.backgroundImage} source={{uri: `data:image/png;base64,${wallImage}`}}>
@@ -61,7 +81,7 @@ export default function DetailsScreen() {
                                     <G id="all_paths">
                                         {holds.map((hold) => (
                                           <Path
-                                            key={hold.id}
+                                            key={hold.hold_id}
                                             onPress={() => handlePress(hold.id)}
                                             fill="none"
                                             stroke="#ff0000"
@@ -88,24 +108,54 @@ export default function DetailsScreen() {
                     </TouchableOpacity>
                 </View>
                 <View style={{margin:10,borderWidth:0.5,padding:10}}>
-                    <Text style={{color:"black",fontSize:16,fontWeight:"bold"}}>
-                        Boulder details
-                    </Text>
-                    <Text style={{color:"black",fontSize:16}}>
+                    <TouchableOpacity onPress={() => router.push(`sends/${id}`)}>
+                        <Text style={{color:"black",fontSize:16,fontWeight:"bold"}}>
+                            Log Send
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={{margin:10, padding:10, gap:5}}>
+                    <Text style={Fonts.h1}>
                         {currentBoulder.name}
                     </Text>
-                    <Text style={{color:"black",fontSize:16}}>
-                        {details ? new Date(details.build_time).toLocaleString(): 'Loading...'}
+                    <Text style={Fonts.plain}>
+                        {currentBoulder.description}
                     </Text>
-                </View>
-                    <View style={{margin:10,borderWidth:0.5,padding:10}}>
-                        <TouchableOpacity onPress={() => router.push(`sends/${id}`)}>
-                            <Text style={{color:"black",fontSize:16,fontWeight:"bold"}}>
-                                Log Send
-                            </Text>
-                        </TouchableOpacity>
+                    <View style={styles.row}>
+                        <Text style={Fonts.h3}>
+                            Hodnocení:
+                        </Text>
+                        <Text style={Fonts.h3}>
+                            Obtížnost:
+                        </Text>
                     </View>
+                    <View style={styles.row}>
+                        <StarRating rating={currentBoulder.average_rating} maxStars={5} size={20}/>
+                        <Text style={Fonts.plain}>
+                            {gradeIdToGradeName(currentBoulder.average_grade)}
+                        </Text>
+                    </View>
+                </View>
+                <View style={styles.sends}>
+                    {
+                        sends.length > 0 ? (
+                            sends.map((send) => (
+                                <View key={send.id} style={{borderWidth:0.5,padding:10}}>
+                                    <Text style={{color:"black",fontSize:16}}>
+                                        {new Date(send.sent_date).toLocaleDateString() + " " + new Date(send.sent_date).toLocaleTimeString()}
+                                    </Text>
+                                    <StarRating rating={send.rating} maxStars={5} size={20}/>
+                                </View>
+                            ))
+                        ) : (
+                            <Text style={{color:"black",fontSize:16}}>
+                                No sends yet
+                            </Text>
+                        )
+                    }
+                </View>
             </ScrollView>
+
             <Modal visible={modalVisible}>
                     <ReactNativeZoomableView
                         maxZoom={20}
@@ -116,14 +166,14 @@ export default function DetailsScreen() {
                         onZoomAfter={this.logOutZoomState}
                         style={{flex: 1}}
                     >
-                        <ImageBackground style={styles.backgroundImage} source={{uri: `data:image/png;base64,${wallImage}`}}>
+                        <ImageBackground style={isImageWider ? styles.backgroundImageWider : styles.backgroundImageHigher } source={{uri: `data:image/png;base64,${wallImage}`}}>
                             <Svg style={styles.svgContainer} height="100%" width="100%" viewBox="0 0 793.75 1058.3334">
                                 <Defs>
                                     <G id="all_paths">
                                         {holds.map((hold) => (
                                           <Path
-                                            key={hold.id}
-                                            onPress={() => handlePress(hold.id)}
+                                            key={hold.hold_id}
+                                            onPress={() => handlePress(hold.hold_id)}
                                             fill="none"
                                             stroke="#ff0000"
                                             strokeWidth="5"
@@ -158,7 +208,6 @@ export default function DetailsScreen() {
 const styles = StyleSheet.create({
     container: {
         padding: 20,
-        flex: 1,
     },
     smallImageContainer: {
         borderWidth: 0.5,
@@ -168,13 +217,31 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
     },
+    backgroundImageHigher: {
+        resizeMode:'contain',
+        width: undefined,
+        height: '100%',
+        aspectRatio: 793.75 / 1058.3334,
+    },
+    backgroundImageWider: {
+        resizeMode:'contain',
+        width: '100%',
+        height: undefined,
+        aspectRatio: 793.75 / 1058.3334,
+    },
     backgroundImage: {
         resizeMode:'contain',
         width: '100%',
         height: undefined,
         aspectRatio: 793.75 / 1058.3334,
     },
-    svgContainer: {
-
-    }
+    row: {
+        flexDirection:"row",
+        justifyContent:"space-between",
+    },
+    sends: {
+        margin: 10,
+        padding: 10,
+        borderWidth: 0.5,
+    },
 });

@@ -144,6 +144,7 @@ Defaultní hodnocení: ${defaultRating}
                     </Text>
                     <Switch
                         trackColor={styles.track}
+                        thumbColor={showUnsent ? Colors.background : Colors.backgroundDarker}
                         onValueChange={setDarkenPreview}
                         value={darkenPreview}
                     />
@@ -154,6 +155,7 @@ Defaultní hodnocení: ${defaultRating}
                     </Text>
                     <Switch
                         trackColor={styles.track}
+                        thumbColor={showUnsent ? Colors.background : Colors.backgroundDarker}
                         onValueChange={setShowUnsent}
                         value={showUnsent}
                     />
@@ -164,6 +166,7 @@ Defaultní hodnocení: ${defaultRating}
                     </Text>
                     <Switch
                         trackColor={styles.track}
+                        thumbColor={showUnsent ? Colors.background : Colors.backgroundDarker}
                         onValueChange={setShowFavourites}
                         value={showFavourites}
                     />

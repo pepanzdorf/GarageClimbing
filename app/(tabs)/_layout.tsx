@@ -5,7 +5,7 @@ export default function TabLayout() {
     return (
         <Tabs screenOptions={{ tabBarActiveTintColor: 'blue', headerShown: false}}>
             <Tabs.Screen
-                name="(boulders)/index"
+                name="(boulders)"
                 options={{
                     title: 'Home',
                     tabBarIcon: ({ color }) => <FontAwesome size={28} name="home" color={color} />,
@@ -16,12 +16,6 @@ export default function TabLayout() {
                 options={{
                     title: 'Random',
                     tabBarIcon: ({ color }) => <FontAwesome5 size={28} name="dice" color={color} />,
-                }}
-            />
-            <Tabs.Screen
-                name="(boulders)/[id]"
-                options={{
-                    href: null,
                 }}
             />
             <Tabs.Screen

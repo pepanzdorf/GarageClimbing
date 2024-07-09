@@ -33,3 +33,10 @@ export const filterBoulders = (boulders, withOpen, lowerGrade, upperGrade) => {
         });
     return chosenBoulders;
 }
+
+export const attemptIdToAttemptName = (attemptId) => {
+    if (attemptId === 0) return "Flash";
+    if (attemptId === 10) return "10-24";
+    if (attemptId === 11) return "25+";
+    return attemptId;
+}

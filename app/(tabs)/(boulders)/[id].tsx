@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Modal, TouchableOpacity, Image, ImageBackground, Button } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { View, Text, StyleSheet, ActivityIndicator, Modal, TouchableOpacity, Image, ImageBackground, Button, ScrollView } from 'react-native';
+import { useRouter, useLocalSearchParams, Stack } from 'expo-router';
 import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GlobalStateContext } from '../../context';
@@ -13,6 +13,7 @@ export default function DetailsScreen() {
     const [isLoading, setIsLoading] = useState(true);
     const [modalVisible, setModalVisible] = useState(false);
     const { wallImage, holds } = useContext(GlobalStateContext);
+    const router = useRouter();
 
     useEffect(() => {
         fetchBoulderDetail();
@@ -41,18 +42,7 @@ export default function DetailsScreen() {
 
     return (
         <SafeAreaView style={{flex: 1}}>
-            <View style={styles.container}>
-                <View style={{margin:10,borderWidth:0.5,padding:10}}>
-                    <Text style={{color:"black",fontSize:16,fontWeight:"bold"}}>
-                        Boulder details
-                    </Text>
-                    <Text style={{color:"black",fontSize:16}}>
-                        {details ? details.name : 'Loading...'}
-                    </Text>
-                    <Text style={{color:"black",fontSize:16}}>
-                        {details ? new Date(details.build_time).toLocaleString(): 'Loading...'}
-                    </Text>
-                </View>
+            <ScrollView style={styles.container}>
                 <View style={styles.smallImageContainer}>
                     <TouchableOpacity onPress={() => setModalVisible(true)}>
                         <ImageBackground style={styles.backgroundImage} source={{uri: `data:image/png;base64,${wallImage}`}}>
@@ -71,7 +61,25 @@ export default function DetailsScreen() {
                         </ImageBackground>
                     </TouchableOpacity>
                 </View>
-            </View>
+                <View style={{margin:10,borderWidth:0.5,padding:10}}>
+                    <Text style={{color:"black",fontSize:16,fontWeight:"bold"}}>
+                        Boulder details
+                    </Text>
+                    <Text style={{color:"black",fontSize:16}}>
+                        {details ? details.name : 'Loading...'}
+                    </Text>
+                    <Text style={{color:"black",fontSize:16}}>
+                        {details ? new Date(details.build_time).toLocaleString(): 'Loading...'}
+                    </Text>
+                </View>
+                    <View style={{margin:10,borderWidth:0.5,padding:10}}>
+                        <TouchableOpacity onPress={() => router.push(`sends/${id}`)}>
+                            <Text style={{color:"black",fontSize:16,fontWeight:"bold"}}>
+                                Log Send
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+            </ScrollView>
             <Modal visible={modalVisible}>
                     <ReactNativeZoomableView
                         maxZoom={20}

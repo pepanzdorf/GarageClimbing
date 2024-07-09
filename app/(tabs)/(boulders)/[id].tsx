@@ -1,32 +1,58 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { FlatList, View, Text, StyleSheet, ActivityIndicator, Modal, TouchableOpacity, Image, ImageBackground, Button, ScrollView, Dimensions } from 'react-native';
-import { useRouter, useLocalSearchParams, Stack } from 'expo-router';
+import { View, Text, StyleSheet, ActivityIndicator, Modal, TouchableOpacity, ImageBackground, ScrollView, Dimensions } from 'react-native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GlobalStateContext } from '../../context';
-import { Svg, Circle, Image as SvgImage, Path, Rect, Mask, ClipPath, Defs, G, Use } from 'react-native-svg'
+import { Svg, Path, Rect, ClipPath, Defs, G, Use } from 'react-native-svg'
 import { apiURL } from '../../../constants/Other';
 import { StarRating } from '../../../components/StarRating';
-import { gradeIdToGradeName, sortBoulderBy, filterBoulders, filterBySearch } from '../../../scripts/utils';
+import { gradeIdToGradeName, attemptIdToAttemptName, numberToColor } from '../../../scripts/utils';
 import { Colors } from '../../../constants/Colors'
 import { Fonts } from '../../../constants/Fonts'
+import { FontAwesome } from '@expo/vector-icons';
 
 export default function DetailsScreen() {
     const { id } = useLocalSearchParams();
+    const { wallImage, settings, token, currentBoulder } = useContext(GlobalStateContext);
     const [holds, setHolds] = useState([]);
     const [sends, setSends] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [modalVisible, setModalVisible] = useState(false);
-    const { wallImage, settings, token, currentBoulder } = useContext(GlobalStateContext);
-    const router = useRouter();
+    const [isFavourite, setIsFavourite] = useState(false);
     const windowAspectRatio = Dimensions.get('window').width / Dimensions.get('window').height;
     const imageAspectRatio = 793.75 / 1058.3334;
     const isImageWider = windowAspectRatio < imageAspectRatio;
+    const router = useRouter();
 
     useEffect(() => {
         setIsLoading(true);
         fetchBoulderHolds();
+        fetchSends();
     }, [id]);
+
+    useEffect(() => {
+        setIsFavourite(currentBoulder.favourite);
+    }
+    , [currentBoulder]);
+
+    const toggleFavourite = () => {
+        if (token === 'token') {
+            alert('Pro přidání do oblíbených se musíte přihlásit');
+            return;
+        }
+        const method = isFavourite ? 'DELETE' : 'POST';
+        fetch(`${apiURL}/climbing/boulders/favourite/${id}`, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token,
+            },
+        })
+            .then(response => {if (response.ok) setIsFavourite(!isFavourite)})
+            .catch(error => console.log(error));
+    }
+
 
     const fetchBoulderHolds = () => {
         fetch(`${apiURL}/climbing/boulders/holds/${id}`)
@@ -41,7 +67,7 @@ export default function DetailsScreen() {
             {
                 headers: {
                     'Content-Type': 'application/json'
-                    },
+                },
                 method: 'POST',
                 body: JSON.stringify({
                     angle: settings.angle,
@@ -53,71 +79,65 @@ export default function DetailsScreen() {
             .finally(() => setIsLoading(false));
     }
 
-    const renderSend = ({item}) => {
-        return (
-            <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', margin: 10}}>
-                <Text style={{color:"black",fontSize:16}}>
-                    {item.date}
-                </Text>
-                <StarRating rating={item.rating} maxStars={5} size={20}/>
-            </View>
-        );
-    }
-
-
-    useEffect(() => {
-        fetchSends();
-    }, [id]);
-
 
     return (
         <SafeAreaView style={{flex: 1}}>
             <ScrollView contentContainerStyle={styles.container}>
-                <View style={styles.smallImageContainer}>
-                    <TouchableOpacity onPress={() => setModalVisible(true)}>
-                        <ImageBackground style={styles.backgroundImage} source={{uri: `data:image/png;base64,${wallImage}`}}>
-                            <Svg style={styles.svgContainer} height="100%" width="100%" viewBox="0 0 793.75 1058.3334">
-                                <Defs>
-                                    <G id="all_paths">
-                                        {holds.map((hold) => (
-                                          <Path
-                                            key={hold.hold_id}
-                                            onPress={() => handlePress(hold.id)}
-                                            fill="none"
-                                            stroke="#ff0000"
-                                            strokeWidth="5"
-                                            d={hold.path}
-                                          />
-                                        ))}
-                                    </G>
-                                </Defs>
-                                <G clipPath="url(#clip)">
+                <TouchableOpacity onPress={() => setModalVisible(true)}>
+                    <ImageBackground style={styles.backgroundImagePreview} source={{uri: `data:image/png;base64,${wallImage}`}}>
+                        <Svg style={styles.svgContainer} height="100%" width="100%" viewBox="0 0 793.75 1058.3334">
+                            <Defs>
+                                <G id="all_paths">
+                                    {holds.map((hold) => (
+                                      <Path
+                                        key={hold.hold_id}
+                                        fill="none"
+                                        stroke={numberToColor(hold.hold_type)}
+                                        strokeWidth="5"
+                                        d={hold.path}
+                                      />
+                                    ))}
+                                </G>
+                            </Defs>
+                            <G clipPath="url(#clip)">
                                 <Rect
                                     x="0" y="0" width="793.75" height="1058.3334"
                                     opacity={settings.darkenPreview ? settings.darkening : 0}
                                     fill="black"
                                 />
-                                </G>
-                                <ClipPath id="clip">
-                                    <Rect x="0" y="0" width="793.75" height="1058.3334" fill="white" />
-                                    <Use href="#all_paths" />
-                                </ClipPath>
+                            </G>
+                            <ClipPath id="clip">
+                                <Rect x="0" y="0" width="793.75" height="1058.3334" fill="white" />
                                 <Use href="#all_paths" />
-                            </Svg>
-                        </ImageBackground>
-                    </TouchableOpacity>
-                </View>
-                <View style={{margin:10,borderWidth:0.5,padding:10}}>
-                    <TouchableOpacity onPress={() => router.push(`sends/${id}`)}>
-                        <Text style={{color:"black",fontSize:16,fontWeight:"bold"}}>
+                            </ClipPath>
+                            <Use href="#all_paths" />
+                        </Svg>
+                    </ImageBackground>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => router.push(`sends/${id}`)}>
+                    <View style={styles.button}>
+                        <Text style={Fonts.h3}>
                             Log Send
                         </Text>
-                    </TouchableOpacity>
-                </View>
-                <View style={{margin:10, padding:10, gap:5}}>
-                    <Text style={Fonts.h1}>
-                        {currentBoulder.name}
-                    </Text>
+                    </View>
+                </TouchableOpacity>
+                <View style={styles.details}>
+                    <View style={styles.row}>
+                        <Text style={[Fonts.h1, styles.boulderName]}>
+                            {currentBoulder.name}
+                        </Text>
+                        {
+                            isFavourite ? (
+                                <TouchableOpacity onPress={toggleFavourite}>
+                                    <FontAwesome name="heart" size={24} color="red" />
+                                </TouchableOpacity>
+                            ) : (
+                                <TouchableOpacity onPress={toggleFavourite}>
+                                    <FontAwesome name="heart-o" size={24} color="red" />
+                                </TouchableOpacity>
+                            )
+                        }
+                    </View>
                     <Text style={Fonts.plain}>
                         {currentBoulder.description}
                     </Text>
@@ -140,16 +160,35 @@ export default function DetailsScreen() {
                     {
                         sends.length > 0 ? (
                             sends.map((send) => (
-                                <View key={send.id} style={{borderWidth:0.5,padding:10}}>
-                                    <Text style={{color:"black",fontSize:16}}>
+                                <View key={send.id} style={styles.sendContainer}>
+                                    <View style={styles.row}>
+                                        <Text style={Fonts.h3}>
+                                            {send.name}
+                                        </Text>
+                                        <Text style={Fonts.h3}>
+                                            {gradeIdToGradeName(send.grade)}
+                                        </Text>
+                                    </View>
+                                    <Text style={Fonts.small}>
                                         {new Date(send.sent_date).toLocaleDateString() + " " + new Date(send.sent_date).toLocaleTimeString()}
                                     </Text>
-                                    <StarRating rating={send.rating} maxStars={5} size={20}/>
+                                    <View style={styles.row}>
+                                        <StarRating rating={send.rating} maxStars={5} size={20}/>
+                                        <Text style={Fonts.h3}>
+                                            {
+                                                send.attempts === 1 ? (
+                                                    attemptIdToAttemptName(send.attempts) + " pokusů"
+                                                ) : (
+                                                    attemptIdToAttemptName(send.attempts)
+                                                )
+                                            }
+                                        </Text>
+                                    </View>
                                 </View>
                             ))
                         ) : (
-                            <Text style={{color:"black",fontSize:16}}>
-                                No sends yet
+                            <Text style={Fonts.h3}>
+                                Ještě nevylezeno
                             </Text>
                         )
                     }
@@ -173,9 +212,8 @@ export default function DetailsScreen() {
                                         {holds.map((hold) => (
                                           <Path
                                             key={hold.hold_id}
-                                            onPress={() => handlePress(hold.hold_id)}
                                             fill="none"
-                                            stroke="#ff0000"
+                                            stroke={numberToColor(hold.hold_type)}
                                             strokeWidth="5"
                                             d={hold.path}
                                           />
@@ -183,11 +221,11 @@ export default function DetailsScreen() {
                                     </G>
                                 </Defs>
                                 <G clipPath="url(#clip)">
-                                <Rect
-                                    x="0" y="0" width="793.75" height="1058.3334"
-                                    opacity={settings.darkening}
-                                    fill="black"
-                                />
+                                    <Rect
+                                        x="0" y="0" width="793.75" height="1058.3334"
+                                        opacity={settings.darkening}
+                                        fill="black"
+                                    />
                                 </G>
                                 <ClipPath id="clip">
                                     <Rect x="0" y="0" width="793.75" height="1058.3334" fill="white" />
@@ -197,9 +235,13 @@ export default function DetailsScreen() {
                             </Svg>
                         </ImageBackground>
                     </ReactNativeZoomableView>
-                    <View>
-                        <Button title="Zavřít" onPress={() => setModalVisible(false)} />
-                    </View>
+                    <TouchableOpacity onPress={() => setModalVisible(false)}>
+                        <View style={styles.button}>
+                            <Text style={Fonts.h3}>
+                                Zavřít
+                            </Text>
+                        </View>
+                    </TouchableOpacity>
             </Modal>
         </SafeAreaView>
     );
@@ -208,14 +250,6 @@ export default function DetailsScreen() {
 const styles = StyleSheet.create({
     container: {
         padding: 20,
-    },
-    smallImageContainer: {
-        borderWidth: 0.5,
-    },
-    image: {
-        resizeMode:'contain',
-        width: '100%',
-        height: '100%',
     },
     backgroundImageHigher: {
         resizeMode:'contain',
@@ -229,7 +263,7 @@ const styles = StyleSheet.create({
         height: undefined,
         aspectRatio: 793.75 / 1058.3334,
     },
-    backgroundImage: {
+    backgroundImagePreview: {
         resizeMode:'contain',
         width: '100%',
         height: undefined,
@@ -241,7 +275,33 @@ const styles = StyleSheet.create({
     },
     sends: {
         margin: 10,
+        marginTop: 20,
+    },
+    button: {
+        backgroundColor: Colors.primary,
         padding: 10,
-        borderWidth: 0.5,
+        alignItems: 'center',
+        borderWidth: 1,
+        borderRadius: 10,
+        marginTop: 15,
+        marginRight: 20,
+        marginLeft: 20,
+        marginBottom: 20,
+    },
+    details: {
+        padding: 10,
+        gap: 5,
+    },
+    sendContainer: {
+        padding: 10,
+        borderWidth: 1,
+        borderColor: Colors.borderDarker,
+        borderRadius: 10,
+        marginBottom: 8,
+    },
+    boulderName: {
+        flex:1,
+        flexWrap: 'wrap',
+        marginRight: 10,
     },
 });

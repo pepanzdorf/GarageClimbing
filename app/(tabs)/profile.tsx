@@ -1,5 +1,5 @@
-import React, { useContext, useState, useEffect } from "react";
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Modal, Button, ScrollView } from 'react-native';
+import React, { useContext, useState } from "react";
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Modal, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { GlobalStateContext } from '../context';
 import { SafeAreaView } from 'react-native-safe-area-context';

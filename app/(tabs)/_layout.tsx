@@ -24,28 +24,28 @@ export default function TabLayout() {
             <Tabs.Screen
                 name="(boulders)"
                 options={{
-                    title: 'Home',
+                    title: 'Bouldery',
                     tabBarIcon: ({ color }) => <FontAwesome size={28} name="home" color={color} />,
                 }}
             />
             <Tabs.Screen
                 name="random"
                 options={{
-                    title: 'Random',
+                    title: 'Náhoda',
                     tabBarIcon: ({ color }) => <FontAwesome5 size={28} name="dice" color={color} />,
                 }}
             />
             <Tabs.Screen
                 name="settings"
                 options={{
-                    title: 'Settings',
+                    title: 'Nastavení',
                     tabBarIcon: ({ color }) => <FontAwesome size={28} name="cog" color={color} />,
                 }}
             />
             <Tabs.Screen
                 name="profile"
                 options={{
-                    title: 'Profile',
+                    title: 'Profil',
                     tabBarIcon: ({ color }) => <FontAwesome size={28} name="user" color={color} />,
                 }}
             />

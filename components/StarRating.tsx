@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import { Fonts } from '../constants/Fonts'
+
 
 const StarRating = props => {
     const filledStars = Math.floor(props.rating);
@@ -9,8 +11,8 @@ const StarRating = props => {
 
     if (props.rating === -1) {
         return (
-            <View style={{flexDirection: 'row', height: props.size, width: props.maxStars*props.size}}>
-                <Text>Nehodnoceno</Text>
+            <View style={{height: props.size, width: props.maxStars*props.size}}>
+                <Text style={Fonts.plainBold}>Nehodnoceno</Text>
             </View>
         );
     }

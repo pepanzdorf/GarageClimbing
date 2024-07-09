@@ -14,9 +14,7 @@ export default function Profile(){
     const [ password, setPassword ] = useState('');
     const [ confirmPassword, setConfirmPassword ] = useState('');
     const [ modalVisible, setModalVisible ] = useState(false);
-    const [ loggedUser, setLoggedUser ] = useState('nepřihlášen');
-    const { token, setToken, saveToken } = useContext(GlobalStateContext);
-    const [ isAdmin, setIsAdmin ] = useState(false);
+    const { setToken, saveToken, loggedUser, isAdmin } = useContext(GlobalStateContext);
 
     const startSignup = () => {
         if (password !== '' && username !== '') {
@@ -24,25 +22,6 @@ export default function Profile(){
         } else {
             alert('Zadejte uživatelské jméno a heslo.');
         }
-    }
-
-    useEffect(() => {
-        whoami();
-    }
-    , [token]);
-
-    const whoami = async () => {
-        fetch(`${apiURL}/climbing/whoami`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + token,
-            },
-            }
-        )
-            .then(response => response.json())
-            .then(response => {setLoggedUser(response.username); setIsAdmin(response.admin)})
-            .catch(error => console.log(error));
     }
 
     const handleSignup = async () => {
@@ -62,6 +41,7 @@ export default function Profile(){
                     setModalVisible(false);
                 } else if (response.status === 400) {
                     alert(await response.text());
+                    setModalVisible(false);
                 } else {
                     alert('Server error');
                 }
@@ -104,75 +84,78 @@ export default function Profile(){
 
     return (
         <SafeAreaView style={styles.container}>
-        <ScrollView>
-            <View style={styles.login}>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Uživatelské jméno"
-                    value={username}
-                    onChangeText={setUsername}
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Heslo"
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry
-                />
-                <TouchableOpacity onPress={handleLogin}>
-                    <View style={styles.button}>
-                        <Text style={Fonts.h3}>Přihlásit</Text>
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={startSignup}>
-                    <View style={styles.button}>
-                        <Text style={Fonts.h3}>Registrovat</Text>
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={logOut}>
-                    <View style={styles.button}>
-                        <Text style={Fonts.h3}>Odhlásit se</Text>
-                    </View>
-                </TouchableOpacity>
-            </View>
-            <View style={styles.info}>
-                <Text style={Fonts.h3}>
-                    Přihlášen jako: { loggedUser }
-                </Text>
-                {
-                    isAdmin ? (
-                        <FontAwesome5 name="user-shield" size={24} color="black" />
-                    ) : null
-                }
-            </View>
+            <ScrollView>
+                <View style={styles.login}>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Uživatelské jméno"
+                        value={username}
+                        onChangeText={setUsername}
+                    />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Heslo"
+                        value={password}
+                        onChangeText={setPassword}
+                        secureTextEntry
+                    />
+                    <TouchableOpacity onPress={handleLogin}>
+                        <View style={styles.button}>
+                            <Text style={Fonts.h3}>Přihlásit</Text>
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={startSignup}>
+                        <View style={styles.button}>
+                            <Text style={Fonts.h3}>Registrovat</Text>
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={logOut}>
+                        <View style={styles.button}>
+                            <Text style={Fonts.h3}>Odhlásit se</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.info}>
+                    <Text style={Fonts.h3}>
+                        Přihlášen jako: { loggedUser }
+                    </Text>
+                    {
+                        isAdmin ? (
+                            <FontAwesome5 name="user-shield" size={24} color="black" />
+                        ) : null
+                    }
+                </View>
             </ScrollView>
+
             <Modal visible={modalVisible}>
                 <View style={styles.registration}>
-                    <View style={{alignItems: 'center', paddingTop:30}}>
-                        <Text style={Fonts.h1}>Registrace</Text>
+                    <View>
+                        <View style={styles.header}>
+                            <Text style={Fonts.h1}>Registrace</Text>
+                        </View>
+                        <View style={styles.userinfo}>
+                            <Text style={Fonts.h3}>Uživatelské jméno: {username}</Text>
+                            <Text style={Fonts.h3}>Zopakujte heslo:</Text>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Zopakujte heslo"
+                                value={confirmPassword}
+                                onChangeText={setConfirmPassword}
+                                secureTextEntry
+                            />
+                        </View>
                     </View>
-                    <View style={{padding:30, gap:20}}>
-                        <Text>Uživatelské jméno: {username}</Text>
-                        <Text>Zopakujte heslo:</Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Zopakujte heslo"
-                            value={confirmPassword}
-                            onChangeText={setConfirmPassword}
-                            secureTextEntry
-                        />
-                    </View>
+                    <TouchableOpacity onPress={handleSignup}>
+                        <View style={styles.button}>
+                            <Text style={Fonts.h3}>Zaregistrovat</Text>
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => setModalVisible(false)}>
+                        <View style={styles.button}>
+                            <Text style={Fonts.h3}>Zavřít</Text>
+                        </View>
+                    </TouchableOpacity>
                 </View>
-                <TouchableOpacity onPress={handleSignup}>
-                    <View style={styles.button}>
-                        <Text style={Fonts.h3}>Zaregistrovat</Text>
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => setModalVisible(false)}>
-                    <View style={styles.button}>
-                        <Text style={Fonts.h3}>Zavřít</Text>
-                    </View>
-                </TouchableOpacity>
             </Modal>
         </SafeAreaView>
     );
@@ -185,9 +168,9 @@ const styles = StyleSheet.create({
         paddingTop: 80,
     },
     input: {
-        height: 40,
-        borderColor: 'gray',
-        borderWidth: 1,
+        height: 50,
+        borderColor: Colors.borderDark,
+        borderWidth: 2,
         marginBottom: 20,
         padding: 10,
     },
@@ -197,12 +180,13 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     info: {
-        marginTop: 20,
+        marginTop: 40,
         flex: 1,
         textAlign: 'center',
+        padding: 10,
     },
     button: {
-        backgroundColor: Colors.theme.primary,
+        backgroundColor: Colors.primary,
         padding: 10,
         alignItems: 'center',
         borderWidth: 1,
@@ -211,6 +195,15 @@ const styles = StyleSheet.create({
     },
     registration: {
         flex: 1,
+        padding: 30,
+    },
+    header: {
+        alignItems: 'center',
+        paddingTop: 30,
+        marginBottom: 20,
+    },
+    userinfo: {
         padding: 10,
+        gap: 20,
     }
 });

@@ -76,7 +76,7 @@ export default function Settings(){
                 </View>
                 <View style={styles.grade}>
                     <MultiSlider
-                        values={[0, 53]}
+                        values={[settings.lowerGrade, settings.upperGrade]}
                         sliderLength={280}
                         onValuesChange={multiSliderValuesChange}
                         onValuesChangeFinish={values => setSettings({...settings, upperGrade: gradeRange[1], lowerGrade: gradeRange[0]})}
@@ -97,10 +97,10 @@ export default function Settings(){
                         {`Ztmavení boulderů: ${darkening}`}
                     </Text>
                     <MultiSlider
-                          values={[100]}
+                          values={[darkening*100]}
                           sliderLength={280}
                           min={0}
-                          max={100}
+                          max={101}
                           step={1}
                           onValuesChange={values => setDarkening(values[0]/100)}
                           onValuesChangeFinish={values => setSettings({...settings, darkening: values[0]/100})}

@@ -12,7 +12,7 @@ import { FontAwesome } from '@expo/vector-icons';
 
 
 export default function Home(){
-    const { settings, boulders, isLoading, reloadAll, setCurrentBoulder } = useContext(GlobalStateContext);
+    const { settings, boulders, bouldersLoading, reloadAll, setCurrentBoulder } = useContext(GlobalStateContext);
     const [ search, setSearch ] = useState('');
     const [ filteredBoulders, setFilteredBoulders ] = useState([]);
     const [ numberOfBoulders, setNumberOfBoulders ] = useState(0);
@@ -42,11 +42,11 @@ export default function Home(){
         return (
             <TouchableOpacity onPress={() => {setCurrentBoulder(item); router.push(`${item.id}`)}}>
                 <View style={styles.boulder}>
-                    <View style={styles.row}>
-                        <Text style={Fonts.h3}>
+                    <View style={styles.firstRow}>
+                        <Text style={[Fonts.h3, styles.name]}>
                             {item.name}
                         </Text>
-                        <View style={styles.row}>
+                        <View style={styles.iconRow}>
                             <Text style={Fonts.h3}>
                                 {gradeIdToGradeName(item.average_grade)}
                             </Text>
@@ -57,14 +57,19 @@ export default function Home(){
                                     <FontAwesome name="times" size={24} color="red" />
                                 )
                             }
+                            {
+                                item.favourite ? (
+                                    <FontAwesome name="heart" size={24} color="red" />
+                                ) : (
+                                    <FontAwesome name="heart-o" size={24} color="red" />
+                                )
+                            }
                         </View>
                     </View>
-                    <View style={styles.row}>
-                        <View style={styles.description}>
-                            <Text style={{color:"black",fontSize:16}}>
-                                {item.description}
-                            </Text>
-                        </View>
+                    <View style={styles.secondRow}>
+                        <Text style={[Fonts.plain, styles.description]}>
+                            {item.description}
+                        </Text>
                         <StarRating rating={item.average_rating} maxStars={5} size={20}/>
                     </View>
                 </View>
@@ -74,29 +79,29 @@ export default function Home(){
 
     return (
         <SafeAreaView style={{flex:1}}>
-                <View style={styles.menuContainer}>
-                    <TouchableOpacity onPress={() => reloadAll()}>
-                        <View style={styles.refresh}>
-                            <Text style={{color:"black",fontSize:16,fontWeight:"bold"}}>
-                                Refresh
-                            </Text>
-                            <Text>
-                                { numberOfBoulders } boulderů
-                            </Text>
-                        </View>
-                    </TouchableOpacity>
-                    <View style={styles.search}>
-                        <SearchBar
-                            placeholder="Vyhledat"
-                            value={search}
-                            onChangeText={setSearch}
-                            containerStyle={styles.searchContainer}
-                            inputContainerStyle={styles.searchInputContainer}
-                        />
+            <View style={styles.menuContainer}>
+                <TouchableOpacity onPress={() => reloadAll()}>
+                    <View style={styles.refresh}>
+                        <Text style={Fonts.h3}>
+                            Refresh
+                        </Text>
+                        <Text style={Fonts.plain}>
+                            { numberOfBoulders } boulderů
+                        </Text>
                     </View>
+                </TouchableOpacity>
+                <View style={styles.search}>
+                    <SearchBar
+                        placeholder="Vyhledat"
+                        value={search}
+                        onChangeText={setSearch}
+                        containerStyle={styles.searchContainer}
+                        inputContainerStyle={styles.searchInputContainer}
+                    />
                 </View>
+            </View>
             <View style={styles.boulders}>
-                { isLoading ? ( <ActivityIndicator size="large" color="black" /> ) : (
+                { bouldersLoading ? ( <ActivityIndicator size="large" color="black" /> ) : (
                      <FlatList
                         data={ filteredBoulders }
                         renderItem={renderBoulder}
@@ -117,18 +122,31 @@ const styles = StyleSheet.create({
         paddingRight: 15,
         paddingTop: 10,
         paddingBottom: 10,
-        backgroundColor: Colors.theme.primary,
-        borderTopLeftRadius: 10,
-        borderTopRightRadius: 10,
+        backgroundColor: Colors.background,
+        borderTopColor: Colors.background,
+        borderBottomColor: Colors.borderDark,
+        borderWidth: 1,
     },
     refresh: {
         padding: 10,
         borderRadius: 10,
         borderWidth: 1,
-        backgroundColor: 'white',
+        borderColor: Colors.borderDark,
+        backgroundColor: Colors.primary,
     },
     search: {
-        width: "70%",
+        flex: 1,
+    },
+    searchContainer: {
+        backgroundColor: Colors.background,
+        borderTopWidth: 0,
+        borderBottomWidth: 0,
+    },
+    searchInputContainer: {
+        borderWidth: 1,
+        borderBottomColor: Colors.border,
+        borderRadius: 10,
+        backgroundColor: Colors.darkerBackground,
     },
     boulder: {
         marginTop: 10,
@@ -137,29 +155,34 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         padding: 10,
         borderRadius: 10,
-        backgroundColor: Colors.theme.darkerBackground,
+        backgroundColor: Colors.darkerBackground,
     },
     boulders: {
-        backgroundColor: Colors.theme.backgroundColor,
-        paddingBottom: 90
+        backgroundColor: Colors.backgroundColor,
+        flex: 1,
     },
-    row: {
+    firstRow: {
         flexDirection:"row",
         justifyContent:"space-between",
+    },
+    secondRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
         marginTop: 5,
     },
+    iconRow: {
+        flexDirection:"row",
+        gap: 5,
+    },
     description: {
-        maxWidth: "70%",
+        flex:1,
+        flexWrap: 'wrap',
+        marginRight: 10,
     },
-    searchContainer: {
-        backgroundColor: 'transparent',
-        borderTopWidth: 0,
-        borderBottomWidth: 0,
-    },
-    searchInputContainer: {
-        borderWidth: 1,
-        borderRadius: 10,
-        backgroundColor: 'white',
-    },
+    name: {
+        flex:1,
+        flexWrap: 'wrap',
+        marginRight: 10,
+    }
 });
 

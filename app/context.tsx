@@ -7,7 +7,6 @@ export const GlobalStateContext = createContext();
 export const GlobalStateProvider = ({ children }) => {
     const defaultSettings = {
         angle: 20,
-        user: 'John Doe',
         sortby: 1,
         upperGrade: 53,
         lowerGrade: 0,
@@ -19,25 +18,33 @@ export const GlobalStateProvider = ({ children }) => {
     }
 
     const [boulders,setBoulders] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [bouldersLoading, setBouldersLoading] = useState(true);
+
     const [settings, setSettings] = useState(defaultSettings);
+    const [settingsLoading, setSettingsLoading] = useState(true);
+
     const [wallImage, setWallImage] = useState(null);
+    const [wallImageLoading, setWallImageLoading] = useState(true);
+
     const [holds, setHolds] = useState([]);
+    const [holdsLoading, setHoldsLoading] = useState(true);
+
     const [token, setToken] = useState('token');
+    const [tokenLoading, setTokenLoading] = useState(true);
+
     const [currentBoulder, setCurrentBoulder] = useState(null);
 
 
-    const executeInOrder = async () => {
-        setIsLoading(true);
-        await loadSettings();
-        await loadToken();
-        await fetchBoulders(settings.angle);
-        await fetchHolds();
-        await fetchBoulderingWallImage();
-        setIsLoading(false);
+    const fetchAll = () => {
+        loadSettings();
+        loadToken();
+        fetchBoulders(settings.angle);
+        fetchHolds();
+        fetchBoulderingWallImage();
     }
 
     const fetchBoulders = (ang) => {
+        setBouldersLoading(true);
         fetch(`${apiURL}/climbing/boulders/${ang}`,
             {
                 method: 'GET',
@@ -49,13 +56,16 @@ export const GlobalStateProvider = ({ children }) => {
             .then(response => response.json())
             .then(jsonResponse => setBoulders(jsonResponse))
             .catch(error => console.log(error))
+            .finally(() => setBouldersLoading(false));
     };
 
     const fetchHolds = () => {
+        setHoldsLoading(true);
         fetch(`${apiURL}/climbing/holds`)
         .then(response => response.json())
         .then(jsonResponse => setHolds(jsonResponse))
         .catch(error => console.log(error))
+        .finally(() => setHoldsLoading(false));
     };
 
     const loadSettings = async () => {
@@ -66,9 +76,11 @@ export const GlobalStateProvider = ({ children }) => {
             } else {
                 rewriteToDefaultSettings();
             }
+            setSettingsLoading(false);
         } catch (error) {
             console.log(error);
             rewriteToDefaultSettings();
+            setSettingsLoading(false);
         }
     }
 
@@ -80,9 +92,11 @@ export const GlobalStateProvider = ({ children }) => {
             } else {
                 setToken('token');
             }
+            setTokenLoading(false);
         } catch (error) {
             console.log(error);
             setToken('token');
+            setTokenLoading(false);
         }
     }
 
@@ -112,6 +126,7 @@ export const GlobalStateProvider = ({ children }) => {
             .then(response => response.text())
             .then(textResponse => setWallImage(textResponse))
             .catch(error => console.log(error))
+            .finally(() => setWallImageLoading(false));
     };
 
     const reloadAll = () => {
@@ -120,7 +135,7 @@ export const GlobalStateProvider = ({ children }) => {
     }
 
     useEffect(()=>{
-        executeInOrder();
+        fetchAll();
     },[]);
 
     useEffect(() => {
@@ -129,7 +144,26 @@ export const GlobalStateProvider = ({ children }) => {
     , [token]);
 
     return (
-        <GlobalStateContext.Provider value={{ boulders, fetchBoulders, isLoading, settings, setSettings, saveSettings, loadSettings, wallImage, holds, reloadAll, setToken, token, saveToken, currentBoulder, setCurrentBoulder }}>
+        <GlobalStateContext.Provider
+            value={{
+                boulders,
+                bouldersLoading,
+                settings,
+                setSettings,
+                saveSettings,
+                settingsLoading,
+                wallImage,
+                wallImageLoading,
+                holds,
+                holdsLoading,
+                reloadAll,
+                token,
+                setToken,
+                saveToken,
+                tokenLoading,
+                currentBoulder,
+                setCurrentBoulder
+        }}>
             {children}
         </GlobalStateContext.Provider>
     );

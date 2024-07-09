@@ -14,7 +14,7 @@ import { gradeIdToGradeName, attemptIdToAttemptName } from '../../../../scripts/
 
 
 export default function LogScreen() {
-    const { id } = useLocalSearchParams();bas
+    const { id } = useLocalSearchParams();
     const { settings } = useContext(GlobalStateContext);
     const [ selectedAngle, setSelectedAngle ] = useState();
     const [ selectedRating, setSelectedRating ] = useState();

@@ -12,7 +12,7 @@ export default function DetailsScreen() {
     const [details, setDetails] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [modalVisible, setModalVisible] = useState(false);
-    const { wallImage, holds } = useContext(GlobalStateContext);
+    const { wallImage, holds, settings } = useContext(GlobalStateContext);
     const router = useRouter();
 
     useEffect(() => {
@@ -47,16 +47,32 @@ export default function DetailsScreen() {
                     <TouchableOpacity onPress={() => setModalVisible(true)}>
                         <ImageBackground style={styles.backgroundImage} source={{uri: `data:image/png;base64,${wallImage}`}}>
                             <Svg style={styles.svgContainer} height="100%" width="100%" viewBox="0 0 793.75 1058.3334">
-                                {details ? (details.map((hold) => (
-                                    <Path
-                                        key={hold.hold_id}
-                                        onPress={() => handlePress(hold.hold_id)}
-                                        fill="none"
-                                        strokeWidth="5"
-                                        stroke={numberToColor(hold.hold_type)}
-                                        d={hold.path}
-                                    />
-                                ))): null}
+                                <Defs>
+                                    <G id="all_paths">
+                                        {holds.map((hold) => (
+                                          <Path
+                                            key={hold.id}
+                                            onPress={() => handlePress(hold.id)}
+                                            fill="none"
+                                            stroke="#ff0000"
+                                            strokeWidth="5"
+                                            d={hold.path}
+                                          />
+                                        ))}
+                                    </G>
+                                </Defs>
+                                <G clipPath="url(#clip)">
+                                <Rect
+                                    x="0" y="0" width="793.75" height="1058.3334"
+                                    opacity={settings.darkenPreview ? settings.darkening : 0}
+                                    fill="black"
+                                />
+                                </G>
+                                <ClipPath id="clip">
+                                    <Rect x="0" y="0" width="793.75" height="1058.3334" fill="white" />
+                                    <Use href="#all_paths" />
+                                </ClipPath>
+                                <Use href="#all_paths" />
                             </Svg>
                         </ImageBackground>
                     </TouchableOpacity>
@@ -109,7 +125,7 @@ export default function DetailsScreen() {
                                 <G clipPath="url(#clip)">
                                 <Rect
                                     x="0" y="0" width="793.75" height="1058.3334"
-                                    opacity="0.4"
+                                    opacity={settings.darkening}
                                     fill="black"
                                 />
                                 </G>

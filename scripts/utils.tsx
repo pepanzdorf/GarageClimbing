@@ -21,6 +21,10 @@ export const sortBoulderBy = (sorter, boulders) => {
         return boulders.sort((a,b) => b.build_time - a.build_time);
     } else if(sorter == 6){
         return boulders.sort((a,b) => a.build_time - b.build_time);
+    } else if(sorter == 7){
+        return boulders.sort((a,b) => b.average_rating - a.average_rating);
+    } else if(sorter == 8){
+        return boulders.sort((a,b) => a.average_rating - b.average_rating);
     } else {
         return boulders;
     }

@@ -10,7 +10,11 @@ export const GlobalStateProvider = ({ children }) => {
         user: 'John Doe',
         sortby: 1,
         upperGrade: 53,
-        lowerGrade: 0
+        lowerGrade: 0,
+        darkening: 0.5,
+        darkenPreview: false,
+        showUnsent: false,
+        showFavorites: false,
     }
 
     const [boulders,setBoulders] = useState([]);
@@ -32,14 +36,21 @@ export const GlobalStateProvider = ({ children }) => {
     }
 
     const fetchBoulders = (ang) => {
-        fetch(`http://192.168.1.113:5000/climbing/boulders/${ang}`)
+        fetch(`${apiULR}/climbing/boulders/${ang}`,
+            {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        )
             .then(response => response.json())
             .then(jsonResponse => setBoulders(jsonResponse))
             .catch(error => console.log(error))
     };
 
     const fetchHolds = () => {
-        fetch("http://192.168.1.113:5000/climbing/holds")
+        fetch(`${apiURL}/climbing/holds`)
         .then(response => response.json())
         .then(jsonResponse => setHolds(jsonResponse))
         .catch(error => console.log(error))

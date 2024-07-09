@@ -33,21 +33,35 @@ export default function Settings(){
             {key:'8', value: 'Nejhorší'},
         ];
 
-    const savePress = async () => {
-        await setSettings(
+    const savePress = () => {
+        setSettings(
             {
                 ...settings,
                 darkenPreview: darkenPreview,
                 showUnsent: showUnsent,
                 showFavourites: showFavourites,
-                rating: defaultRating
+                rating: defaultRating,
+                angle: angle,
+                sortby: selectedSort,
+                lowerGrade: gradeRange[0],
+                upperGrade: gradeRange[1],
+                darkening: darkening,
             }
         );
-        saveSettings(settings);
-        alert(`Nastavení bylo uloženo!\n Úhel: ${settings.angle}˚\n Seřadit podle: ${options.find(option => option.key == selectedSort).value}\n Obtížnosti: ${gradeIdToGradeName(gradeRange[0])} až ${gradeIdToGradeName(gradeRange[1])}\n Ztmavení: ${settings.darkening}`)
+        alert(
+            `
+Nastavení bylo uloženo!
+Úhel: ${angle}˚
+Seřadit podle: ${options.find(option => option.key == selectedSort).value}
+Obtížnosti: ${gradeIdToGradeName(gradeRange[0])} až ${gradeRange[1]}
+Ztmavení: ${darkening}
+Ztmavit preview: ${darkenPreview ? 'Ano' : 'Ne'}
+Zobrazit pouze nevylezené: ${showUnsent ? 'Ano' : 'Ne'}
+Zobrazit pouze oblíbené: ${showFavourites ? 'Ano' : 'Ne'}
+Defaultní hodnocení: ${defaultRating}
+            `
+        )
     }
-
-    const multiSliderValuesChange = values => {setGradeRange(values);};
 
     return (
         <SafeAreaView style={{flex:1}}>
@@ -69,7 +83,6 @@ export default function Settings(){
                         max={45}
                         step={1}
                         onValuesChange={values => setAngle(values[0])}
-                        onValuesChangeFinish={values => setSettings({...settings, angle: values[0]})}
                         markerStyle={styles.markerStyle}
                         selectedStyle={{backgroundColor: Colors.primary}}
                         unselectedStyle={{backgroundColor: Colors.border}}
@@ -82,7 +95,6 @@ export default function Settings(){
                     </Text>
                     <SelectList
                         setSelected={setSelectedSort}
-                        onSelect={() => setSettings({...settings, sortby: selectedSort})}
                         placeholder="Vyberte..."
                         data={options}
                         save="key"
@@ -96,8 +108,7 @@ export default function Settings(){
                     <MultiSlider
                         values={[settings.lowerGrade, settings.upperGrade]}
                         sliderLength={280}
-                        onValuesChange={multiSliderValuesChange}
-                        onValuesChangeFinish={values => setSettings({...settings, upperGrade: gradeRange[1], lowerGrade: gradeRange[0]})}
+                        onValuesChange={setGradeRange}
                         min={0}
                         max={53}
                         step={1}
@@ -121,7 +132,6 @@ export default function Settings(){
                         max={101}
                         step={1}
                         onValuesChange={values => setDarkening(values[0]/100)}
-                        onValuesChangeFinish={values => setSettings({...settings, darkening: values[0]/100})}
                         markerStyle={styles.markerStyle}
                         touchDimensions={styles.touchDimensions}
                         selectedStyle={{backgroundColor: Colors.primary}}

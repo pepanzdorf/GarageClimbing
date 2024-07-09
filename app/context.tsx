@@ -15,6 +15,7 @@ export const GlobalStateProvider = ({ children }) => {
         darkenPreview: false,
         showUnsent: false,
         showFavourites: false,
+        rating: 3,
     }
 
     const [boulders,setBoulders] = useState([]);
@@ -23,6 +24,7 @@ export const GlobalStateProvider = ({ children }) => {
     const [wallImage, setWallImage] = useState(null);
     const [holds, setHolds] = useState([]);
     const [token, setToken] = useState('token');
+    const [currentBoulder, setCurrentBoulder] = useState(null);
 
 
     const executeInOrder = async () => {
@@ -115,7 +117,6 @@ export const GlobalStateProvider = ({ children }) => {
     const reloadAll = () => {
         fetchBoulders(settings.angle);
         fetchHolds();
-        fetchBoulderingWallImage();
     }
 
     useEffect(()=>{
@@ -128,7 +129,7 @@ export const GlobalStateProvider = ({ children }) => {
     , [token]);
 
     return (
-        <GlobalStateContext.Provider value={{ boulders, fetchBoulders, isLoading, settings, setSettings, saveSettings, loadSettings, wallImage, holds, reloadAll, setToken, token, saveToken }}>
+        <GlobalStateContext.Provider value={{ boulders, fetchBoulders, isLoading, settings, setSettings, saveSettings, loadSettings, wallImage, holds, reloadAll, setToken, token, saveToken, currentBoulder, setCurrentBoulder }}>
             {children}
         </GlobalStateContext.Provider>
     );

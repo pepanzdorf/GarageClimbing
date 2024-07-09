@@ -6,6 +6,7 @@ import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import { SelectList } from 'react-native-dropdown-select-list'
 import { FontAwesome } from '@expo/vector-icons';
 import { gradeIdToGradeName } from '../../scripts/utils';
+import { StarRatingClickable } from '../../components/StarRatingClickable';
 
 
 export default function Settings(){
@@ -17,6 +18,7 @@ export default function Settings(){
     const [ darkenPreview, setDarkenPreview ] = useState(settings.darkenPreview);
     const [ showUnsent, setShowUnsent ] = useState(settings.showUnsent);
     const [ showFavourites, setShowFavourites ] = useState(settings.showFavourites);
+    const [ defaultRating, setDefaultRating ] = useState(settings.rating);
 
     const options = [
             {key:'1', value: 'Nejtěžší'},
@@ -30,7 +32,7 @@ export default function Settings(){
         ];
 
     const savePress = () => {
-        setSettings({...settings, darkenPreview: darkenPreview, showUnsent: showUnsent, showFavourites: showFavourites});
+        setSettings({...settings, darkenPreview: darkenPreview, showUnsent: showUnsent, showFavourites: showFavourites, rating: defaultRating});
         saveSettings(settings);
         alert(`Nastavení bylo uloženo!\n Úhel: ${settings.angle}˚\n Seřadit podle: ${options.find(option => option.key == selectedSort).value}\n Obtížnosti: ${gradeIdToGradeName(gradeRange[0])} až ${gradeIdToGradeName(gradeRange[1])}\n Ztmavení: ${settings.darkening}`)
     }
@@ -144,6 +146,12 @@ export default function Settings(){
                       value={showFavourites}
                     />
                 </View>
+                <View style={styles.angle}>
+                    <Text style={{color:"black",fontSize:16,fontWeight:"bold"}}>
+                        {`Defaultní hodnocení: ${defaultRating}`}
+                    </Text>
+                    <StarRatingClickable maxStars={5} initialRating={settings.rating} onRatingChange={setDefaultRating} size={48}/>
+                </View>
             </ScrollView>
             <Button title="Uložit nastavení" onPress={() => savePress()} />
         </SafeAreaView>
@@ -157,7 +165,6 @@ const styles = StyleSheet.create({
         paddingRight: 20,
         paddingTop: 10,
         paddingBottom: 10,
-        flex: 1,
     },
     sort: {
         flexDirection: 'row',

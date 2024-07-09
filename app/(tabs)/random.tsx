@@ -8,7 +8,7 @@ import { gradeIdToGradeName, filterBoulders } from '../../scripts/utils';
 
 
 export default function Random(){
-    const { boulders, fetchBoulders, isLoading, settings } = useContext(GlobalStateContext);
+    const { boulders, fetchBoulders, isLoading, settings, setCurrentBoulder } = useContext(GlobalStateContext);
     const [bouldersInRange, setBouldersInRange] = useState([]);
     const [nBouldersInRange, setNBouldersInRange] = useState(0);
     const [gradeRange, setGradeRange] = useState([0, 53]);
@@ -16,8 +16,13 @@ export default function Random(){
     const router = useRouter();
 
 
-
     const multiSliderValuesChange = values => {setGradeRange(values)};
+
+
+    function handleReroute() {
+        setCurrentBoulder(randomBoulder);
+        router.push(`${randomBoulder.id}`);
+    }
 
     function getRandomBoulder() {
         if (bouldersInRange.length === 0) {
@@ -84,7 +89,7 @@ export default function Random(){
                 <Text>{randomBoulder?.name ?? "žádný"}</Text>
                 {
                     randomBoulder &&
-                    <Button title="Jít na boulder" onPress={() => router.push(`${randomBoulder.id}`)}></Button>
+                    <Button title="Jít na boulder" onPress={handleReroute}></Button>
                 }
             </View>
         </SafeAreaView>

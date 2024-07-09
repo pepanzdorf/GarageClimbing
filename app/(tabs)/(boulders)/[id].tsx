@@ -12,15 +12,25 @@ export default function DetailsScreen() {
     const [details, setDetails] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [modalVisible, setModalVisible] = useState(false);
-    const { wallImage, holds, settings } = useContext(GlobalStateContext);
+    const { wallImage, holds, settings, token, currentBoulder } = useContext(GlobalStateContext);
     const router = useRouter();
 
     useEffect(() => {
+        setIsLoading(true);
         fetchBoulderDetail();
     }, [id]);
 
     const fetchBoulderDetail = () => {
-        fetch(`${apiURL}/climbing/boulders/detail/${id}`)
+        fetch(`${apiURL}/climbing/boulders/detail/${id}`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({angle: settings.angle})
+            }
+        )
             .then(response => response.json())
             .then(jsonResponse => setDetails(jsonResponse))
             .catch(error => console.log(error))
@@ -82,7 +92,7 @@ export default function DetailsScreen() {
                         Boulder details
                     </Text>
                     <Text style={{color:"black",fontSize:16}}>
-                        {details ? details.name : 'Loading...'}
+                        {currentBoulder.name}
                     </Text>
                     <Text style={{color:"black",fontSize:16}}>
                         {details ? new Date(details.build_time).toLocaleString(): 'Loading...'}

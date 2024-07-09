@@ -12,7 +12,7 @@ import { FontAwesome } from '@expo/vector-icons';
 
 
 export default function Home(){
-    const { settings, boulders, isLoading, reloadAll } = useContext(GlobalStateContext);
+    const { settings, boulders, isLoading, reloadAll, setCurrentBoulder } = useContext(GlobalStateContext);
     const [ search, setSearch ] = useState('');
     const [ filteredBoulders, setFilteredBoulders ] = useState([]);
     const [ numberOfBoulders, setNumberOfBoulders ] = useState(0);
@@ -40,7 +40,7 @@ export default function Home(){
 
     const renderBoulder = ({item}) => {
         return (
-            <TouchableOpacity onPress={() => router.push(`${item.id}`)}>
+            <TouchableOpacity onPress={() => {setCurrentBoulder(item); router.push(`${item.id}`)}}>
                 <View style={styles.boulder}>
                     <View style={styles.row}>
                         <Text style={Fonts.h3}>

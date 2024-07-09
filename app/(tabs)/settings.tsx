@@ -7,10 +7,12 @@ import { SelectList } from 'react-native-dropdown-select-list'
 import { FontAwesome } from '@expo/vector-icons';
 import { gradeIdToGradeName } from '../../scripts/utils';
 import { StarRatingClickable } from '../../components/StarRatingClickable';
+import { Colors } from '../../constants/Colors'
+import { Fonts } from '../../constants/Fonts'
 
 
 export default function Settings(){
-    const { settings, setSettings, saveSettings, loadSettings } = useContext(GlobalStateContext);
+    const { settings, setSettings, saveSettings, settingsLoading } = useContext(GlobalStateContext);
     const [ angle, setAngle ] = useState(settings.angle);
     const [ selectedSort, setSelectedSort ] = useState(settings.sortby);
     const [ gradeRange, setGradeRange ] = useState([0, 53]);
@@ -31,8 +33,16 @@ export default function Settings(){
             {key:'8', value: 'Nejhorší'},
         ];
 
-    const savePress = () => {
-        setSettings({...settings, darkenPreview: darkenPreview, showUnsent: showUnsent, showFavourites: showFavourites, rating: defaultRating});
+    const savePress = async () => {
+        await setSettings(
+            {
+                ...settings,
+                darkenPreview: darkenPreview,
+                showUnsent: showUnsent,
+                showFavourites: showFavourites,
+                rating: defaultRating
+            }
+        );
         saveSettings(settings);
         alert(`Nastavení bylo uloženo!\n Úhel: ${settings.angle}˚\n Seřadit podle: ${options.find(option => option.key == selectedSort).value}\n Obtížnosti: ${gradeIdToGradeName(gradeRange[0])} až ${gradeIdToGradeName(gradeRange[1])}\n Ztmavení: ${settings.darkening}`)
     }
@@ -42,29 +52,32 @@ export default function Settings(){
     return (
         <SafeAreaView style={{flex:1}}>
             <View style={styles.header}>
-                <Text style={styles.headerText}>
+                <Text style={Fonts.h1}>
                     Nastavení
                 </Text>
             </View>
+            {settingsLoading && <ActivityIndicator size="large" color="#0000ff" />}
             <ScrollView contentContainerStyle={styles.settingsContainer}>
                 <View style={styles.angle}>
-                    <Text style={{color:"black",fontSize:16,fontWeight:"bold"}}>
+                    <Text style={Fonts.h3}>
                         {`Úhel: ${angle}˚`}
                     </Text>
                     <MultiSlider
-                          values={[angle]}
-                          sliderLength={280}
-                          min={0}
-                          max={45}
-                          step={1}
-                          onValuesChange={values => setAngle(values[0])}
-                          onValuesChangeFinish={values => setSettings({...settings, angle: values[0]})}
-                          markerStyle={{height: 20, width: 20}}
-                          touchDimensions={{height: 60, width: 60, borderRadius: 20, slipDisplacement: 200}}
+                        values={[angle]}
+                        sliderLength={280}
+                        min={0}
+                        max={45}
+                        step={1}
+                        onValuesChange={values => setAngle(values[0])}
+                        onValuesChangeFinish={values => setSettings({...settings, angle: values[0]})}
+                        markerStyle={styles.markerStyle}
+                        selectedStyle={{backgroundColor: Colors.primary}}
+                        unselectedStyle={{backgroundColor: Colors.border}}
+                        touchDimensions={styles.touchDimensions}
                     />
                 </View>
                 <View style={styles.sort}>
-                    <Text style={{color:"black",fontSize:16,fontWeight:"bold",marginRight:10}}>
+                    <Text style={Fonts.h3}>
                         Seřadit bouldery podle:
                     </Text>
                     <SelectList
@@ -77,6 +90,9 @@ export default function Settings(){
                     />
                 </View>
                 <View style={styles.grade}>
+                    <Text style={Fonts.h3}>Rozsah obtížností</Text>
+                    <Text style={Fonts.plainBold}>Od: {gradeIdToGradeName(gradeRange[0])}</Text>
+                    <Text style={Fonts.plainBold}>Do: {gradeIdToGradeName(gradeRange[1])}</Text>
                     <MultiSlider
                         values={[settings.lowerGrade, settings.upperGrade]}
                         sliderLength={280}
@@ -87,110 +103,138 @@ export default function Settings(){
                         step={1}
                         snapped
                         allowOverlap
-                        markerStyle={{height: 20, width: 20}}
-                        touchDimensions={{height: 60, width: 60, borderRadius: 20, slipDisplacement: 200}}
+                        markerStyle={styles.markerStyle}
+                        selectedStyle={{backgroundColor: Colors.primary}}
+                        unselectedStyle={{backgroundColor: Colors.border}}
+                        touchDimensions={styles.touchDimensions}
                     ></MultiSlider>
-                    <Text>Grade Range</Text>
-                    <Text>From: {gradeIdToGradeName(gradeRange[0])}</Text>
-                    <Text>To: {gradeIdToGradeName(gradeRange[1])}</Text>
+
                 </View>
                 <View style={styles.angle}>
-                    <Text style={{color:"black",fontSize:16,fontWeight:"bold"}}>
+                    <Text style={Fonts.h3}>
                         {`Ztmavení boulderů: ${darkening}`}
                     </Text>
                     <MultiSlider
-                          values={[darkening*100]}
-                          sliderLength={280}
-                          min={0}
-                          max={101}
-                          step={1}
-                          onValuesChange={values => setDarkening(values[0]/100)}
-                          onValuesChangeFinish={values => setSettings({...settings, darkening: values[0]/100})}
-                          markerStyle={{height: 20, width: 20}}
-                          touchDimensions={{height: 60, width: 60, borderRadius: 20, slipDisplacement: 200}}
+                        values={[darkening*100]}
+                        sliderLength={280}
+                        min={0}
+                        max={101}
+                        step={1}
+                        onValuesChange={values => setDarkening(values[0]/100)}
+                        onValuesChangeFinish={values => setSettings({...settings, darkening: values[0]/100})}
+                        markerStyle={styles.markerStyle}
+                        touchDimensions={styles.touchDimensions}
+                        selectedStyle={{backgroundColor: Colors.primary}}
+                        unselectedStyle={{backgroundColor: Colors.border}}
                     />
                 </View>
                 <View style={styles.switch}>
-                    <Text style={{color:"black",fontSize:16,fontWeight:"bold"}}>
+                    <Text style={Fonts.h3}>
                         {`Ztmavit preview boulderu: `}
                     </Text>
                     <Switch
-                      trackColor={{false: '#767577', true: '#81b0ff'}}
-                      thumbColor={darkenPreview ? '#f5dd4b' : '#f4f3f4'}
-                      ios_backgroundColor="#3e3e3e"
-                      onValueChange={setDarkenPreview}
-                      value={darkenPreview}
+                        trackColor={styles.track}
+                        onValueChange={setDarkenPreview}
+                        value={darkenPreview}
                     />
                 </View>
                 <View style={styles.switch}>
-                    <Text style={{color:"black",fontSize:16,fontWeight:"bold"}}>
+                    <Text style={Fonts.h3}>
                         {`Zobrazit pouze nevylezené: `}
                     </Text>
                     <Switch
-                      trackColor={{false: '#767577', true: '#81b0ff'}}
-                      thumbColor={darkenPreview ? '#f5dd4b' : '#f4f3f4'}
-                      ios_backgroundColor="#3e3e3e"
-                      onValueChange={setShowUnsent}
-                      value={showUnsent}
+                        trackColor={styles.track}
+                        onValueChange={setShowUnsent}
+                        value={showUnsent}
                     />
                 </View>
                 <View style={styles.switch}>
-                    <Text style={{color:"black",fontSize:16,fontWeight:"bold"}}>
+                    <Text style={Fonts.h3}>
                         {`Zobrazit pouze oblíbené: `}
                     </Text>
                     <Switch
-                      trackColor={{false: '#767577', true: '#81b0ff'}}
-                      thumbColor={darkenPreview ? '#f5dd4b' : '#f4f3f4'}
-                      ios_backgroundColor="#3e3e3e"
-                      onValueChange={setShowFavourites}
-                      value={showFavourites}
+                        trackColor={styles.track}
+                        onValueChange={setShowFavourites}
+                        value={showFavourites}
                     />
                 </View>
                 <View style={styles.angle}>
-                    <Text style={{color:"black",fontSize:16,fontWeight:"bold"}}>
+                    <Text style={Fonts.h3}>
                         {`Defaultní hodnocení: ${defaultRating}`}
                     </Text>
-                    <StarRatingClickable maxStars={5} initialRating={settings.rating} onRatingChange={setDefaultRating} size={48}/>
+                    <View style={styles.stars}>
+                        <StarRatingClickable maxStars={5} initialRating={settings.rating} onRatingChange={setDefaultRating} size={48}/>
+                    </View>
                 </View>
             </ScrollView>
-            <Button title="Uložit nastavení" onPress={() => savePress()} />
+            <TouchableOpacity onPress={savePress}>
+                <View style={styles.button}>
+                    <Text style={Fonts.h3}>Uložit nastavení</Text>
+                </View>
+            </TouchableOpacity>
         </SafeAreaView>
     )
 }
 
 const styles = StyleSheet.create({
     settingsContainer: {
-        alignItems: 'center',
-        paddingLeft: 20,
-        paddingRight: 20,
+        paddingLeft: 30,
+        paddingRight: 30,
         paddingTop: 10,
         paddingBottom: 10,
+        gap: 10,
     },
     sort: {
-        flexDirection: 'row',
-        alignItems: 'center',
         padding: 10,
+        gap: 20,
     },
     angle: {
         padding: 10,
     },
+    grade: {
+        padding: 10,
+    },
     header: {
-        backgroundColor: 'lightblue',
+        backgroundColor: Colors.primary,
         padding: 10,
         alignItems: 'center',
-    },
-    headerText: {
-        color: 'black',
-        fontSize: 20,
-        fontWeight: 'bold',
+        borderWidth: 1,
+        borderColor: Colors.border,
+        borderBottomColor: Colors.borderDark,
     },
     switch: {
         flexDirection: 'row',
         alignItems: 'center',
         padding: 10,
     },
-    grade: {
-        padding: 10,
+    button: {
+         backgroundColor: Colors.primary,
+         padding: 10,
+         alignItems: 'center',
+         borderWidth: 1,
+         borderRadius: 10,
+         marginTop: 15,
+         marginRight: 20,
+         marginLeft: 20,
+     },
+    stars: {
+        alignItems: 'center',
+        marginTop: 10
+    },
+    markerStyle: {
+        height: 20,
+        width: 20,
+        backgroundColor: Colors.primary,
+    },
+    touchDimensions: {
+        height: 60,
+        width: 60,
+        borderRadius: 20,
+        slipDisplacement: 200
+    },
+    track: {
+        false: Colors.darkerBorder,
+        true: Colors.primary
     }
 });
 

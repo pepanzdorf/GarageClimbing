@@ -1,9 +1,26 @@
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
+import { Colors } from '../../constants/Colors'
+import { Fonts } from '../../constants/Fonts'
 
 export default function TabLayout() {
     return (
-        <Tabs screenOptions={{ tabBarActiveTintColor: 'blue', headerShown: false}}>
+        <Tabs screenOptions={{
+            tabBarActiveTintColor: Colors.primary,
+            tabBarInactiveTintColor: Colors.secondary,
+            tabBarStyle: {
+                height: 55,
+                borderWidth: 1,
+                borderColor: Colors.border,
+                borderTopColor: Colors.borderDark,
+                backgroundColor: Colors.background,
+            },
+            tabBarLabelStyle: {
+                fontSize: 12,
+                fontWeight: "bold",
+            },
+            headerShown: false
+        }}>
             <Tabs.Screen
                 name="(boulders)"
                 options={{

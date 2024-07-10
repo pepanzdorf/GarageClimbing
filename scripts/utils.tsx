@@ -44,9 +44,9 @@ export const filterBySearch = (boulders, search) => {
 
 export const attemptIdToAttemptName = (attemptId) => {
     if (attemptId === 0) return "Flash";
-    if (attemptId === 10) return "10-24";
-    if (attemptId === 11) return "25+";
-    return attemptId;
+    if (attemptId === 9) return "10-24";
+    if (attemptId === 10) return "25+";
+    return attemptId+1;
 }
 
 export const numberToColor = (num) => {

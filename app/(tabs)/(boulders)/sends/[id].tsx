@@ -15,7 +15,7 @@ import { gradeIdToGradeName, attemptIdToAttemptName } from '../../../../scripts/
 
 export default function LogScreen() {
     const { id } = useLocalSearchParams();
-    const { settings, token, currentBoulder } = useContext(GlobalStateContext);
+    const { settings, token, currentBoulder, setReload } = useContext(GlobalStateContext);
     const [ selectedAngle, setSelectedAngle ] = useState(settings.angle);
     const [ selectedRating, setSelectedRating ] = useState(settings.rating);
     const [ selectedGrade, setSelectedGrade ] = useState(currentBoulder.average_grade);
@@ -23,8 +23,8 @@ export default function LogScreen() {
     const router = useRouter();
 
     const angleData = Array(46).fill().map((_, i) => i);
-    const gradeData = Array(53).fill().map((_, i) => gradeIdToGradeName(i));
-    const attemptsData = Array(12).fill().map((_, i) => attemptIdToAttemptName(i));
+    const gradeData = Array(53).fill().map((_, i) => gradeIdToGradeName(i, settings.grading));
+    const attemptsData = Array(11).fill().map((_, i) => attemptIdToAttemptName(i));
 
 
     const logSend = () => {
@@ -45,7 +45,7 @@ export default function LogScreen() {
         .then(response => response.text())
         .then(jsonResponse => console.log(jsonResponse))
         .catch(error => console.log(error))
-        .finally(() => router.back());
+        .finally(() => {setReload(true); router.back()});
     }
 
     const setDefaults = () => {

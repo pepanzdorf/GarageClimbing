@@ -251,7 +251,7 @@ export default function DetailsScreen() {
                     <View style={styles.row}>
                         <StarRating rating={currentBoulder.average_rating} maxStars={5} size={20}/>
                         <Text style={Fonts.plain}>
-                            {gradeIdToGradeName(currentBoulder.average_grade)}
+                            {gradeIdToGradeName(currentBoulder.average_grade, settings.grading)}
                         </Text>
                     </View>
                 </View>
@@ -313,7 +313,7 @@ export default function DetailsScreen() {
                                                     {send.name}
                                                 </Text>
                                                 <Text style={Fonts.h3}>
-                                                    {gradeIdToGradeName(send.grade)}
+                                                    {gradeIdToGradeName(send.grade, settings.grading)}
                                                 </Text>
                                             </View>
                                             <Text style={Fonts.small}>

@@ -48,7 +48,7 @@ export default function Home(){
                         </Text>
                         <View style={styles.iconRow}>
                             <Text style={Fonts.h3}>
-                                {gradeIdToGradeName(item.average_grade)}
+                                {gradeIdToGradeName(item.average_grade, settings.grading)}
                             </Text>
                             {
                                 item.sent ? (

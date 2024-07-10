@@ -15,6 +15,7 @@ export const GlobalStateProvider = ({ children }) => {
         showUnsent: false,
         showFavourites: false,
         rating: 3,
+        grading: 0,
     }
 
     const [boulders,setBoulders] = useState([]);
@@ -34,6 +35,11 @@ export const GlobalStateProvider = ({ children }) => {
 
     const [currentBoulder, setCurrentBoulder] = useState(null);
 
+    const [loggedUser, setLoggedUser] = useState('nepřihlášen');
+    const [isAdmin, setIsAdmin] = useState(false);
+
+    const [reload, setReload] = useState(false);
+
 
     const fetchAll = () => {
         loadSettings();
@@ -41,6 +47,21 @@ export const GlobalStateProvider = ({ children }) => {
         fetchBoulders(settings.angle);
         fetchHolds();
         fetchBoulderingWallImage();
+        whoami();
+    }
+
+    const whoami = () => {
+        fetch(`${apiURL}/climbing/whoami`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token,
+            },
+            }
+        )
+            .then(response => response.json())
+            .then(response => {setLoggedUser(response.username), setIsAdmin(response.admin)})
+            .catch(error => console.log(error));
     }
 
     const fetchBoulders = (ang) => {
@@ -129,7 +150,7 @@ export const GlobalStateProvider = ({ children }) => {
             .finally(() => setWallImageLoading(false));
     };
 
-    const reloadAll = () => {
+    const reloadBoulders = () => {
         fetchBoulders(settings.angle);
         fetchHolds();
     }
@@ -139,9 +160,18 @@ export const GlobalStateProvider = ({ children }) => {
     },[]);
 
     useEffect(() => {
-        reloadAll();
+        reloadBoulders();
+        whoami();
     }
     , [token]);
+
+    useEffect(() => {
+        saveSettings(settings);
+        fetchBoulders(settings.angle);
+    }
+    , [settings]);
+
+
 
     return (
         <GlobalStateContext.Provider
@@ -156,13 +186,17 @@ export const GlobalStateProvider = ({ children }) => {
                 wallImageLoading,
                 holds,
                 holdsLoading,
-                reloadAll,
+                reloadBoulders,
                 token,
                 setToken,
                 saveToken,
                 tokenLoading,
                 currentBoulder,
-                setCurrentBoulder
+                setCurrentBoulder,
+                loggedUser,
+                isAdmin,
+                reload,
+                setReload,
         }}>
             {children}
         </GlobalStateContext.Provider>

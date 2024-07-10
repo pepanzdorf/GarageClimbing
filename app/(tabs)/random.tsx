@@ -72,8 +72,8 @@ export default function Random(){
                     touchDimensions={{height: 60, width: 60, borderRadius: 20, slipDisplacement: 200}}
                 ></MultiSlider>
                 <Text>Grade Range</Text>
-                <Text>From: {gradeIdToGradeName(gradeRange[0])}</Text>
-                <Text>To: {gradeIdToGradeName(gradeRange[1])}</Text>
+                <Text>From: {gradeIdToGradeName(gradeRange[0], settings.grading)}</Text>
+                <Text>To: {gradeIdToGradeName(gradeRange[1], settings.grading)}</Text>
                 <Text>Number of boulders in range: {nBouldersInRange}</Text>
                 <Button title="Get Random Boulder" onPress={() => {
                         const rBoulder = getRandomBoulder(boulders, gradeRange);

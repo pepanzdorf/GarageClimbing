@@ -15,6 +15,7 @@ export default function Settings(){
     const { settings, setSettings, saveSettings, settingsLoading } = useContext(GlobalStateContext);
     const [ angle, setAngle ] = useState(settings.angle);
     const [ selectedSort, setSelectedSort ] = useState(settings.sortby);
+    const [ selectedGrading, setSelectedGrading ] = useState(settings.grading);
     const [ gradeRange, setGradeRange ] = useState([0, 53]);
     const [ darkening, setDarkening ] = useState(settings.darkening);
     const [ darkenPreview, setDarkenPreview ] = useState(settings.darkenPreview);
@@ -33,6 +34,14 @@ export default function Settings(){
             {key:'8', value: 'Nejhorší'},
         ];
 
+    const gradingOptions = [
+        {key:'0', value: 'V-grade'},
+        {key:'1', value: 'Font'},
+        {key:'2', value: 'YDS'},
+        {key:'3', value: 'French sport'},
+        {key:'4', value: 'Melda-scale'},
+    ];
+
     const savePress = () => {
         setSettings(
             {
@@ -46,6 +55,7 @@ export default function Settings(){
                 lowerGrade: gradeRange[0],
                 upperGrade: gradeRange[1],
                 darkening: darkening,
+                grading: selectedGrading,
             }
         );
         alert(
@@ -53,12 +63,13 @@ export default function Settings(){
 Nastavení bylo uloženo!
 Úhel: ${angle}˚
 Seřadit podle: ${options.find(option => option.key == selectedSort).value}
-Obtížnosti: ${gradeIdToGradeName(gradeRange[0])} až ${gradeRange[1]}
+Obtížnosti: ${gradeIdToGradeName(gradeRange[0], selectedGrading)} až ${gradeIdToGradeName(gradeRange[1], selectedGrading)}
 Ztmavení: ${darkening}
 Ztmavit preview: ${darkenPreview ? 'Ano' : 'Ne'}
 Zobrazit pouze nevylezené: ${showUnsent ? 'Ano' : 'Ne'}
 Zobrazit pouze oblíbené: ${showFavourites ? 'Ano' : 'Ne'}
 Defaultní hodnocení: ${defaultRating}
+Používat stupnici: ${gradingOptions.find(option => option.key == selectedGrading).value}
             `
         )
     }
@@ -103,8 +114,8 @@ Defaultní hodnocení: ${defaultRating}
                 </View>
                 <View style={styles.grade}>
                     <Text style={Fonts.h3}>Rozsah obtížností</Text>
-                    <Text style={Fonts.plainBold}>Od: {gradeIdToGradeName(gradeRange[0])}</Text>
-                    <Text style={Fonts.plainBold}>Do: {gradeIdToGradeName(gradeRange[1])}</Text>
+                    <Text style={Fonts.plainBold}>Od: {gradeIdToGradeName(gradeRange[0], settings.grading)}</Text>
+                    <Text style={Fonts.plainBold}>Do: {gradeIdToGradeName(gradeRange[1], settings.grading)}</Text>
                     <MultiSlider
                         values={[settings.lowerGrade, settings.upperGrade]}
                         sliderLength={280}
@@ -179,6 +190,18 @@ Defaultní hodnocení: ${defaultRating}
                         <StarRatingClickable maxStars={5} initialRating={settings.rating} onRatingChange={setDefaultRating} size={48}/>
                     </View>
                 </View>
+                <View style={styles.grading}>
+                    <Text style={Fonts.h3}>
+                        Používat stupnici:
+                    </Text>
+                    <SelectList
+                        setSelected={setSelectedGrading}
+                        placeholder="Vyberte..."
+                        data={gradingOptions}
+                        save="key"
+                        search={false}
+                    />
+                </View>
             </ScrollView>
             <TouchableOpacity onPress={savePress}>
                 <View style={styles.button}>
@@ -248,7 +271,11 @@ const styles = StyleSheet.create({
     track: {
         false: Colors.darkerBorder,
         true: Colors.primary
-    }
+    },
+    grading: {
+        padding: 10,
+        gap: 20,
+    },
 });
 
 

@@ -13,5 +13,12 @@ export const Fonts = {
     },
     plain: {
         fontSize: 16,
-    }
+    },
+    plainBold: {
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    small: {
+        fontSize: 14,
+    },
 }

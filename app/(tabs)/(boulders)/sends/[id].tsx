@@ -1,16 +1,14 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Modal, TouchableOpacity, Image, ImageBackground, Button, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GlobalStateContext } from '../../../context';
-import { Svg, Circle, Image as SvgImage, Path, Rect, Mask, ClipPath, Defs, G, Use } from 'react-native-svg'
 import { apiURL } from '../../../../constants/Other';
 import ScrollPicker from "react-native-wheel-scrollview-picker";
 import { StarRatingClickable } from '../../../../components/StarRatingClickable';
 import { Fonts } from '../../../../constants/Fonts';
 import { gradeIdToGradeName, attemptIdToAttemptName } from '../../../../scripts/utils';
-
+import { Colors } from '../../../../constants/Colors';
 
 
 export default function LogScreen() {
@@ -50,6 +48,9 @@ export default function LogScreen() {
 
     const setDefaults = () => {
         setSelectedAngle(settings.angle);
+        setSelectedRating(settings.rating);
+        setSelectedGrade(currentBoulder.average_grade);
+        setSelectedAttempts(0);
     }
 
     useEffect(() => {
@@ -59,55 +60,63 @@ export default function LogScreen() {
 
     return (
         <SafeAreaView style={{flex: 1}}>
-            <ScrollView style={styles.container}>
-                <View style={{width: "35%"}}>
-                    <Text>Úhel</Text>
+            <ScrollView contentContainerStyle={styles.container}>
+                <View style={styles.picker}>
+                    <Text style={Fonts.h3}>Úhel</Text>
                     <ScrollPicker
                         dataSource={angleData}
                         selectedIndex={settings.angle}
-                        wrapperHeight={60}
+                        wrapperHeight={styles.pickerHeight}
                         wrapperBackground="#FFFFFF"
-                        itemHeight={60}
-                        highlightColor="#aaaaaa"
+                        itemHeight={styles.pickerHeight}
+                        highlightColor={Colors.border}
                         highlightBorderWidth={2}
                         itemTextStyle={Fonts.h3}
-                        activeItemTextStyle={[Fonts.h3, {color: "red"}]}
+                        activeItemTextStyle={[Fonts.h3, {color: Colors.primary}]}
                         onValueChange={(value) => setSelectedAngle(value)}
                     />
                 </View>
-                <View style={{width: "35%"}}>
-                    <Text>Obtížnost</Text>
+                <View style={styles.picker}>
+                    <Text style={Fonts.h3}>Obtížnost</Text>
                     <ScrollPicker
                         dataSource={gradeData}
                         selectedIndex={selectedGrade}
-                        wrapperHeight={60}
+                        wrapperHeight={styles.pickerHeight}
                         wrapperBackground="#FFFFFF"
-                        itemHeight={60}
-                        highlightColor="#aaaaaa"
+                        itemHeight={styles.pickerHeight}
+                        highlightColor={Colors.border}
                         highlightBorderWidth={2}
                         itemTextStyle={Fonts.h3}
-                        activeItemTextStyle={[Fonts.h3, {color: "red"}]}
+                        activeItemTextStyle={[Fonts.h3, {color: Colors.primary}]}
                         onValueChange={(_, index) => setSelectedGrade(index)}
                     />
                 </View>
-                <View style={{width: "35%"}}>
-                    <Text>Počet pokusů</Text>
+                <View style={styles.picker}>
+                    <Text style={Fonts.h3}>Počet pokusů</Text>
                     <ScrollPicker
                         dataSource={attemptsData}
-                        wrapperHeight={60}
+                        wrapperHeight={styles.pickerHeight}
                         wrapperBackground="#FFFFFF"
-                        itemHeight={60}
-                        highlightColor="#aaaaaa"
+                        itemHeight={styles.pickerHeight}
+                        highlightColor={Colors.border}
                         highlightBorderWidth={2}
                         itemTextStyle={Fonts.h3}
-                        activeItemTextStyle={[Fonts.h3, {color: "red"}]}
+                        activeItemTextStyle={[Fonts.h3, {color: Colors.primary}]}
                         onValueChange={(value) => setSelectedAttempts(value)}
                     />
                 </View>
                 <StarRatingClickable maxStars={5} initialRating={settings.rating} onRatingChange={setSelectedRating} size={48}/>
             </ScrollView>
-            <Button title="Odeslat" onPress={logSend}/>
-            <Button title="Zpět" onPress={() => router.back()}/>
+            <TouchableOpacity onPress={logSend}>
+                <View style={styles.button}>
+                    <Text style={Fonts.h3}>Odeslat</Text>
+                </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => router.back()}>
+                <View style={styles.button}>
+                    <Text style={Fonts.h3}>Zavřít</Text>
+                </View>
+            </TouchableOpacity>
         </SafeAreaView>
     );
 }
@@ -115,6 +124,21 @@ export default function LogScreen() {
 const styles = StyleSheet.create({
     container: {
         padding: 20,
-        flex: 1,
+        alignItems: 'center',
+        gap: 20,
     },
+    button: {
+        backgroundColor: Colors.primary,
+        padding: 10,
+        alignItems: 'center',
+        borderWidth: 1,
+        borderRadius: 10,
+        marginRight: 20,
+        marginLeft: 20,
+        marginBottom: 15,
+    },
+    picker: {
+        width: "50%",
+    },
+    pickerHeight: 70,
 });

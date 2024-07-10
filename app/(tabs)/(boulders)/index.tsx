@@ -12,7 +12,7 @@ import { FontAwesome } from '@expo/vector-icons';
 
 
 export default function Home(){
-    const { settings, boulders, bouldersLoading, reloadAll, setCurrentBoulder } = useContext(GlobalStateContext);
+    const { settings, boulders, bouldersLoading, reloadBoulders, setCurrentBoulder } = useContext(GlobalStateContext);
     const [ search, setSearch ] = useState('');
     const [ filteredBoulders, setFilteredBoulders ] = useState([]);
     const [ numberOfBoulders, setNumberOfBoulders ] = useState(0);
@@ -80,7 +80,7 @@ export default function Home(){
     return (
         <SafeAreaView style={{flex:1}}>
             <View style={styles.menuContainer}>
-                <TouchableOpacity onPress={() => reloadAll()}>
+                <TouchableOpacity onPress={() => reloadBoulders()}>
                     <View style={styles.refresh}>
                         <Text style={Fonts.h3}>
                             Refresh

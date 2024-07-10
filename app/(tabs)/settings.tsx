@@ -121,7 +121,7 @@ Používat stupnici: ${gradingOptions.find(option => option.key == selectedGradi
                         sliderLength={280}
                         onValuesChange={setGradeRange}
                         min={0}
-                        max={53}
+                        max={52}
                         step={1}
                         snapped
                         allowOverlap

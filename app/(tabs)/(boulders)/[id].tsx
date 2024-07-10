@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Modal, TouchableOpacity, ImageBackground, ScrollView, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, Modal, TouchableOpacity, ImageBackground, ScrollView, Dimensions, TextInput } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -20,6 +20,8 @@ export default function DetailsScreen() {
     const [comments, setComments] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [modalVisible, setModalVisible] = useState(false);
+    const [commentModalVisible, setCommentModalVisible] = useState(false);
+    const [comment, setComment] = useState('');
     const [isFavourite, setIsFavourite] = useState(false);
     const [showComments, setShowComments] = useState(false);
     const windowAspectRatio = Dimensions.get('window').width / Dimensions.get('window').height;
@@ -94,6 +96,23 @@ export default function DetailsScreen() {
             .then(jsonResponse => setComments(jsonResponse))
             .catch(error => console.log(error))
             .finally(() => setIsLoading(false));
+    }
+
+    const sendComment = () => {
+        fetch(`${apiURL}/climbing/boulders/comment/${id}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token,
+            },
+            body: JSON.stringify({
+                text: comment,
+            }),
+        })
+            .then(response => response.text())
+            .then(jsonResponse => console.log(jsonResponse))
+            .catch(error => console.log(error))
+            .finally(() => {fetchComments(); setComment(''); setCommentModalVisible(false)});
     }
 
 
@@ -186,7 +205,9 @@ export default function DetailsScreen() {
                             comments.length > 0 ? (
                                 <View style={styles.commentsContainer}>
                                     <View style={styles.addButton}>
-                                        <FontAwesome name="plus" size={36} color={Colors.primary} />
+                                        <TouchableOpacity onPress={() => setCommentModalVisible(true)}>
+                                            <FontAwesome name="plus" size={36} color={Colors.primary} />
+                                        </TouchableOpacity>
                                     </View>
                                     {
                                     comments.map((comment) => (
@@ -206,12 +227,13 @@ export default function DetailsScreen() {
                                 </View>
                             ) : (
                                 <View style={styles.commentsContainer}>
-
                                     <View style={styles.row}>
                                         <Text style={Fonts.h3}>
                                             Žádné komentáře
                                         </Text>
-                                        <FontAwesome name="plus" size={36} color={Colors.primary} />
+                                        <TouchableOpacity onPress={() => setCommentModalVisible(true)}>
+                                            <FontAwesome name="plus" size={36} color={Colors.primary} />
+                                        </TouchableOpacity>
                                     </View>
                                 </View>
 
@@ -303,6 +325,27 @@ export default function DetailsScreen() {
                         </View>
                     </TouchableOpacity>
             </Modal>
+
+            <Modal visible={commentModalVisible}>
+                <View style={[styles.container, {flex:1, paddingTop:120}]}>
+                    <TextInput
+                        style={styles.commentInput}
+                        placeholder="Napište komentář:"
+                        value={comment}
+                        onChangeText={setComment}
+                    />
+                    <TouchableOpacity onPress={sendComment}>
+                        <View style={styles.button}>
+                            <Text style={Fonts.h3}>Odeslat</Text>
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => setCommentModalVisible(false)}>
+                        <View style={styles.button}>
+                            <Text style={Fonts.h3}>Zavřít</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+            </Modal>
         </SafeAreaView>
     );
 }
@@ -369,5 +412,14 @@ const styles = StyleSheet.create({
     },
     addButton : {
         flexDirection: 'row-reverse',
+    },
+    commentInput: {
+        height: 200,
+        borderColor: Colors.borderDark,
+        borderWidth: 2,
+        marginBottom: 20,
+        padding: 10,
+        multiline: true,
+        textAlignVertical: 'top',
     },
 });

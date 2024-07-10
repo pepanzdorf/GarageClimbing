@@ -13,10 +13,10 @@ import { Colors } from '../../../../constants/Colors';
 
 export default function LogScreen() {
     const { id } = useLocalSearchParams();
-    const { settings, token, currentBoulder, setReload } = useContext(GlobalStateContext);
+    const { settings, token, currentBoulder, setReload, currentChallenge } = useContext(GlobalStateContext);
     const [ selectedAngle, setSelectedAngle ] = useState(settings.angle);
     const [ selectedRating, setSelectedRating ] = useState(settings.rating);
-    const [ selectedGrade, setSelectedGrade ] = useState(currentBoulder.average_grade);
+    const [ selectedGrade, setSelectedGrade ] = useState(currentBoulder.average_grade == -1 ? 0 : currentBoulder.average_grade);
     const [ selectedAttempts, setSelectedAttempts ] = useState(0);
     const router = useRouter();
 
@@ -38,6 +38,7 @@ export default function LogScreen() {
                 grade: selectedGrade,
                 attempts: selectedAttempts,
                 rating: selectedRating,
+                challenge: currentChallenge.id,
             }),
         })
         .then(response => response.text())
@@ -49,7 +50,7 @@ export default function LogScreen() {
     const setDefaults = () => {
         setSelectedAngle(settings.angle);
         setSelectedRating(settings.rating);
-        setSelectedGrade(currentBoulder.average_grade);
+        setSelectedGrade(currentBoulder.average_grade == -1 ? 0 : currentBoulder.average_grade);
         setSelectedAttempts(0);
     }
 

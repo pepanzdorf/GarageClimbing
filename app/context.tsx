@@ -40,6 +40,9 @@ export const GlobalStateProvider = ({ children }) => {
 
     const [reload, setReload] = useState(false);
 
+    const [currentChallenge, setCurrentChallenge] = useState({id: 1, name: "Žádný", description: "nic", score: 0});
+    const [challenges, setChallenges] = useState([]);
+
 
     const fetchAll = () => {
         loadSettings();
@@ -47,6 +50,7 @@ export const GlobalStateProvider = ({ children }) => {
         fetchBoulders(settings.angle);
         fetchHolds();
         fetchBoulderingWallImage();
+        fetchChallenges();
         whoami();
     }
 
@@ -150,6 +154,15 @@ export const GlobalStateProvider = ({ children }) => {
             .finally(() => setWallImageLoading(false));
     };
 
+
+    const fetchChallenges = () => {
+        fetch(`${apiURL}/climbing/boulders/challenges`)
+            .then(response => response.json())
+            .then(jsonResponse => setChallenges(jsonResponse))
+            .catch(error => console.log(error));
+    }
+
+
     const reloadBoulders = () => {
         fetchBoulders(settings.angle);
         fetchHolds();
@@ -197,6 +210,9 @@ export const GlobalStateProvider = ({ children }) => {
                 isAdmin,
                 reload,
                 setReload,
+                currentChallenge,
+                setCurrentChallenge,
+                challenges,
         }}>
             {children}
         </GlobalStateContext.Provider>

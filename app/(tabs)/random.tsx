@@ -7,14 +7,18 @@ import { useRouter } from 'expo-router';
 import { gradeIdToGradeName, filterBoulders } from '../../scripts/utils';
 import { Colors } from '../../constants/Colors'
 import { Fonts } from '../../constants/Fonts'
+import { FontAwesome } from '@expo/vector-icons';
 
 
 export default function Random(){
-    const { boulders, fetchBoulders, isLoading, settings, setCurrentBoulder } = useContext(GlobalStateContext);
+    const { boulders, fetchBoulders, isLoading, settings, setCurrentBoulder, challenges, setCurrentChallenge, currentChallenge } = useContext(GlobalStateContext);
     const [ bouldersInRange, setBouldersInRange ] = useState([]);
     const [ nBouldersInRange, setNBouldersInRange ] = useState(0);
     const [ gradeRange, setGradeRange ] = useState([0, 52]);
     const [ randomBoulder, setRandomBoulder ] = useState(null);
+    const [ randomChallenge, setRandomChallenge ] = useState(null);
+    const [ nChallenges, setNChallenges ] = useState(Object.keys(challenges).length);
+    const [ challengeActive, setChallengeActive ] = useState(false);
     const router = useRouter();
 
 
@@ -22,6 +26,9 @@ export default function Random(){
 
 
     function handleReroute() {
+        if (randomBoulder === null) {
+            return;
+        }
         setCurrentBoulder(randomBoulder);
         router.push(`${randomBoulder.id}`);
     }
@@ -34,6 +41,20 @@ export default function Random(){
         const randomIndex = Math.floor(Math.random() * bouldersInRange.length);
 
         return bouldersInRange[randomIndex];
+    }
+
+    function getRandomChallenge() {
+        if (nChallenges === 0) {
+            setRandomChallenge(null);
+            return;
+        }
+
+        const randomIndex = Math.floor(Math.random() * nChallenges);
+
+        setRandomChallenge(challenges[randomIndex]);
+        if (challengeActive) {
+            setCurrentChallenge(challenges[randomIndex]);
+        }
     }
 
     function handleFilter() {
@@ -53,9 +74,24 @@ export default function Random(){
         }
     }
 
+    function handleRandomChallenge() {
+        if (challengeActive) {
+            setChallengeActive(false);
+            setCurrentChallenge({id: 1, name: "Žádný", description: "nic", score: 0});
+        }
+        else {
+            setChallengeActive(true);
+            setCurrentChallenge(randomChallenge);
+        }
+    }
+
     useEffect(() => {
         handleFilter();
     }, [boulders, settings]);
+
+    useEffect(() => {
+        setNChallenges(Object.keys(challenges).length);
+    }, [challenges]);
 
     return (
         <SafeAreaView style={styles.container}>
@@ -85,10 +121,48 @@ export default function Random(){
                             <Text style={Fonts.h3}>Náhodný boulder</Text>
                         </View>
                     </TouchableOpacity>
-                    {randomBoulder ? <Text style={Fonts.h3}>{randomBoulder.name}</Text> : <Text style={Fonts.h3}>Není vybrán žádný boulder</Text>}
+                    {
+                        randomBoulder ? (
+                            <View>
+                            <Text style={Fonts.h3}>{randomBoulder.name}</Text>
+                            <Text style={Fonts.h3}>{gradeIdToGradeName(randomBoulder.average_grade, settings.grading)}</Text>
+                            </View>
+                        ) : (
+                            <Text style={Fonts.h3}>Není vybrán žádný boulder</Text>
+                        )}
+                </View>
+                <View style={styles.randomChallenge}>
+                    <TouchableOpacity onPress={getRandomChallenge}>
+                        <View style={styles.button}>
+                            <Text style={Fonts.h3}>Náhodná výzva</Text>
+                        </View>
+                    </TouchableOpacity>
+                    {
+                        randomChallenge ? (
+                            <View>
+                                <Text style={Fonts.h3}>{randomChallenge.name}</Text>
+                                <Text style={Fonts.plainBold}>{randomChallenge.description}</Text>
+                                <Text style={Fonts.plainBold}>Skóre: {randomChallenge.score}</Text>
+                            </View>
+                        ) : <Text style={Fonts.h3}>Žádná výzva</Text>
+                    }
+                    <TouchableOpacity onPress={handleRandomChallenge}>
+                        {
+                            challengeActive ? <FontAwesome name="power-off" size={48} color={Colors.primary} />
+                            : <FontAwesome name="power-off" size={48} color={Colors.borderDark} />}
+                    </TouchableOpacity>
                 </View>
                 <View style={styles.randomChallenges}>
-
+                    <Text style={Fonts.h2}>Možné výzvy:</Text>
+                    {challenges.map((challenge, index) => {
+                        return (
+                            <View key={index+1}>
+                                <Text style={Fonts.h3}>{index+1}. {challenge.name}</Text>
+                                <Text style={Fonts.plainBold}>{challenge.description}</Text>
+                                <Text style={Fonts.plainBold}>Skóre: {challenge.score}</Text>
+                            </View>
+                        )
+                    })}
                 </View>
             </ScrollView>
             <TouchableOpacity onPress={handleReroute}>
@@ -114,12 +188,21 @@ const styles = StyleSheet.create({
     },
     randomChallenges: {
         padding: 20,
-        alignItems: 'center',
         gap: 10,
         backgroundColor: Colors.darkerBackground,
         borderRadius: 25,
         borderWidth: 1,
         borderColor: Colors.border,
+    },
+    randomChallenge: {
+        padding: 20,
+        gap: 10,
+        backgroundColor: Colors.darkerBackground,
+        borderRadius: 25,
+        borderWidth: 1,
+        borderColor: Colors.border,
+        marginBottom: 20,
+        alignItems: 'center',
     },
     container: {
         flex:1,

@@ -10,11 +10,11 @@ import { StarRating } from '../../../components/StarRating';
 import { gradeIdToGradeName, attemptIdToAttemptName, numberToColor } from '../../../scripts/utils';
 import { Colors } from '../../../constants/Colors'
 import { Fonts } from '../../../constants/Fonts'
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 
 export default function DetailsScreen() {
     const { id } = useLocalSearchParams();
-    const { wallImage, settings, token, currentBoulder, reload, reloadBoulders } = useContext(GlobalStateContext);
+    const { wallImage, settings, token, currentBoulder, reload, reloadBoulders, currentChallenge } = useContext(GlobalStateContext);
     const [holds, setHolds] = useState([]);
     const [sends, setSends] = useState([]);
     const [comments, setComments] = useState([]);
@@ -24,6 +24,7 @@ export default function DetailsScreen() {
     const [comment, setComment] = useState('');
     const [isFavourite, setIsFavourite] = useState(false);
     const [showComments, setShowComments] = useState(false);
+    const [completedChallenges, setCompletedChallenges] = useState([]);
     const windowAspectRatio = Dimensions.get('window').width / Dimensions.get('window').height;
     const imageAspectRatio = 793.75 / 1058.3334;
     const isImageWider = windowAspectRatio < imageAspectRatio;
@@ -34,6 +35,7 @@ export default function DetailsScreen() {
         fetchBoulderHolds();
         fetchSends();
         fetchComments();
+        fetchCompletedChallenges();
     }, [id]);
 
     useEffect(() => {
@@ -44,6 +46,7 @@ export default function DetailsScreen() {
         if (reload) {
             reloadBoulders();
             fetchSends();
+            fetchCompletedChallenges();
         }
     }, [reload]);
 
@@ -61,6 +64,23 @@ export default function DetailsScreen() {
             },
         })
             .then(response => {if (response.ok) setIsFavourite(!isFavourite)})
+            .catch(error => console.log(error));
+    }
+
+
+    const fetchCompletedChallenges = () => {
+        fetch(`${apiURL}/climbing/challenges/completed/${id}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token,
+            },
+            body: JSON.stringify({
+                angle: settings.angle,
+            }),
+        })
+            .then(response => response.json())
+            .then(jsonResponse => setCompletedChallenges(jsonResponse))
             .catch(error => console.log(error));
     }
 
@@ -237,6 +257,22 @@ export default function DetailsScreen() {
                             )
                         }
                     </View>
+                    {
+                        currentChallenge.id === 1 ? null : (
+                            <View style={[styles.row, {marginTop:20}]}>
+                                {
+                                    completedChallenges.includes(currentChallenge.id) ? (
+                                        <FontAwesome5 name="crown" size={24} color='gold' />
+                                    ) : (
+                                        <FontAwesome5 name="crown" size={24} color={Colors.borderDark} />
+                                    )
+                                }
+                                <Text style={Fonts.plainBold}>
+                                    {currentChallenge.name}
+                                </Text>
+                            </View>
+                        )
+                    }
                     <Text style={Fonts.plain}>
                         {currentBoulder.description}
                     </Text>
@@ -316,9 +352,12 @@ export default function DetailsScreen() {
                                                     {gradeIdToGradeName(send.grade, settings.grading)}
                                                 </Text>
                                             </View>
-                                            <Text style={Fonts.small}>
-                                                {new Date(send.sent_date).toLocaleDateString() + " " + new Date(send.sent_date).toLocaleTimeString()}
-                                            </Text>
+                                            <View style={styles.row}>
+                                                <Text style={Fonts.small}>
+                                                    {new Date(send.sent_date).toLocaleDateString() + " " + new Date(send.sent_date).toLocaleTimeString()}
+                                                </Text>
+                                                {(send.challenge_id != 1) ? <FontAwesome5 name="crown" size={12} color='gold' /> : null }
+                                            </View>
                                             <View style={styles.row}>
                                                 <StarRating rating={send.rating} maxStars={5} size={20}/>
                                                 <Text style={Fonts.h3}>

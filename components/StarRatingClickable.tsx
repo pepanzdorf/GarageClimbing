@@ -18,7 +18,7 @@ const StarRatingClickable = props => {
     }, [props.initialRating]);
 
     return (
-        <View style={{flexDirection: 'row', height: props.size, width: props.maxStars*props.size}}>
+        <View style={{flexDirection: 'row', height: props.size, width: props.maxStars*props.size, justifyContent: 'center'}}>
             {
                 Array(props.maxStars)
                     .fill()

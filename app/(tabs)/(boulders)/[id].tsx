@@ -14,12 +14,14 @@ import { FontAwesome } from '@expo/vector-icons';
 
 export default function DetailsScreen() {
     const { id } = useLocalSearchParams();
-    const { wallImage, settings, token, currentBoulder } = useContext(GlobalStateContext);
+    const { wallImage, settings, token, currentBoulder, reload, reloadBoulders } = useContext(GlobalStateContext);
     const [holds, setHolds] = useState([]);
     const [sends, setSends] = useState([]);
+    const [comments, setComments] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [modalVisible, setModalVisible] = useState(false);
     const [isFavourite, setIsFavourite] = useState(false);
+    const [showComments, setShowComments] = useState(false);
     const windowAspectRatio = Dimensions.get('window').width / Dimensions.get('window').height;
     const imageAspectRatio = 793.75 / 1058.3334;
     const isImageWider = windowAspectRatio < imageAspectRatio;
@@ -29,12 +31,19 @@ export default function DetailsScreen() {
         setIsLoading(true);
         fetchBoulderHolds();
         fetchSends();
+        fetchComments();
     }, [id]);
 
     useEffect(() => {
         setIsFavourite(currentBoulder.favourite);
-    }
-    , [currentBoulder]);
+    }, [currentBoulder]);
+
+    useEffect(() => {
+        if (reload) {
+            reloadBoulders();
+            fetchSends();
+        }
+    }, [reload]);
 
     const toggleFavourite = () => {
         if (token === 'token') {
@@ -75,6 +84,14 @@ export default function DetailsScreen() {
             })
             .then(response => response.json())
             .then(jsonResponse => setSends(jsonResponse))
+            .catch(error => console.log(error))
+            .finally(() => setIsLoading(false));
+    }
+
+    const fetchComments = () => {
+        fetch(`${apiURL}/climbing/boulders/comments/${id}`)
+            .then(response => response.json())
+            .then(jsonResponse => setComments(jsonResponse))
             .catch(error => console.log(error))
             .finally(() => setIsLoading(false));
     }
@@ -156,40 +173,83 @@ export default function DetailsScreen() {
                         </Text>
                     </View>
                 </View>
-                <View style={styles.sends}>
+                <View style={styles.sendComContainer}>
+                    <TouchableOpacity onPress={() => setShowComments(!showComments)}>
+                        <View style={styles.button}>
+                            <Text style={Fonts.h3}>
+                                { showComments ? "Zobrazit výlezy" : "Zobrazit komentáře"}
+                            </Text>
+                        </View>
+                    </TouchableOpacity>
                     {
-                        sends.length > 0 ? (
-                            sends.map((send) => (
-                                <View key={send.id} style={styles.sendContainer}>
-                                    <View style={styles.row}>
-                                        <Text style={Fonts.h3}>
-                                            {send.name}
-                                        </Text>
-                                        <Text style={Fonts.h3}>
-                                            {gradeIdToGradeName(send.grade)}
-                                        </Text>
+                        showComments ? (
+                            comments.length > 0 ? (
+                                <View style={styles.commentsContainer}>
+                                    <View style={styles.addButton}>
+                                        <FontAwesome name="plus" size={36} color={Colors.primary} />
                                     </View>
-                                    <Text style={Fonts.small}>
-                                        {new Date(send.sent_date).toLocaleDateString() + " " + new Date(send.sent_date).toLocaleTimeString()}
-                                    </Text>
+                                    {
+                                    comments.map((comment) => (
+                                        <View key={comment.id} style={styles.sendContainer}>
+                                            <Text style={Fonts.h3}>
+                                                {comment.name}
+                                            </Text>
+                                            <Text style={Fonts.small}>
+                                                {new Date(comment.date).toLocaleDateString() + " " + new Date(comment.date).toLocaleTimeString()}
+                                            </Text>
+                                            <Text style={Fonts.plain}>
+                                                {comment.text}
+                                            </Text>
+                                        </View>
+                                    ))
+                                    }
+                                </View>
+                            ) : (
+                                <View style={styles.commentsContainer}>
+
                                     <View style={styles.row}>
-                                        <StarRating rating={send.rating} maxStars={5} size={20}/>
                                         <Text style={Fonts.h3}>
-                                            {
-                                                send.attempts === 1 ? (
-                                                    attemptIdToAttemptName(send.attempts) + " pokusů"
-                                                ) : (
-                                                    attemptIdToAttemptName(send.attempts)
-                                                )
-                                            }
+                                            Žádné komentáře
                                         </Text>
+                                        <FontAwesome name="plus" size={36} color={Colors.primary} />
                                     </View>
                                 </View>
-                            ))
+
+                            )
                         ) : (
-                            <Text style={Fonts.h3}>
-                                Ještě nevylezeno
-                            </Text>
+                            sends.length > 0 ? (
+                                sends.map((send) => (
+                                    <View key={send.id} style={styles.sendContainer}>
+                                        <View style={styles.row}>
+                                            <Text style={Fonts.h3}>
+                                                {send.name}
+                                            </Text>
+                                            <Text style={Fonts.h3}>
+                                                {gradeIdToGradeName(send.grade)}
+                                            </Text>
+                                        </View>
+                                        <Text style={Fonts.small}>
+                                            {new Date(send.sent_date).toLocaleDateString() + " " + new Date(send.sent_date).toLocaleTimeString()}
+                                        </Text>
+                                        <View style={styles.row}>
+                                            <StarRating rating={send.rating} maxStars={5} size={20}/>
+                                            <Text style={Fonts.h3}>
+                                                {
+                                                    send.attempts === 1 ? (
+                                                        attemptIdToAttemptName(send.attempts) + " pokusů"
+                                                    ) : (
+                                                        attemptIdToAttemptName(send.attempts)
+                                                    )
+                                                }
+                                            </Text>
+                                        </View>
+                                    </View>
+                                ))
+                            ) : (
+                                <Text style={Fonts.h3}>
+                                    Ještě nevylezeno
+                                </Text>
+                            )
                         )
                     }
                 </View>
@@ -273,9 +333,12 @@ const styles = StyleSheet.create({
         flexDirection:"row",
         justifyContent:"space-between",
     },
-    sends: {
+    sendComContainer: {
         margin: 10,
         marginTop: 20,
+    },
+    commentsContainer: {
+        marginTop: 10,
     },
     button: {
         backgroundColor: Colors.primary,
@@ -303,5 +366,8 @@ const styles = StyleSheet.create({
         flex:1,
         flexWrap: 'wrap',
         marginRight: 10,
+    },
+    addButton : {
+        flexDirection: 'row-reverse',
     },
 });

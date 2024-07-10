@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Modal, TouchableOpacity, ImageBackground, ScrollView, Dimensions, TextInput } from 'react-native';
+import { Alert, View, Text, StyleSheet, ActivityIndicator, Modal, TouchableOpacity, ImageBackground, ScrollView, Dimensions, TextInput } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -116,6 +116,69 @@ export default function DetailsScreen() {
     }
 
 
+    const confirmCommentDelete = (commentId) => {
+        Alert.alert("Vymazat komentář", "Opravdu chcete smazat tento komentář?",
+            [
+                {
+                    text: "Ano",
+                    onPress: () => deleteComment(commentId),
+                },
+                {
+                    text: "Ne",
+                    onPress: () => console.log("Cancel Pressed"),
+                    style: "cancel",
+                },
+            ]
+        );
+    }
+
+    const deleteComment = (commentId) => {
+        fetch(`${apiURL}/climbing/boulders/comment/${commentId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token,
+            },
+        })
+            .then(response => response.text())
+            .then(jsonResponse => alert(jsonResponse))
+            .catch(error => console.log(error))
+            .finally(() => fetchComments());
+    }
+
+
+    const confirmSendDelete = (sendId) => {
+        Alert.alert("Vymazat výlez", "Opravdu chcete smazat tento výlez?",
+            [
+                {
+                    text: "Ano",
+                    onPress: () => deleteSend(sendId),
+                },
+                {
+                    text: "Ne",
+                    onPress: () => console.log("Cancel Pressed"),
+                    style: "cancel",
+                },
+            ]
+        );
+    }
+
+
+    const deleteSend = (sendId) => {
+        fetch(`${apiURL}/climbing/boulders/send/${sendId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token,
+            },
+        })
+            .then(response => response.text())
+            .then(jsonResponse => alert(jsonResponse))
+            .catch(error => console.log(error))
+            .finally(() => fetchSends());
+    }
+
+
     return (
         <SafeAreaView style={{flex: 1}}>
             <ScrollView contentContainerStyle={styles.container}>
@@ -211,17 +274,19 @@ export default function DetailsScreen() {
                                     </View>
                                     {
                                     comments.map((comment) => (
-                                        <View key={comment.id} style={styles.sendContainer}>
-                                            <Text style={Fonts.h3}>
-                                                {comment.name}
-                                            </Text>
-                                            <Text style={Fonts.small}>
-                                                {new Date(comment.date).toLocaleDateString() + " " + new Date(comment.date).toLocaleTimeString()}
-                                            </Text>
-                                            <Text style={Fonts.plain}>
-                                                {comment.text}
-                                            </Text>
-                                        </View>
+                                        <TouchableOpacity key={comment.id} onPress={() => confirmCommentDelete(comment.id)}>
+                                            <View key={comment.id} style={styles.sendContainer}>
+                                                <Text style={Fonts.h3}>
+                                                    {comment.name}
+                                                </Text>
+                                                <Text style={Fonts.small}>
+                                                    {new Date(comment.date).toLocaleDateString() + " " + new Date(comment.date).toLocaleTimeString()}
+                                                </Text>
+                                                <Text style={Fonts.plain}>
+                                                    {comment.text}
+                                                </Text>
+                                            </View>
+                                        </TouchableOpacity>
                                     ))
                                     }
                                 </View>
@@ -241,31 +306,33 @@ export default function DetailsScreen() {
                         ) : (
                             sends.length > 0 ? (
                                 sends.map((send) => (
-                                    <View key={send.id} style={styles.sendContainer}>
-                                        <View style={styles.row}>
-                                            <Text style={Fonts.h3}>
-                                                {send.name}
+                                    <TouchableOpacity key={send.id} onPress={() => confirmSendDelete(send.id)}>
+                                        <View key={send.id} style={styles.sendContainer}>
+                                            <View style={styles.row}>
+                                                <Text style={Fonts.h3}>
+                                                    {send.name}
+                                                </Text>
+                                                <Text style={Fonts.h3}>
+                                                    {gradeIdToGradeName(send.grade)}
+                                                </Text>
+                                            </View>
+                                            <Text style={Fonts.small}>
+                                                {new Date(send.sent_date).toLocaleDateString() + " " + new Date(send.sent_date).toLocaleTimeString()}
                                             </Text>
-                                            <Text style={Fonts.h3}>
-                                                {gradeIdToGradeName(send.grade)}
-                                            </Text>
+                                            <View style={styles.row}>
+                                                <StarRating rating={send.rating} maxStars={5} size={20}/>
+                                                <Text style={Fonts.h3}>
+                                                    {
+                                                        send.attempts === 1 ? (
+                                                            attemptIdToAttemptName(send.attempts) + " pokusů"
+                                                        ) : (
+                                                            attemptIdToAttemptName(send.attempts)
+                                                        )
+                                                    }
+                                                </Text>
+                                            </View>
                                         </View>
-                                        <Text style={Fonts.small}>
-                                            {new Date(send.sent_date).toLocaleDateString() + " " + new Date(send.sent_date).toLocaleTimeString()}
-                                        </Text>
-                                        <View style={styles.row}>
-                                            <StarRating rating={send.rating} maxStars={5} size={20}/>
-                                            <Text style={Fonts.h3}>
-                                                {
-                                                    send.attempts === 1 ? (
-                                                        attemptIdToAttemptName(send.attempts) + " pokusů"
-                                                    ) : (
-                                                        attemptIdToAttemptName(send.attempts)
-                                                    )
-                                                }
-                                            </Text>
-                                        </View>
-                                    </View>
+                                    </TouchableOpacity>
                                 ))
                             ) : (
                                 <Text style={Fonts.h3}>

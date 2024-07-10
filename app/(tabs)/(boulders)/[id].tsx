@@ -468,9 +468,10 @@ const styles = StyleSheet.create({
     sendContainer: {
         padding: 10,
         borderWidth: 1,
-        borderColor: Colors.borderDarker,
+        borderColor: Colors.borderDark,
         borderRadius: 10,
         marginBottom: 8,
+        backgroundColor: Colors.darkerBackground,
     },
     boulderName: {
         flex:1,

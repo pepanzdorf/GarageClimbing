@@ -11,6 +11,8 @@ import { gradeIdToGradeName, attemptIdToAttemptName, numberToStrokeColor, number
 import { Colors } from '../../../constants/Colors'
 import { Fonts } from '../../../constants/Fonts'
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+
 
 export default function DetailsScreen() {
     const { id } = useLocalSearchParams();
@@ -26,6 +28,8 @@ export default function DetailsScreen() {
     const [showComments, setShowComments] = useState(false);
     const [completedChallenges, setCompletedChallenges] = useState([]);
     const windowAspectRatio = Dimensions.get('window').width / Dimensions.get('window').height;
+    const tabBarHeight = useBottomTabBarHeight();
+    const maxHeight = Dimensions.get('window').height - tabBarHeight*3;
     const imageAspectRatio = 793.75 / 1058.3334;
     const isImageWider = windowAspectRatio < imageAspectRatio;
     const router = useRouter();
@@ -203,8 +207,17 @@ export default function DetailsScreen() {
         holds ? (
         <SafeAreaView style={{flex: 1}}>
             <ScrollView contentContainerStyle={styles.container}>
-                <TouchableOpacity onPress={() => setModalVisible(true)}>
-                    <ImageBackground style={styles.backgroundImagePreview} source={{uri: `data:image/png;base64,${wallImage}`}}>
+                <ReactNativeZoomableView
+                    maxZoom={20}
+                    minZoom={1}
+                    zoomStep={0.5}
+                    initialZoom={1}
+                    bindToBorders={true}
+                    onZoomAfter={this.logOutZoomState}
+                    style={{flex: 1}}
+                >
+                    <View style={{maxHeight: maxHeight}}>
+                    <ImageBackground style={isImageWider ? styles.backgroundImageWider : styles.backgroundImageHigher } source={{uri: `data:image/png;base64,${wallImage}`}}>
                         <Svg style={styles.svgContainer} height="100%" width="100%" viewBox="0 0 793.75 1058.3334">
                             <Defs>
                                 <G id="holds">
@@ -260,7 +273,8 @@ export default function DetailsScreen() {
                             <Use href="#holds" mask="url(#mask_holds)"/>
                         </Svg>
                     </ImageBackground>
-                </TouchableOpacity>
+                    </View>
+                </ReactNativeZoomableView>
                 <TouchableOpacity onPress={() => router.push(`sends/${id}`)}>
                     <View style={styles.button}>
                         <Text style={Fonts.h3}>
@@ -411,82 +425,6 @@ export default function DetailsScreen() {
                 </View>
             </ScrollView>
 
-            <Modal visible={modalVisible}>
-                    <ReactNativeZoomableView
-                        maxZoom={20}
-                        minZoom={1}
-                        zoomStep={0.5}
-                        initialZoom={1}
-                        bindToBorders={true}
-                        onZoomAfter={this.logOutZoomState}
-                        style={{flex: 1}}
-                    >
-                        <ImageBackground style={isImageWider ? styles.backgroundImageWider : styles.backgroundImageHigher } source={{uri: `data:image/png;base64,${wallImage}`}}>
-                            <Svg style={styles.svgContainer} height="100%" width="100%" viewBox="0 0 793.75 1058.3334">
-                                <Defs>
-                                    <G id="holds">
-                                        {holds["false"].map((hold) => (
-                                            <Path
-                                                key={hold.hold_id}
-                                                fill={numberToFillColor(hold.hold_type)}
-                                                stroke={numberToStrokeColor(hold.hold_type)}
-                                                strokeWidth="8"
-                                                d={hold.path}
-                                            />
-                                        ))}
-                                    </G>
-                                    <G id="volumes">
-                                        {holds['true'].map((hold) => (
-                                            <Path
-                                                key={hold.hold_id}
-                                                fill={numberToFillColor(hold.hold_type)}
-                                                stroke={numberToStrokeColor(hold.hold_type)}
-                                                strokeWidth="8"
-                                                d={hold.path}
-                                            />
-                                        ))}
-                                    </G>
-                                    <ClipPath id="clip_holds">
-                                        <Use href="#holds" />
-                                    </ClipPath>
-                                    <ClipPath id="clip_both">
-                                        <Use href="#holds" />
-                                        <Use href="#volumes" />
-                                    </ClipPath>
-                                    <Mask id="mask_both">
-                                        <Rect x="0" y="0" width="100%" height="100%" fill="white" />
-                                        <Rect x="0" y="0" width="100%" height="100%" fill="black" clipPath="url(#clip_both)" clipRule="nonzero" />
-                                    </Mask>
-                                    <Mask id="mask_holds">
-                                        <Rect x="0" y="0" width="100%" height="100%" fill="white" />
-                                        <Rect x="0" y="0" width="100%" height="100%" fill="black" clipPath="url(#clip_holds)" clipRule="nonzero" />
-                                    </Mask>
-                                    <Pattern id="hatch" width="10" height="10" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
-                                        <Line x1="0" y1="0" x2="0" y2="10" stroke="black" strokeWidth="5" />
-                                    </Pattern>
-                                </Defs>
-                                <Rect
-                                    x="0" y="0" width="100%" height="100%"
-                                    opacity={settings.darkening}
-                                    fill="black"
-                                    mask="url(#mask_both)"
-                                />
-                                <G mask="url(#mask_holds)">
-                                    <Use href="#volumes" />
-                                </G>
-                                <Use href="#holds" mask="url(#mask_holds)"/>
-                            </Svg>
-                        </ImageBackground>
-                    </ReactNativeZoomableView>
-                    <TouchableOpacity onPress={() => setModalVisible(false)}>
-                        <View style={styles.button}>
-                            <Text style={Fonts.h3}>
-                                Zavřít
-                            </Text>
-                        </View>
-                    </TouchableOpacity>
-            </Modal>
-
             <Modal visible={commentModalVisible}>
                 <View style={[styles.container, {flex:1, paddingTop:120}]}>
                     <TextInput
@@ -518,7 +456,6 @@ export default function DetailsScreen() {
 
 const styles = StyleSheet.create({
     container: {
-        padding: 20,
     },
     backgroundImageHigher: {
         resizeMode:'contain',
@@ -527,12 +464,6 @@ const styles = StyleSheet.create({
         aspectRatio: 793.75 / 1058.3334,
     },
     backgroundImageWider: {
-        resizeMode:'contain',
-        width: '100%',
-        height: undefined,
-        aspectRatio: 793.75 / 1058.3334,
-    },
-    backgroundImagePreview: {
         resizeMode:'contain',
         width: '100%',
         height: undefined,

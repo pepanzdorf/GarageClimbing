@@ -237,19 +237,19 @@ export default function DetailsScreen() {
                                     <Use href="#volumes" />
                                 </ClipPath>
                                 <Mask id="mask_both">
-                                    <Rect x="0" y="0" width="793.75" height="1058.3334" fill="white" />
-                                    <Rect x="0" y="0" width="793.75" height="1058.3334" fill="black" clipPath="url(#clip_both)" clipRule="nonzero" />
+                                    <Rect x="0" y="0" width="100%" height="100%" fill="white" />
+                                    <Rect x="0" y="0" width="100%" height="100%" fill="black" clipPath="url(#clip_both)" clipRule="nonzero" />
                                 </Mask>
                                 <Mask id="mask_holds">
-                                    <Rect x="0" y="0" width="793.75" height="1058.3334" fill="white" />
-                                    <Rect x="0" y="0" width="793.75" height="1058.3334" fill="black" clipPath="url(#clip_holds)" clipRule="nonzero" />
+                                    <Rect x="0" y="0" width="100%" height="100%" fill="white" />
+                                    <Rect x="0" y="0" width="100%" height="100%" fill="black" clipPath="url(#clip_holds)" clipRule="nonzero" />
                                 </Mask>
                                 <Pattern id="hatch" width="10" height="10" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
                                     <Line x1="0" y1="0" x2="0" y2="10" stroke="black" strokeWidth="5" />
                                 </Pattern>
                             </Defs>
                             <Rect
-                                x="0" y="0" width="793.75" height="1058.3334"
+                                x="0" y="0" width="100%" height="100%"
                                 opacity={settings.darkenPreview ? settings.darkening : 0}
                                 fill="black"
                                 mask="url(#mask_both)"
@@ -466,7 +466,7 @@ export default function DetailsScreen() {
                                     </Pattern>
                                 </Defs>
                                 <Rect
-                                    x="0" y="0" width="793.75" height="1058.3334"
+                                    x="0" y="0" width="100%" height="100%"
                                     opacity={settings.darkening}
                                     fill="black"
                                     mask="url(#mask_both)"

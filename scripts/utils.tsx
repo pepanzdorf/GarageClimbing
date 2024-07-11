@@ -60,18 +60,37 @@ export const attemptIdToAttemptName = (attemptId) => {
     return attemptId+1;
 }
 
-export const numberToColor = (num) => {
+export const numberToStrokeColor = (num) => {
     switch(num){
         case 0:
-            return "red";
+            return "#ff2900";
         case 1:
-            return "blue";
+            return "#fffb22";
         case 2:
-            return "green";
+            return "#0089ff";
         case 3:
-            return "yellow";
+            return "#4cff00";
+        case 4:
+            return "none";
     }
 }
+
+export const numberToFillColor = (num) => {
+    switch(num){
+        case 0:
+            return "none";
+        case 1:
+            return "none";
+        case 2:
+            return "none";
+        case 3:
+            return "none";
+        case 4:
+            return "url(#hatch)";
+    }
+}
+
+
 
 const fontDict = {
     0: '4-',

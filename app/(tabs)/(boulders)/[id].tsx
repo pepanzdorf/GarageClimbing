@@ -4,10 +4,10 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GlobalStateContext } from '../../context';
-import { Svg, Path, Rect, ClipPath, Defs, G, Use } from 'react-native-svg'
+import { Svg, Path, Rect, ClipPath, Defs, G, Use, Mask, Pattern, Line } from 'react-native-svg'
 import { apiURL } from '../../../constants/Other';
 import { StarRating } from '../../../components/StarRating';
-import { gradeIdToGradeName, attemptIdToAttemptName, numberToColor } from '../../../scripts/utils';
+import { gradeIdToGradeName, attemptIdToAttemptName, numberToStrokeColor, numberToFillColor } from '../../../scripts/utils';
 import { Colors } from '../../../constants/Colors'
 import { Fonts } from '../../../constants/Fonts'
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
@@ -15,7 +15,7 @@ import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 export default function DetailsScreen() {
     const { id } = useLocalSearchParams();
     const { wallImage, settings, token, currentBoulder, reload, reloadBoulders, currentChallenge } = useContext(GlobalStateContext);
-    const [holds, setHolds] = useState([]);
+    const [holds, setHolds] = useState({'false': [], 'true': []});
     const [sends, setSends] = useState([]);
     const [comments, setComments] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -206,30 +206,69 @@ export default function DetailsScreen() {
                     <ImageBackground style={styles.backgroundImagePreview} source={{uri: `data:image/png;base64,${wallImage}`}}>
                         <Svg style={styles.svgContainer} height="100%" width="100%" viewBox="0 0 793.75 1058.3334">
                             <Defs>
-                                <G id="all_paths">
-                                    {holds.map((hold) => (
-                                      <Path
+                                <Mask id="mask_both">
+                                    <Rect x="0" y="0" width="793.75" height="1058.3334" fill="white" />
+                                        {holds["false"].map((hold) => (
+                                            <Path
+                                                key={`${hold.hold_id}-mask`}
+                                                fill="black"
+                                                stroke="none"
+                                                strokeWidth="5"
+                                                d={hold.path}
+                                            />
+                                        ))}
+                                        {holds["true"].map((hold) => (
+                                            <Path
+                                                key={`${hold.hold_id}-mask`}
+                                                fill="black"
+                                                stroke="none"
+                                                strokeWidth="5"
+                                                d={hold.path}
+                                            />
+                                        ))}
+                                </Mask>
+                                <Mask id="mask_holds">
+                                    <Rect x="0" y="0" width="793.75" height="1058.3334" fill="white" />
+                                    {holds["false"].map((hold) => (
+                                        <Path
+                                            key={`${hold.hold_id}-mask`}
+                                            fill="black"
+                                            stroke="none"
+                                            strokeWidth="5"
+                                            d={hold.path}
+                                        />
+                                    ))}
+                                </Mask>
+                              <Pattern id="hatch" width="10" height="10" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+                                <Line x1="0" y1="0" x2="0" y2="10" stroke="black" strokeWidth="5" />
+                              </Pattern>
+                            </Defs>
+                            <Rect
+                                x="0" y="0" width="793.75" height="1058.3334"
+                                opacity={settings.darkenPreview ? settings.darkening : 0}
+                                fill="black"
+                                mask="url(#mask_both)"
+                            />
+                            <G mask="url(#mask_holds)">
+                                {holds['true'].map((hold) => (
+                                    <Path
                                         key={hold.hold_id}
-                                        fill="none"
-                                        stroke={numberToColor(hold.hold_type)}
+                                        fill={numberToFillColor(hold.hold_type)}
+                                        stroke={numberToStrokeColor(hold.hold_type)}
                                         strokeWidth="5"
                                         d={hold.path}
-                                      />
-                                    ))}
-                                </G>
-                            </Defs>
-                            <G clipPath="url(#clip)">
-                                <Rect
-                                    x="0" y="0" width="793.75" height="1058.3334"
-                                    opacity={settings.darkenPreview ? settings.darkening : 0}
-                                    fill="black"
-                                />
+                                    />
+                                ))}
                             </G>
-                            <ClipPath id="clip">
-                                <Rect x="0" y="0" width="793.75" height="1058.3334" fill="white" />
-                                <Use href="#all_paths" />
-                            </ClipPath>
-                            <Use href="#all_paths" />
+                            {holds['false'].map((hold) => (
+                                <Path
+                                    key={hold.hold_id}
+                                    fill={numberToFillColor(hold.hold_type)}
+                                    stroke={numberToStrokeColor(hold.hold_type)}
+                                    strokeWidth="5"
+                                    d={hold.path}
+                                />
+                            ))}
                         </Svg>
                     </ImageBackground>
                 </TouchableOpacity>
@@ -396,30 +435,69 @@ export default function DetailsScreen() {
                         <ImageBackground style={isImageWider ? styles.backgroundImageWider : styles.backgroundImageHigher } source={{uri: `data:image/png;base64,${wallImage}`}}>
                             <Svg style={styles.svgContainer} height="100%" width="100%" viewBox="0 0 793.75 1058.3334">
                                 <Defs>
-                                    <G id="all_paths">
-                                        {holds.map((hold) => (
-                                          <Path
+                                    <Mask id="mask_both">
+                                        <Rect x="0" y="0" width="793.75" height="1058.3334" fill="white" />
+                                            {holds["false"].map((hold) => (
+                                                <Path
+                                                    key={`${hold.hold_id}-mask`}
+                                                    fill="black"
+                                                    stroke="none"
+                                                    strokeWidth="5"
+                                                    d={hold.path}
+                                                />
+                                            ))}
+                                            {holds["true"].map((hold) => (
+                                                <Path
+                                                    key={`${hold.hold_id}-mask`}
+                                                    fill="black"
+                                                    stroke="none"
+                                                    strokeWidth="5"
+                                                    d={hold.path}
+                                                />
+                                            ))}
+                                    </Mask>
+                                    <Mask id="mask_holds">
+                                        <Rect x="0" y="0" width="793.75" height="1058.3334" fill="white" />
+                                        {holds["false"].map((hold) => (
+                                            <Path
+                                                key={`${hold.hold_id}-mask`}
+                                                fill="black"
+                                                stroke="none"
+                                                strokeWidth="5"
+                                                d={hold.path}
+                                            />
+                                        ))}
+                                    </Mask>
+                                  <Pattern id="hatch" width="10" height="10" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+                                    <Line x1="0" y1="0" x2="0" y2="10" stroke="black" strokeWidth="5" />
+                                  </Pattern>
+                                </Defs>
+                                <Rect
+                                    x="0" y="0" width="793.75" height="1058.3334"
+                                    opacity={settings.darkening}
+                                    fill="black"
+                                    mask="url(#mask_both)"
+                                />
+                                <G mask="url(#mask_holds)">
+                                    {holds['true'].map((hold) => (
+                                        <Path
                                             key={hold.hold_id}
-                                            fill="none"
-                                            stroke={numberToColor(hold.hold_type)}
+                                            fill={numberToFillColor(hold.hold_type)}
+                                            stroke={numberToStrokeColor(hold.hold_type)}
                                             strokeWidth="5"
                                             d={hold.path}
-                                          />
-                                        ))}
-                                    </G>
-                                </Defs>
-                                <G clipPath="url(#clip)">
-                                    <Rect
-                                        x="0" y="0" width="793.75" height="1058.3334"
-                                        opacity={settings.darkening}
-                                        fill="black"
-                                    />
+                                        />
+                                    ))}
                                 </G>
-                                <ClipPath id="clip">
-                                    <Rect x="0" y="0" width="793.75" height="1058.3334" fill="white" />
-                                    <Use href="#all_paths" />
-                                </ClipPath>
-                                <Use href="#all_paths" />
+                                {holds['false'].map((hold) => (
+                                    <Path
+                                        key={hold.hold_id}
+                                        fill={numberToFillColor(hold.hold_type)}
+                                        stroke={numberToStrokeColor(hold.hold_type)}
+                                        strokeWidth="5"
+                                        d={hold.path}
+                                    />
+                                ))}
                             </Svg>
                         </ImageBackground>
                     </ReactNativeZoomableView>

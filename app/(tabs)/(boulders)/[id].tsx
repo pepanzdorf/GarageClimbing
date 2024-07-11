@@ -15,7 +15,7 @@ import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 export default function DetailsScreen() {
     const { id } = useLocalSearchParams();
     const { wallImage, settings, token, currentBoulder, reload, reloadBoulders, currentChallenge } = useContext(GlobalStateContext);
-    const [holds, setHolds] = useState({'false': [], 'true': []});
+    const [holds, setHolds] = useState(null);
     const [sends, setSends] = useState([]);
     const [comments, setComments] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -200,48 +200,53 @@ export default function DetailsScreen() {
 
 
     return (
+        holds ? (
         <SafeAreaView style={{flex: 1}}>
             <ScrollView contentContainerStyle={styles.container}>
                 <TouchableOpacity onPress={() => setModalVisible(true)}>
                     <ImageBackground style={styles.backgroundImagePreview} source={{uri: `data:image/png;base64,${wallImage}`}}>
                         <Svg style={styles.svgContainer} height="100%" width="100%" viewBox="0 0 793.75 1058.3334">
                             <Defs>
-                                <Mask id="mask_both">
-                                    <Rect x="0" y="0" width="793.75" height="1058.3334" fill="white" />
-                                        {holds["false"].map((hold) => (
-                                            <Path
-                                                key={`${hold.hold_id}-mask`}
-                                                fill="black"
-                                                stroke="none"
-                                                strokeWidth="5"
-                                                d={hold.path}
-                                            />
-                                        ))}
-                                        {holds["true"].map((hold) => (
-                                            <Path
-                                                key={`${hold.hold_id}-mask`}
-                                                fill="black"
-                                                stroke="none"
-                                                strokeWidth="5"
-                                                d={hold.path}
-                                            />
-                                        ))}
-                                </Mask>
-                                <Mask id="mask_holds">
-                                    <Rect x="0" y="0" width="793.75" height="1058.3334" fill="white" />
+                                <G id="holds">
                                     {holds["false"].map((hold) => (
                                         <Path
-                                            key={`${hold.hold_id}-mask`}
-                                            fill="black"
-                                            stroke="none"
-                                            strokeWidth="5"
+                                            key={hold.hold_id}
+                                            fill={numberToFillColor(hold.hold_type)}
+                                            stroke={numberToStrokeColor(hold.hold_type)}
+                                            strokeWidth="8"
                                             d={hold.path}
                                         />
                                     ))}
+                                </G>
+                                <G id="volumes">
+                                    {holds['true'].map((hold) => (
+                                        <Path
+                                            key={hold.hold_id}
+                                            fill={numberToFillColor(hold.hold_type)}
+                                            stroke={numberToStrokeColor(hold.hold_type)}
+                                            strokeWidth="8"
+                                            d={hold.path}
+                                        />
+                                    ))}
+                                </G>
+                                <ClipPath id="clip_holds">
+                                    <Use href="#holds" />
+                                </ClipPath>
+                                <ClipPath id="clip_both">
+                                    <Use href="#holds" />
+                                    <Use href="#volumes" />
+                                </ClipPath>
+                                <Mask id="mask_both">
+                                    <Rect x="0" y="0" width="793.75" height="1058.3334" fill="white" />
+                                    <Rect x="0" y="0" width="793.75" height="1058.3334" fill="black" clipPath="url(#clip_both)" clipRule="nonzero" />
                                 </Mask>
-                              <Pattern id="hatch" width="10" height="10" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
-                                <Line x1="0" y1="0" x2="0" y2="10" stroke="black" strokeWidth="5" />
-                              </Pattern>
+                                <Mask id="mask_holds">
+                                    <Rect x="0" y="0" width="793.75" height="1058.3334" fill="white" />
+                                    <Rect x="0" y="0" width="793.75" height="1058.3334" fill="black" clipPath="url(#clip_holds)" clipRule="nonzero" />
+                                </Mask>
+                                <Pattern id="hatch" width="10" height="10" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+                                    <Line x1="0" y1="0" x2="0" y2="10" stroke="black" strokeWidth="5" />
+                                </Pattern>
                             </Defs>
                             <Rect
                                 x="0" y="0" width="793.75" height="1058.3334"
@@ -250,25 +255,9 @@ export default function DetailsScreen() {
                                 mask="url(#mask_both)"
                             />
                             <G mask="url(#mask_holds)">
-                                {holds['true'].map((hold) => (
-                                    <Path
-                                        key={hold.hold_id}
-                                        fill={numberToFillColor(hold.hold_type)}
-                                        stroke={numberToStrokeColor(hold.hold_type)}
-                                        strokeWidth="5"
-                                        d={hold.path}
-                                    />
-                                ))}
+                                <Use href="#volumes" />
                             </G>
-                            {holds['false'].map((hold) => (
-                                <Path
-                                    key={hold.hold_id}
-                                    fill={numberToFillColor(hold.hold_type)}
-                                    stroke={numberToStrokeColor(hold.hold_type)}
-                                    strokeWidth="5"
-                                    d={hold.path}
-                                />
-                            ))}
+                            <Use href="#holds" mask="url(#mask_holds)"/>
                         </Svg>
                     </ImageBackground>
                 </TouchableOpacity>
@@ -435,42 +424,46 @@ export default function DetailsScreen() {
                         <ImageBackground style={isImageWider ? styles.backgroundImageWider : styles.backgroundImageHigher } source={{uri: `data:image/png;base64,${wallImage}`}}>
                             <Svg style={styles.svgContainer} height="100%" width="100%" viewBox="0 0 793.75 1058.3334">
                                 <Defs>
-                                    <Mask id="mask_both">
-                                        <Rect x="0" y="0" width="793.75" height="1058.3334" fill="white" />
-                                            {holds["false"].map((hold) => (
-                                                <Path
-                                                    key={`${hold.hold_id}-mask`}
-                                                    fill="black"
-                                                    stroke="none"
-                                                    strokeWidth="5"
-                                                    d={hold.path}
-                                                />
-                                            ))}
-                                            {holds["true"].map((hold) => (
-                                                <Path
-                                                    key={`${hold.hold_id}-mask`}
-                                                    fill="black"
-                                                    stroke="none"
-                                                    strokeWidth="5"
-                                                    d={hold.path}
-                                                />
-                                            ))}
-                                    </Mask>
-                                    <Mask id="mask_holds">
-                                        <Rect x="0" y="0" width="793.75" height="1058.3334" fill="white" />
+                                    <G id="holds">
                                         {holds["false"].map((hold) => (
                                             <Path
-                                                key={`${hold.hold_id}-mask`}
-                                                fill="black"
-                                                stroke="none"
-                                                strokeWidth="5"
+                                                key={hold.hold_id}
+                                                fill={numberToFillColor(hold.hold_type)}
+                                                stroke={numberToStrokeColor(hold.hold_type)}
+                                                strokeWidth="8"
                                                 d={hold.path}
                                             />
                                         ))}
+                                    </G>
+                                    <G id="volumes">
+                                        {holds['true'].map((hold) => (
+                                            <Path
+                                                key={hold.hold_id}
+                                                fill={numberToFillColor(hold.hold_type)}
+                                                stroke={numberToStrokeColor(hold.hold_type)}
+                                                strokeWidth="8"
+                                                d={hold.path}
+                                            />
+                                        ))}
+                                    </G>
+                                    <ClipPath id="clip_holds">
+                                        <Use href="#holds" />
+                                    </ClipPath>
+                                    <ClipPath id="clip_both">
+                                        <Use href="#holds" />
+                                        <Use href="#volumes" />
+                                    </ClipPath>
+                                    <Mask id="mask_both">
+                                        <Rect x="0" y="0" width="100%" height="100%" fill="white" />
+                                        <Rect x="0" y="0" width="100%" height="100%" fill="black" clipPath="url(#clip_both)" clipRule="nonzero" />
                                     </Mask>
-                                  <Pattern id="hatch" width="10" height="10" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
-                                    <Line x1="0" y1="0" x2="0" y2="10" stroke="black" strokeWidth="5" />
-                                  </Pattern>
+                                    <Mask id="mask_holds">
+                                        <Rect x="0" y="0" width="100%" height="100%" fill="white" />
+                                        <Rect x="0" y="0" width="100%" height="100%" fill="black" clipPath="url(#clip_holds)" clipRule="nonzero" />
+                                    </Mask>
+                                    <Pattern id="hatch" width="10" height="10" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+                                        <Line x1="0" y1="0" x2="0" y2="10" stroke="black" strokeWidth="5" />
+                                    </Pattern>
                                 </Defs>
                                 <Rect
                                     x="0" y="0" width="793.75" height="1058.3334"
@@ -479,25 +472,9 @@ export default function DetailsScreen() {
                                     mask="url(#mask_both)"
                                 />
                                 <G mask="url(#mask_holds)">
-                                    {holds['true'].map((hold) => (
-                                        <Path
-                                            key={hold.hold_id}
-                                            fill={numberToFillColor(hold.hold_type)}
-                                            stroke={numberToStrokeColor(hold.hold_type)}
-                                            strokeWidth="5"
-                                            d={hold.path}
-                                        />
-                                    ))}
+                                    <Use href="#volumes" />
                                 </G>
-                                {holds['false'].map((hold) => (
-                                    <Path
-                                        key={hold.hold_id}
-                                        fill={numberToFillColor(hold.hold_type)}
-                                        stroke={numberToStrokeColor(hold.hold_type)}
-                                        strokeWidth="5"
-                                        d={hold.path}
-                                    />
-                                ))}
+                                <Use href="#holds" mask="url(#mask_holds)"/>
                             </Svg>
                         </ImageBackground>
                     </ReactNativeZoomableView>
@@ -530,7 +507,12 @@ export default function DetailsScreen() {
                     </TouchableOpacity>
                 </View>
             </Modal>
-        </SafeAreaView>
+        </SafeAreaView>)
+        : (
+            <SafeAreaView style={{flex: 1}}>
+                <ActivityIndicator size="large" color={Colors.primary} />
+            </SafeAreaView>
+        )
     );
 }
 

@@ -178,22 +178,58 @@ export default function NewBoulder(){
                 <View style={styles.details}>
                     <View style={[styles.row, {paddingLeft: 25, paddingRight: 25}]}>
                         <TouchableOpacity onPress={() => setSelectedColor(-1)}>
-                            <FontAwesome name="ban" size={36} color='black' />
+                            {
+                                selectedColor === -1 ?
+                                <View style={styles.iconContainer}>
+                                    <FontAwesome name="ban" size={36} color='black' />
+                                </View> :
+                                <FontAwesome name="ban" size={36} color='black' />
+                            }
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => setSelectedColor(0)}>
-                            <FontAwesome name="circle" size={36} color={numberToStrokeColor(0)} />
+                            {
+                                selectedColor === 0 ?
+                                <View style={styles.iconContainer}>
+                                    <FontAwesome name="circle" size={36} color={numberToStrokeColor(0)} />
+                                </View> :
+                                <FontAwesome name="circle" size={36} color={numberToStrokeColor(0)} />
+                            }
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => setSelectedColor(1)}>
-                            <FontAwesome name="circle" size={36} color={numberToStrokeColor(1)} />
+                            {
+                                selectedColor === 1 ?
+                                <View style={styles.iconContainer}>
+                                    <FontAwesome name="circle" size={36} color={numberToStrokeColor(1)} />
+                                </View> :
+                                <FontAwesome name="circle" size={36} color={numberToStrokeColor(1)} />
+                            }
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => setSelectedColor(2)}>
-                            <FontAwesome name="circle" size={36} color={numberToStrokeColor(2)} />
+                            {
+                                selectedColor === 2 ?
+                                <View style={styles.iconContainer}>
+                                    <FontAwesome name="circle" size={36} color={numberToStrokeColor(2)} />
+                                </View> :
+                                <FontAwesome name="circle" size={36} color={numberToStrokeColor(2)} />
+                            }
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => setSelectedColor(3)}>
-                            <FontAwesome name="circle" size={36} color={numberToStrokeColor(3)} />
+                            {
+                                selectedColor === 3 ?
+                                <View style={styles.iconContainer}>
+                                    <FontAwesome name="circle" size={36} color={numberToStrokeColor(3)} />
+                                </View> :
+                                <FontAwesome name="circle" size={36} color={numberToStrokeColor(3)} />
+                            }
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => setSelectedColor(4)}>
-                            <FontAwesome6 name="circle-half-stroke" size={36} color={numberToFillColor(4)} />
+                            {
+                                selectedColor === 4 ?
+                                <View style={styles.iconContainer}>
+                                    <FontAwesome6 name="circle-half-stroke" size={36} color={numberToFillColor(4)} />
+                                </View> :
+                                <FontAwesome6 name="circle-half-stroke" size={36} color={numberToFillColor(4)} />
+                            }
                         </TouchableOpacity>
                     </View>
                     <TextInput
@@ -305,5 +341,12 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         padding: 10,
         margin: 15,
+    },
+    iconContainer: {
+        flex: 1,
+        alignItems: 'center',
+        borderRadius: 15,
+        borderWidth: 4,
+        borderColor: Colors.primary,
     },
 });

@@ -437,6 +437,14 @@ export default function DetailsScreen() {
                             )
                         }
                     </View>
+                    <View style={styles.row}>
+                        <Text style={Fonts.small}>
+                            {new Date(currentBoulder.build_time).toLocaleDateString() + " " + new Date(currentBoulder.build_time).toLocaleTimeString()}
+                        </Text>
+                        <Text style={Fonts.plain}>
+                            {currentBoulder.built_by}
+                        </Text>
+                    </View>
                     {
                         currentChallenge.id === 1 ? null : (
                             <View style={[styles.row, {marginTop:20}]}>

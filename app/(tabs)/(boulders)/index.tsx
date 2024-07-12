@@ -70,7 +70,12 @@ export default function Home(){
                         <Text style={[Fonts.plain, styles.description]}>
                             {item.description}
                         </Text>
-                        <StarRating rating={item.average_rating} maxStars={5} size={20}/>
+                        <View style={{flex:1}}>
+                            <StarRating rating={item.average_rating} maxStars={5} size={20}/>
+                            <Text style={[Fonts.plain, styles.description]}>
+                                {item.built_by}
+                            </Text>
+                        </View>
                     </View>
                 </View>
             </TouchableOpacity>
@@ -178,7 +183,7 @@ const styles = StyleSheet.create({
         gap: 5,
     },
     description: {
-        flex:1,
+        flex:2,
         flexWrap: 'wrap',
         marginRight: 10,
     },

@@ -449,11 +449,13 @@ export default function DetailsScreen() {
                         currentChallenge.id === 1 ? null : (
                             <View style={[styles.row, {marginTop:20}]}>
                                 {
-                                    completedChallenges["ids"].includes(currentChallenge.id) ? (
-                                        <FontAwesome5 name="crown" size={24} color='gold' />
-                                    ) : (
-                                        <FontAwesome5 name="crown" size={24} color={Colors.borderDark} />
-                                    )
+                                    completedChallenges ? (
+                                        completedChallenges["ids"].includes(currentChallenge.id) ? (
+                                            <FontAwesome5 name="crown" size={24} color='gold' />
+                                        ) : (
+                                            <FontAwesome5 name="crown" size={24} color={Colors.borderDark} />
+                                        )
+                                    ) : <FontAwesome5 name="crown" size={24} color={Colors.borderDark} />
                                 }
                                 <Text style={Fonts.plainBold}>
                                     {currentChallenge.name}

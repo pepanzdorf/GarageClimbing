@@ -25,14 +25,15 @@ export default function DetailsScreen() {
     const [commentModalVisible, setCommentModalVisible] = useState(false);
     const [comment, setComment] = useState('');
     const [isFavourite, setIsFavourite] = useState(false);
-    const [showComments, setShowComments] = useState(false);
-    const [completedChallenges, setCompletedChallenges] = useState([]);
+    const [show, setShow] = useState(0);
+    const [completedChallenges, setCompletedChallenges] = useState(null);
     const windowAspectRatio = Dimensions.get('window').width / Dimensions.get('window').height;
     const tabBarHeight = useBottomTabBarHeight();
     const maxHeight = Dimensions.get('window').height - tabBarHeight*3;
     const imageAspectRatio = 793.75 / 1058.3334;
     const isImageWider = windowAspectRatio < imageAspectRatio;
     const router = useRouter();
+    const tabNames = ["Zobrazit komentáře", "Zobrazit splněné výzvy", "Zobrazit výlezy"];
 
     useEffect(() => {
         setIsLoading(true);
@@ -203,6 +204,133 @@ export default function DetailsScreen() {
     }
 
 
+    const RenderSendsCommentsChallenges = () => {
+        if (show === 1) {
+            if (comments.length > 0) {
+                return (
+                    <View style={styles.commentsContainer}>
+                        <View style={styles.addButton}>
+                            <TouchableOpacity onPress={() => setCommentModalVisible(true)}>
+                                <FontAwesome name="plus" size={36} color={Colors.primary} />
+                            </TouchableOpacity>
+                        </View>
+                        {
+                        comments.map((comment) => (
+                            <TouchableOpacity key={comment.id} onPress={() => confirmCommentDelete(comment.id)}>
+                                <View key={comment.id} style={styles.sendContainer}>
+                                    <Text style={Fonts.h3}>
+                                        {comment.name}
+                                    </Text>
+                                    <Text style={Fonts.small}>
+                                        {new Date(comment.date).toLocaleDateString() + " " + new Date(comment.date).toLocaleTimeString()}
+                                    </Text>
+                                    <Text style={Fonts.plain}>
+                                        {comment.text}
+                                    </Text>
+                                </View>
+                            </TouchableOpacity>
+                        ))
+                        }
+                    </View>
+                )
+            } else {
+                return (
+                    <View style={styles.commentsContainer}>
+                        <View style={styles.row}>
+                            <Text style={Fonts.h3}>
+                                Žádné komentáře
+                            </Text>
+                            <TouchableOpacity onPress={() => setCommentModalVisible(true)}>
+                                <FontAwesome name="plus" size={36} color={Colors.primary} />
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                )
+            }
+        } else if (show === 0) {
+            if (sends.length > 0) {
+                return (
+                    sends.map((send) => (
+                        <TouchableOpacity key={send.id} onPress={() => confirmSendDelete(send.id)}>
+                            <View key={send.id} style={styles.sendContainer}>
+                                <View style={styles.row}>
+                                    <Text style={Fonts.h3}>
+                                        {send.name}
+                                    </Text>
+                                    <Text style={Fonts.h3}>
+                                        {gradeIdToGradeName(send.grade, settings.grading)}
+                                    </Text>
+                                </View>
+                                <View style={styles.row}>
+                                    <Text style={Fonts.small}>
+                                        {new Date(send.sent_date).toLocaleDateString() + " " + new Date(send.sent_date).toLocaleTimeString()}
+                                    </Text>
+                                    {(send.challenge_id != 1) ? (
+                                        <View style={styles.crownContainer}>
+                                            <View>
+                                                <FontAwesome5 name="crown" size={20} color='gold' />
+                                            </View>
+                                            <View style={{position: 'absolute'}}>
+                                                <Text style={Fonts.small}>
+                                                    {send.challenge_id}
+                                                </Text>
+                                            </View>
+                                        </View>) : null }
+                                </View>
+                                <View style={styles.row}>
+                                    <StarRating rating={send.rating} maxStars={5} size={20}/>
+                                    <Text style={Fonts.h3}>
+                                        {
+                                            send.attempts === 1 ? (
+                                                attemptIdToAttemptName(send.attempts) + " pokusů"
+                                            ) : (
+                                                attemptIdToAttemptName(send.attempts)
+                                            )
+                                        }
+                                    </Text>
+                                </View>
+                            </View>
+                        </TouchableOpacity>
+                    ))
+                )
+            } else {
+                return (
+                    <Text style={Fonts.h3}>
+                        Ještě nevylezeno
+                    </Text>
+                )
+            }
+        } else {
+            if (completedChallenges) {
+                return (
+                    completedChallenges["rest"].map((challenge) => (
+                        <View key={challenge.id} style={styles.sendContainer}>
+                            <View style={styles.row}>
+                                <Text style={Fonts.h3}>
+                                    {challenge.name}
+                                </Text>
+                                <Text style={Fonts.h3}>
+                                    ID: {challenge.challenge_id}
+                                </Text>
+                            </View>
+                            <Text style={Fonts.small}>
+                                Skóre: {challenge.score}
+                            </Text>
+                        </View>
+                    ))
+                )
+            } else {
+                return (
+                    <Text style={Fonts.h3}>
+                        Žádné splněné výzvy
+                    </Text>
+                )
+            }
+        }
+    }
+
+
+
     return (
         holds ? (
         <SafeAreaView style={{flex: 1}}>
@@ -303,7 +431,7 @@ export default function DetailsScreen() {
                         currentChallenge.id === 1 ? null : (
                             <View style={[styles.row, {marginTop:20}]}>
                                 {
-                                    completedChallenges.includes(currentChallenge.id) ? (
+                                    completedChallenges["ids"].includes(currentChallenge.id) ? (
                                         <FontAwesome5 name="crown" size={24} color='gold' />
                                     ) : (
                                         <FontAwesome5 name="crown" size={24} color={Colors.borderDark} />
@@ -334,94 +462,14 @@ export default function DetailsScreen() {
                     </View>
                 </View>
                 <View style={styles.sendComContainer}>
-                    <TouchableOpacity onPress={() => setShowComments(!showComments)}>
+                    <TouchableOpacity onPress={() => setShow((show+1)%3)}>
                         <View style={styles.button}>
                             <Text style={Fonts.h3}>
-                                { showComments ? "Zobrazit výlezy" : "Zobrazit komentáře"}
+                                { tabNames[show] }
                             </Text>
                         </View>
                     </TouchableOpacity>
-                    {
-                        showComments ? (
-                            comments.length > 0 ? (
-                                <View style={styles.commentsContainer}>
-                                    <View style={styles.addButton}>
-                                        <TouchableOpacity onPress={() => setCommentModalVisible(true)}>
-                                            <FontAwesome name="plus" size={36} color={Colors.primary} />
-                                        </TouchableOpacity>
-                                    </View>
-                                    {
-                                    comments.map((comment) => (
-                                        <TouchableOpacity key={comment.id} onPress={() => confirmCommentDelete(comment.id)}>
-                                            <View key={comment.id} style={styles.sendContainer}>
-                                                <Text style={Fonts.h3}>
-                                                    {comment.name}
-                                                </Text>
-                                                <Text style={Fonts.small}>
-                                                    {new Date(comment.date).toLocaleDateString() + " " + new Date(comment.date).toLocaleTimeString()}
-                                                </Text>
-                                                <Text style={Fonts.plain}>
-                                                    {comment.text}
-                                                </Text>
-                                            </View>
-                                        </TouchableOpacity>
-                                    ))
-                                    }
-                                </View>
-                            ) : (
-                                <View style={styles.commentsContainer}>
-                                    <View style={styles.row}>
-                                        <Text style={Fonts.h3}>
-                                            Žádné komentáře
-                                        </Text>
-                                        <TouchableOpacity onPress={() => setCommentModalVisible(true)}>
-                                            <FontAwesome name="plus" size={36} color={Colors.primary} />
-                                        </TouchableOpacity>
-                                    </View>
-                                </View>
-
-                            )
-                        ) : (
-                            sends.length > 0 ? (
-                                sends.map((send) => (
-                                    <TouchableOpacity key={send.id} onPress={() => confirmSendDelete(send.id)}>
-                                        <View key={send.id} style={styles.sendContainer}>
-                                            <View style={styles.row}>
-                                                <Text style={Fonts.h3}>
-                                                    {send.name}
-                                                </Text>
-                                                <Text style={Fonts.h3}>
-                                                    {gradeIdToGradeName(send.grade, settings.grading)}
-                                                </Text>
-                                            </View>
-                                            <View style={styles.row}>
-                                                <Text style={Fonts.small}>
-                                                    {new Date(send.sent_date).toLocaleDateString() + " " + new Date(send.sent_date).toLocaleTimeString()}
-                                                </Text>
-                                                {(send.challenge_id != 1) ? <FontAwesome5 name="crown" size={12} color='gold' /> : null }
-                                            </View>
-                                            <View style={styles.row}>
-                                                <StarRating rating={send.rating} maxStars={5} size={20}/>
-                                                <Text style={Fonts.h3}>
-                                                    {
-                                                        send.attempts === 1 ? (
-                                                            attemptIdToAttemptName(send.attempts) + " pokusů"
-                                                        ) : (
-                                                            attemptIdToAttemptName(send.attempts)
-                                                        )
-                                                    }
-                                                </Text>
-                                            </View>
-                                        </View>
-                                    </TouchableOpacity>
-                                ))
-                            ) : (
-                                <Text style={Fonts.h3}>
-                                    Ještě nevylezeno
-                                </Text>
-                            )
-                        )
-                    }
+                    <RenderSendsCommentsChallenges />
                 </View>
             </ScrollView>
 
@@ -519,5 +567,9 @@ const styles = StyleSheet.create({
         padding: 10,
         multiline: true,
         textAlignVertical: 'top',
+    },
+    crownContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
     },
 });

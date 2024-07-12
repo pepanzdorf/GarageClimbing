@@ -157,7 +157,10 @@ export default function Random(){
                     {challenges.map((challenge, index) => {
                         return (
                             <View key={index+1}>
-                                <Text style={Fonts.h3}>{index+1}. {challenge.name}</Text>
+                                <View style={styles.row}>
+                                    <Text style={Fonts.h3}>{index+1}. {challenge.name}</Text>
+                                    <Text style={Fonts.h3}>ID: {challenge.id}</Text>
+                                </View>
                                 <Text style={Fonts.plainBold}>{challenge.description}</Text>
                                 <Text style={Fonts.plainBold}>Skóre: {challenge.score}</Text>
                             </View>
@@ -228,5 +231,9 @@ const styles = StyleSheet.create({
         marginTop: 15,
         marginRight: 20,
         marginLeft: 20,
+    },
+    row: {
+        flexDirection:"row",
+        justifyContent:"space-between",
     },
 });

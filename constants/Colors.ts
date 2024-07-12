@@ -6,4 +6,5 @@ export const Colors = {
     fill: '#F59733',
     border: '#D9D9D9',
     borderDark: '#A6A6A6',
+    highlight: '#ea1531',
 };

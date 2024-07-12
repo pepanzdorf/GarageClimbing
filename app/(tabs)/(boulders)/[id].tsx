@@ -212,6 +212,37 @@ export default function DetailsScreen() {
             .finally(() => fetchSends());
     }
 
+    const handleDeleteBoulder = () => {
+        Alert.alert("Vymazat boulder", "Opravdu chcete smazat tento boulder?",
+            [
+                {
+                    text: "Ano",
+                    onPress: () => deleteBoulder(),
+                },
+                {
+                    text: "Ne",
+                    onPress: () => console.log("Cancel Pressed"),
+                    style: "cancel",
+                },
+            ]
+        );
+    }
+
+    const deleteBoulder = () => {
+        fetch(`${apiURL}/climbing/boulders/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token,
+            },
+        })
+            .then(response => response.text())
+            .then(jsonResponse => alert(jsonResponse))
+            .catch(error => console.log(error))
+    }
+    const handleEditBoulder = () => {
+        }
+
 
     const RenderSendsCommentsChallenges = () => {
         if (show === 1) {
@@ -481,6 +512,18 @@ export default function DetailsScreen() {
                         </Text>
                     </View>
                 </View>
+                <View style={styles.twoButtons}>
+                    <TouchableOpacity onPress={handleDeleteBoulder}>
+                        <View style={styles.editButtons}>
+                            <Text style={Fonts.h3}>Smazat</Text>
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={handleEditBoulder}>
+                        <View style={styles.editButtons}>
+                            <Text style={Fonts.h3}>Upravit</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
                 <View style={styles.sendComContainer}>
                     <TouchableOpacity onPress={() => setShow((show+1)%3)}>
                         <View style={styles.button}>
@@ -593,4 +636,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
+    editButtons: {
+        backgroundColor: Colors.highlight,
+        padding: 10,
+        alignItems: 'center',
+        borderWidth: 1,
+        borderRadius: 10,
+        marginTop: 15,
+        marginRight: 20,
+        marginLeft: 20,
+    }
 });

@@ -75,8 +75,8 @@ export default function DetailsScreen() {
     }
 
 
-    const fetchCompletedChallenges = () => {
-        fetch(`${apiURL}/climbing/challenges/completed/${id}`, {
+    const fetchCompletedChallenges = async () => {
+        const response = await fetch(`${apiURL}/climbing/challenges/completed/${id}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -86,9 +86,16 @@ export default function DetailsScreen() {
                 angle: settings.angle,
             }),
         })
-            .then(response => response.json())
-            .then(jsonResponse => setCompletedChallenges(jsonResponse))
-            .catch(error => console.log(error));
+        if (response.ok) {
+            const jsonResponse = await response.json();
+            setCompletedChallenges(jsonResponse);
+        } else if (response.status == 400) {
+            console.log(await response.text());
+        } else if (response.status == 401) {
+            console.log(await response.text());
+        } else {
+            console.log("Server error");
+        }
     }
 
 
@@ -483,6 +490,7 @@ export default function DetailsScreen() {
                         placeholder="Napište komentář:"
                         value={comment}
                         onChangeText={setComment}
+                        multiline={true}
                     />
                     <TouchableOpacity onPress={sendComment}>
                         <View style={styles.button}>

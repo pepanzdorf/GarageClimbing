@@ -15,8 +15,6 @@ import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
 
 
-
-
 export default function NewBoulder(){
     const { token, settings, holds, wallImage } = useContext(GlobalStateContext);
     const windowAspectRatio = Dimensions.get('window').width / Dimensions.get('window').height;
@@ -28,6 +26,8 @@ export default function NewBoulder(){
     const [colorsHolds, setColorsHolds] = useState();
     const [colorsVolumes, setColorsVolumes] = useState();
     const [selectedColor, setSelectedColor] = useState(0);
+    const [boulderName, setBoulderName] = useState('');
+    const [boulderDescription, setBoulderDescription] = useState('');
 
     const handleColorChange = (index, isVolume) => {
         if (isVolume) {
@@ -36,6 +36,59 @@ export default function NewBoulder(){
             setColorsHolds(colorsHolds.map((color, i) => i === index ? selectedColor : color));
         }
     }
+
+    const handleCancel = () => {
+        setColorsHolds(Array.from({length: holds["false"].length}, () => -1));
+        setColorsVolumes(Array.from({length: holds["true"].length}, () => -1));
+        setBoulderName('');
+        setBoulderDescription('');
+    }
+
+    const convertToListOfHolds = () => {
+        const holdsList = [];
+        for (let i = 0; i < colorsHolds.length; i++) {
+            if (colorsHolds[i] !== -1) {
+                holdsList.push({id: holds["false"][i].id, type: colorsHolds[i]});
+            }
+        }
+        for (let i = 0; i < colorsVolumes.length; i++) {
+            if (colorsVolumes[i] !== -1) {
+                holdsList.push({id: holds["true"][i].id, type: colorsVolumes[i]});
+            }
+        }
+        return holdsList;
+    }
+
+    const handleSave = async () => {
+        if (boulderName === '') {
+            alert('Vyplňte jméno boulderu');
+            return;
+        }
+        const boulder = {
+            name: boulderName,
+            description: boulderDescription,
+            holds: convertToListOfHolds(),
+        }
+        try {
+            const response = await fetch(`${apiURL}/climbing/boulder`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify(boulder),
+            });
+            if (response.ok) {
+                alert('Boulder byl úspěšně uložen');
+                handleCancel();
+            } else {
+                alert(await response.text());
+            }
+        } catch (error) {
+            alert('Server error');
+        }
+    }
+
 
     useEffect(() => {
         if (holds) {
@@ -48,7 +101,7 @@ export default function NewBoulder(){
     return (
         <SafeAreaView style={{flex: 1}}>
             {
-                holds ? (
+                holds && colorsHolds && colorsVolumes ? (
             <ScrollView contentContainerStyle={styles.container}>
                 <ReactNativeZoomableView
                     ref={zoomableViewRef}
@@ -143,7 +196,30 @@ export default function NewBoulder(){
                             <FontAwesome6 name="circle-half-stroke" size={36} color={numberToFillColor(4)} />
                         </TouchableOpacity>
                     </View>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Jméno"
+                        value={boulderName}
+                        onChangeText={setBoulderName}
+                    />
+                    <TextInput
+                        style={styles.commentInput}
+                        placeholder="Popisek"
+                        multiline={true}
+                        value={boulderDescription}
+                        onChangeText={setBoulderDescription}
+                    />
                 </View>
+                <TouchableOpacity onPress={handleSave}>
+                    <View style={styles.button}>
+                        <Text style={Fonts.h3}>Uložit</Text>
+                    </View>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={handleCancel}>
+                    <View style={styles.button}>
+                        <Text style={Fonts.h3}>Smazat</Text>
+                    </View>
+                </TouchableOpacity>
             </ScrollView>
             ) : (
                 <ActivityIndicator size="large" color={Colors.primary} />
@@ -213,13 +289,21 @@ const styles = StyleSheet.create({
         height: 200,
         borderColor: Colors.borderDark,
         borderWidth: 2,
-        marginBottom: 20,
         padding: 10,
         multiline: true,
         textAlignVertical: 'top',
+        margin: 15,
+        marginTop: 0,
     },
     crownContainer: {
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    input: {
+        height: 50,
+        borderColor: Colors.borderDark,
+        borderWidth: 2,
+        padding: 10,
+        margin: 15,
     },
 });

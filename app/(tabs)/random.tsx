@@ -156,14 +156,23 @@ export default function Random(){
                     <Text style={Fonts.h2}>Možné výzvy:</Text>
                     {challenges.map((challenge, index) => {
                         return (
-                            <View key={index+1}>
-                                <View style={styles.row}>
-                                    <Text style={Fonts.h3}>{index+1}. {challenge.name}</Text>
-                                    <Text style={Fonts.h3}>ID: {challenge.id}</Text>
+                            <TouchableOpacity key={index} onPress={() =>
+                                    {
+                                        setRandomChallenge(challenge);
+                                        if (challengeActive) {
+                                            setCurrentChallenge(challenge);
+                                        }
+                                    }
+                                }>
+                                <View key={index+1}>
+                                    <View style={styles.row}>
+                                        <Text style={Fonts.h3}>{index+1}. {challenge.name}</Text>
+                                        <Text style={Fonts.h3}>ID: {challenge.id}</Text>
+                                    </View>
+                                    <Text style={Fonts.plainBold}>{challenge.description}</Text>
+                                    <Text style={Fonts.plainBold}>Skóre: {challenge.score}</Text>
                                 </View>
-                                <Text style={Fonts.plainBold}>{challenge.description}</Text>
-                                <Text style={Fonts.plainBold}>Skóre: {challenge.score}</Text>
-                            </View>
+                            </TouchableOpacity>
                         )
                     })}
                 </View>

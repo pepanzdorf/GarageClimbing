@@ -62,6 +62,8 @@ export const attemptIdToAttemptName = (attemptId) => {
 
 export const numberToStrokeColor = (num) => {
     switch(num){
+        case -1:
+            return "#FFFFFF";
         case 0:
             return "#ff2900";
         case 1:
@@ -77,6 +79,8 @@ export const numberToStrokeColor = (num) => {
 
 export const numberToFillColor = (num) => {
     switch(num){
+        case -1:
+            return "none";
         case 0:
             return "none";
         case 1:

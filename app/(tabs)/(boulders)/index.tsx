@@ -99,6 +99,9 @@ export default function Home(){
                         inputContainerStyle={styles.searchInputContainer}
                     />
                 </View>
+                <TouchableOpacity onPress={() => router.push('new_boulder')}>
+                    <FontAwesome name="plus" size={36} color={Colors.primary} />
+                </TouchableOpacity>
             </View>
             <View style={styles.boulders}>
                 { bouldersLoading ? ( <ActivityIndicator size="large" color="black" /> ) : (

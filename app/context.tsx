@@ -28,7 +28,7 @@ export const GlobalStateProvider = ({ children }) => {
     const [wallImage, setWallImage] = useState(null);
     const [wallImageLoading, setWallImageLoading] = useState(true);
 
-    const [holds, setHolds] = useState([]);
+    const [holds, setHolds] = useState({});
     const [holdsLoading, setHoldsLoading] = useState(true);
 
     const [token, setToken] = useState('token');

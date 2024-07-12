@@ -304,7 +304,7 @@ export default function DetailsScreen() {
             if (completedChallenges) {
                 return (
                     completedChallenges["rest"].map((challenge) => (
-                        <View key={challenge.id} style={styles.sendContainer}>
+                        <View key={challenge.challenge_id} style={styles.sendContainer}>
                             <View style={styles.row}>
                                 <Text style={Fonts.h3}>
                                     {challenge.name}
@@ -354,7 +354,7 @@ export default function DetailsScreen() {
                                             key={hold.hold_id}
                                             fill={numberToFillColor(hold.hold_type)}
                                             stroke={numberToStrokeColor(hold.hold_type)}
-                                            strokeWidth="8"
+                                            strokeWidth={settings.lineWidth}
                                             d={hold.path}
                                         />
                                     ))}
@@ -365,7 +365,7 @@ export default function DetailsScreen() {
                                             key={hold.hold_id}
                                             fill={numberToFillColor(hold.hold_type)}
                                             stroke={numberToStrokeColor(hold.hold_type)}
-                                            strokeWidth="8"
+                                            strokeWidth={settings.lineWidth}
                                             d={hold.path}
                                         />
                                     ))}

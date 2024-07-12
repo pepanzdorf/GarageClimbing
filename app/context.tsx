@@ -8,14 +8,15 @@ export const GlobalStateProvider = ({ children }) => {
     const defaultSettings = {
         angle: 20,
         sortby: 1,
-        upperGrade: 53,
+        upperGrade: 52,
         lowerGrade: 0,
-        darkening: 0.5,
-        darkenPreview: false,
+        darkening: 0.3,
+        darkenPreview: true,
         showUnsent: false,
         showFavourites: false,
         rating: 3,
         grading: 0,
+        lineWidth: 8,
     }
 
     const [boulders,setBoulders] = useState([]);

@@ -22,6 +22,7 @@ export default function Settings(){
     const [ showUnsent, setShowUnsent ] = useState(settings.showUnsent);
     const [ showFavourites, setShowFavourites ] = useState(settings.showFavourites);
     const [ defaultRating, setDefaultRating ] = useState(settings.rating);
+    const [ selectedLineWidth, setSelectedLineWidth ] = useState(settings.lineWidth);
 
     const options = [
             {key:'1', value: 'Nejtěžší'},
@@ -56,6 +57,7 @@ export default function Settings(){
                 upperGrade: gradeRange[1],
                 darkening: darkening,
                 grading: selectedGrading,
+                lineWidth: selectedLineWidth,
             }
         );
         alert(
@@ -70,6 +72,7 @@ Zobrazit pouze nevylezené: ${showUnsent ? 'Ano' : 'Ne'}
 Zobrazit pouze oblíbené: ${showFavourites ? 'Ano' : 'Ne'}
 Defaultní hodnocení: ${defaultRating}
 Používat stupnici: ${gradingOptions.find(option => option.key == selectedGrading).value}
+Tloušťka čáry kolem chytů: ${selectedLineWidth}
             `
         )
     }
@@ -200,6 +203,23 @@ Používat stupnici: ${gradingOptions.find(option => option.key == selectedGradi
                         data={gradingOptions}
                         save="key"
                         search={false}
+                    />
+                </View>
+                <View style={styles.angle}>
+                    <Text style={Fonts.h3}>
+                        {`Tloušťka čáry chytů: ${selectedLineWidth}`}
+                    </Text>
+                    <MultiSlider
+                        values={[selectedLineWidth]}
+                        sliderLength={280}
+                        min={1}
+                        max={20}
+                        step={1}
+                        onValuesChange={values => setSelectedLineWidth(values[0])}
+                        markerStyle={styles.markerStyle}
+                        selectedStyle={{backgroundColor: Colors.primary}}
+                        unselectedStyle={{backgroundColor: Colors.border}}
+                        touchDimensions={styles.touchDimensions}
                     />
                 </View>
             </ScrollView>

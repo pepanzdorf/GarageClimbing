@@ -34,6 +34,8 @@ export default function DetailsScreen() {
     const isImageWider = windowAspectRatio < imageAspectRatio;
     const router = useRouter();
     const tabNames = ["Zobrazit komentáře", "Zobrazit splněné výzvy", "Zobrazit výlezy"];
+    const zoomableViewRef = React.createRef<ReactNativeZoomableView>();
+
 
     useEffect(() => {
         setIsLoading(true);
@@ -330,18 +332,19 @@ export default function DetailsScreen() {
     }
 
 
-
     return (
         holds ? (
         <SafeAreaView style={{flex: 1}}>
             <ScrollView contentContainerStyle={styles.container}>
                 <ReactNativeZoomableView
+                    ref={zoomableViewRef}
                     maxZoom={20}
                     minZoom={1}
-                    zoomStep={0.5}
                     initialZoom={1}
                     bindToBorders={true}
                     onZoomAfter={this.logOutZoomState}
+                    disablePanOnInitialZoom={true}
+                    onDoubleTapAfter={() => zoomableViewRef.current!.zoomTo(1)}
                     style={{flex: 1}}
                 >
                     <View style={{maxHeight: maxHeight}}>

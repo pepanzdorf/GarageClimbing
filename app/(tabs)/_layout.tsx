@@ -61,6 +61,13 @@ export default function TabLayout() {
                     href: null
                 }}
             />
+            <Tabs.Screen
+                name="stats/index"
+                options={{
+                    title: 'Žebříček',
+                    tabBarIcon: ({ color }) => <FontAwesome5 size={28} name="medal" color={color} />,
+                }}
+            />
         </Tabs>
     );
 }

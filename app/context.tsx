@@ -37,7 +37,7 @@ export const GlobalStateProvider = ({ children }) => {
     const [currentBoulder, setCurrentBoulder] = useState(null);
     const [currentHolds, setCurrentHolds] = useState(null);
 
-    const [loggedUser, setLoggedUser] = useState('nepřihlášen');
+    const [loggedUser, setLoggedUser] = useState('Nepřihlášen');
     const [isAdmin, setIsAdmin] = useState(false);
 
     const [reload, setReload] = useState(false);

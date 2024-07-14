@@ -35,6 +35,7 @@ export const GlobalStateProvider = ({ children }) => {
     const [tokenLoading, setTokenLoading] = useState(true);
 
     const [currentBoulder, setCurrentBoulder] = useState(null);
+    const [currentHolds, setCurrentHolds] = useState(null);
 
     const [loggedUser, setLoggedUser] = useState('nepřihlášen');
     const [isAdmin, setIsAdmin] = useState(false);
@@ -214,6 +215,8 @@ export const GlobalStateProvider = ({ children }) => {
                 currentChallenge,
                 setCurrentChallenge,
                 challenges,
+                setCurrentHolds,
+                currentHolds,
         }}>
             {children}
         </GlobalStateContext.Provider>

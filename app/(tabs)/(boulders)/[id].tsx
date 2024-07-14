@@ -16,7 +16,7 @@ import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
 export default function DetailsScreen() {
     const { id } = useLocalSearchParams();
-    const { wallImage, settings, token, currentBoulder, reload, reloadBoulders, currentChallenge } = useContext(GlobalStateContext);
+    const { wallImage, settings, token, currentBoulder, reload, reloadBoulders, currentChallenge, setCurrentHolds, currentHolds, setReload } = useContext(GlobalStateContext);
     const [holds, setHolds] = useState(null);
     const [sends, setSends] = useState([]);
     const [comments, setComments] = useState([]);
@@ -54,6 +54,8 @@ export default function DetailsScreen() {
             reloadBoulders();
             fetchSends();
             fetchCompletedChallenges();
+            fetchBoulderHolds();
+            setReload(false);
         }
     }, [reload]);
 
@@ -102,7 +104,7 @@ export default function DetailsScreen() {
     const fetchBoulderHolds = () => {
         fetch(`${apiURL}/climbing/boulders/holds/${id}`)
             .then(response => response.json())
-            .then(jsonResponse => setHolds(jsonResponse))
+            .then(jsonResponse => setCurrentHolds(jsonResponse))
             .catch(error => console.log(error))
             .finally(() => setIsLoading(false));
     };
@@ -240,8 +242,11 @@ export default function DetailsScreen() {
             .then(jsonResponse => alert(jsonResponse))
             .catch(error => console.log(error))
     }
+
     const handleEditBoulder = () => {
-        }
+        router.back();
+        router.push(`edit_boulder`);
+    }
 
 
     const RenderSendsCommentsChallenges = () => {
@@ -371,7 +376,7 @@ export default function DetailsScreen() {
 
 
     return (
-        holds ? (
+        currentHolds ? (
         <SafeAreaView style={{flex: 1}}>
             <ScrollView contentContainerStyle={styles.container}>
                 <ReactNativeZoomableView
@@ -390,7 +395,7 @@ export default function DetailsScreen() {
                         <Svg style={styles.svgContainer} height="100%" width="100%" viewBox="0 0 793.75 1058.3334">
                             <Defs>
                                 <G id="holds">
-                                    {holds["false"].map((hold) => (
+                                    {currentHolds["false"].map((hold) => (
                                         <Path
                                             key={hold.hold_id}
                                             fill={numberToFillColor(hold.hold_type)}
@@ -401,7 +406,7 @@ export default function DetailsScreen() {
                                     ))}
                                 </G>
                                 <G id="volumes">
-                                    {holds['true'].map((hold) => (
+                                    {currentHolds['true'].map((hold) => (
                                         <Path
                                             key={hold.hold_id}
                                             fill={numberToFillColor(hold.hold_type)}

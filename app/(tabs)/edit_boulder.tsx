@@ -12,11 +12,12 @@ import { Colors } from '../../constants/Colors'
 import { Fonts } from '../../constants/Fonts'
 import { FontAwesome, FontAwesome6 } from '@expo/vector-icons';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import { useIsFocused } from '@react-navigation/native';
 
 
 
-export default function NewBoulder(){
-    const { token, settings, holds, wallImage } = useContext(GlobalStateContext);
+export default function EditBoulder(){
+    const { token, settings, holds, wallImage, currentBoulder, currentHolds, setReload } = useContext(GlobalStateContext);
     const windowAspectRatio = Dimensions.get('window').width / Dimensions.get('window').height;
     const tabBarHeight = useBottomTabBarHeight();
     const maxHeight = Dimensions.get('window').height - tabBarHeight*3;
@@ -28,6 +29,8 @@ export default function NewBoulder(){
     const [selectedColor, setSelectedColor] = useState(0);
     const [boulderName, setBoulderName] = useState('');
     const [boulderDescription, setBoulderDescription] = useState('');
+    const router = useRouter();
+    const isFocused = useIsFocused();
 
     const handleColorChange = (index, isVolume) => {
         if (isVolume) {
@@ -38,8 +41,8 @@ export default function NewBoulder(){
     }
 
     const handleCancel = () => {
-        setColorsHolds(Array.from({length: holds["false"].length}, () => -1));
-        setColorsVolumes(Array.from({length: holds["true"].length}, () => -1));
+        setColorsHolds(null);
+        setColorsVolumes(null);
         setBoulderName('');
         setBoulderDescription('');
     }
@@ -68,8 +71,8 @@ export default function NewBoulder(){
             name: boulderName,
             description: boulderDescription,
             holds: convertToListOfHolds(),
-            edit: false,
-            bid: null,
+            edit: true,
+            bid: currentBoulder.id,
         }
         try {
             const response = await fetch(`${apiURL}/climbing/boulder`, {
@@ -81,8 +84,10 @@ export default function NewBoulder(){
                 body: JSON.stringify(boulder),
             });
             if (response.ok) {
-                alert('Boulder byl úspěšně uložen');
+                alert('Boulder byl úspěšně upraven');
                 handleCancel();
+                setReload(true);
+                router.back();
             } else {
                 alert(await response.text());
             }
@@ -93,12 +98,32 @@ export default function NewBoulder(){
 
 
     useEffect(() => {
+        handleCancel();
         if (holds) {
-            setColorsHolds(Array.from({length: holds["false"].length}, () => -1));
-            setColorsVolumes(Array.from({length: holds["true"].length}, () => -1));
+            setBoulderName(currentBoulder.name);
+            setBoulderDescription(currentBoulder.description);
+            const holdsArray = Array.from({length: holds["false"].length}, () => -1);
+            const volumesArray = Array.from({length: holds["true"].length}, () => -1);
+
+            currentHolds['false'].forEach(hold => {
+                for (let i = 0; i < holds["false"].length; i++) {
+                    if (holds["false"][i].id === hold.hold_id) {
+                        holdsArray[i] = hold.hold_type;
+                    }
+                }
+            });
+
+            currentHolds['true'].forEach(hold => {
+                for (let i = 0; i < holds["true"].length; i++) {
+                    if (holds["true"][i].id === hold.hold_id) {
+                        volumesArray[i] = hold.hold_type;
+                    }
+                }
+            });
+            setColorsHolds(holdsArray);
+            setColorsVolumes(volumesArray);
         }
-    }
-    , [holds]);
+    }, [currentBoulder, isFocused]);
 
     return (
         <SafeAreaView style={{flex: 1}}>
@@ -253,9 +278,9 @@ export default function NewBoulder(){
                         <Text style={Fonts.h3}>Uložit</Text>
                     </View>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={handleCancel}>
+                <TouchableOpacity onPress={() => {handleCancel();router.back()}}>
                     <View style={styles.button}>
-                        <Text style={Fonts.h3}>Smazat</Text>
+                        <Text style={Fonts.h3}>Zrušit</Text>
                     </View>
                 </TouchableOpacity>
             </ScrollView>

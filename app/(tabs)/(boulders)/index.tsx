@@ -91,7 +91,7 @@ export default function Home(){
                             Refresh
                         </Text>
                         <Text style={Fonts.plain}>
-                            { numberOfBoulders } boulderů
+                            { numberOfBoulders }/{ boulders.length }
                         </Text>
                     </View>
                 </TouchableOpacity>

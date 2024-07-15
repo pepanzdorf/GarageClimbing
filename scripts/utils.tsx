@@ -94,6 +94,47 @@ export const numberToFillColor = (num) => {
     }
 }
 
+export const gradeToColor = (grade) => {
+    switch(grade){
+        case 0:
+            return "#FF5733";
+        case 1:
+            return "#33FF57";
+        case 2:
+            return "#3357FF";
+        case 3:
+            return "#FF33A1";
+        case 4:
+            return "#57FF33";
+        case 5:
+            return "#33A1FF";
+        case 6:
+            return "#A133FF";
+        case 7:
+            return "#FF8C33";
+        case 8:
+            return "#8C33FF";
+        case 9:
+            return "#33FF8C";
+        case 10:
+            return "#FF3333";
+        case 11:
+            return "#33FFB2";
+        case 12:
+            return "#FF33F0";
+        case 13:
+            return "#33F0FF";
+        case 14:
+            return "#FFD733";
+        case 15:
+            return "#33FFDA";
+        case 16:
+            return "#FFA133";
+        case 17:
+            return "#33FFA1";
+    }
+}
+
 
 
 const fontDict = {

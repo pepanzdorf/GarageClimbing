@@ -7,7 +7,7 @@ import { FontAwesome5, FontAwesome } from '@expo/vector-icons';
 import { Colors } from '../../../constants/Colors'
 import { Fonts } from '../../../constants/Fonts'
 import { apiURL } from '../../../constants/Other';
-import { gradeIdToGradeName } from '../../../scripts/utils';
+import { gradeIdToGradeName, gradeToColor } from '../../../scripts/utils';
 
 
 export default function LogScreen() {
@@ -49,6 +49,24 @@ export default function LogScreen() {
                                 <Text style={Fonts.plainBold}>{userStats['all_sends']}</Text>
                                 <Text style={Fonts.h3}>Splněných výzev (unikátní):</Text>
                                 <Text style={Fonts.plainBold}>{userStats['challenges']}</Text>
+                                <View style={{flexDirection:"row", flexWrap: 'wrap'}}>
+                                    {
+                                        userStats['completed_grades'].map((value) => {
+                                            return (
+                                                <View style={styles.awardContainer} key={value}>
+                                                    <View>
+                                                        <FontAwesome5 name="award" size={40} color={gradeToColor(value)} />
+                                                    </View>
+                                                    <View style={{position: 'absolute', top: 4}}>
+                                                        <Text style={Fonts.plainBold}>
+                                                            V{value}
+                                                        </Text>
+                                                    </View>
+                                                </View>
+                                            )
+                                        })
+                                    }
+                                </View>
                             </View>
                             <View style={{gap: 5}}>
                                 {
@@ -112,5 +130,9 @@ const styles = StyleSheet.create({
         gap: 10,
         marginBottom: 20,
         padding: 10,
+    },
+    awardContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
     },
 });

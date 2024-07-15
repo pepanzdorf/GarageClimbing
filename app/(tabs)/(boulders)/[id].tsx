@@ -27,6 +27,7 @@ export default function DetailsScreen() {
     const [isFavourite, setIsFavourite] = useState(false);
     const [show, setShow] = useState(0);
     const [completedChallenges, setCompletedChallenges] = useState(null);
+    const [randomHold, setRandomHold] = useState(null);
     const windowAspectRatio = Dimensions.get('window').width / Dimensions.get('window').height;
     const tabBarHeight = useBottomTabBarHeight();
     const maxHeight = Dimensions.get('window').height - tabBarHeight*3;
@@ -58,6 +59,36 @@ export default function DetailsScreen() {
             setReload(false);
         }
     }, [reload]);
+
+    useEffect(() => {
+        if (currentHolds && currentChallenge.id == 7) {
+            chooseRandomHold();
+        } else {
+            setRandomHold(null);
+        }
+    }
+    , [currentChallenge, currentBoulder, currentHolds]);
+
+
+    const chooseRandomHold = () => {
+        let randomHoldIDs = [];
+        currentHolds["false"].forEach((hold) => {
+            if (hold.hold_type == 1 || hold.hold_type == 2) {
+                randomHoldIDs.push(hold.hold_id);
+            }
+        });
+
+        if (randomHoldIDs.length === 0) {
+            setRandomHold(null);
+            Alert.alert("Gratulace", "Žádný chyt není možné odstranit. Užívej výzvu zdarma! 🎉");
+            return;
+        }
+
+        const randomIndex = Math.floor(Math.random() * randomHoldIDs.length);
+
+        setRandomHold(randomHoldIDs[randomIndex]);
+    }
+
 
     const toggleFavourite = () => {
         if (token === 'token') {
@@ -92,9 +123,7 @@ export default function DetailsScreen() {
             const jsonResponse = await response.json();
             setCompletedChallenges(jsonResponse);
         } else if (response.status == 400) {
-            console.log(await response.text());
         } else if (response.status == 401) {
-            console.log(await response.text());
         } else {
             console.log("Server error");
         }
@@ -402,6 +431,7 @@ export default function DetailsScreen() {
                                             stroke={numberToStrokeColor(hold.hold_type)}
                                             strokeWidth={settings.lineWidth}
                                             d={hold.path}
+                                            strokeDasharray={hold.hold_id == randomHold ? "3,5" : ""}
                                         />
                                     ))}
                                 </G>

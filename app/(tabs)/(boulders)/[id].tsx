@@ -78,12 +78,6 @@ export default function DetailsScreen() {
             }
         });
 
-        if (randomHoldIDs.length === 0) {
-            setRandomHold(null);
-            Alert.alert("Gratulace", "Žádný chyt není možné odstranit. Užívej výzvu zdarma! 🎉");
-            return;
-        }
-
         const randomIndex = Math.floor(Math.random() * randomHoldIDs.length);
 
         setRandomHold(randomHoldIDs[randomIndex]);

@@ -103,7 +103,7 @@ export default function LogScreen() {
                         highlightBorderWidth={2}
                         itemTextStyle={Fonts.h3}
                         activeItemTextStyle={[Fonts.h3, {color: Colors.primary}]}
-                        onValueChange={(value) => setSelectedAttempts(value)}
+                        onValueChange={(_, index) => setSelectedAttempts(index)}
                     />
                 </View>
                 <StarRatingClickable maxStars={5} initialRating={settings.rating} onRatingChange={setSelectedRating} size={48}/>

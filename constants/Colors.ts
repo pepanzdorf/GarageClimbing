@@ -7,4 +7,7 @@ export const Colors = {
     border: '#D9D9D9',
     borderDark: '#A6A6A6',
     highlight: '#ea1531',
+    first: '#FFC400',
+    second: '#d0d0d0',
+    third: '#cd7f32'
 };

@@ -45,6 +45,7 @@ export const GlobalStateProvider = ({ children }) => {
     const [currentChallenge, setCurrentChallenge] = useState({id: 1, name: "Žádný", description: "nic", score: 0});
     const [challenges, setChallenges] = useState([]);
 
+    const [stats, setStats] = useState(null);
 
     const fetchAll = () => {
         loadSettings();
@@ -54,6 +55,7 @@ export const GlobalStateProvider = ({ children }) => {
         fetchBoulderingWallImage();
         fetchChallenges();
         whoami();
+        fetchUserStats();
     }
 
     const whoami = () => {
@@ -170,6 +172,21 @@ export const GlobalStateProvider = ({ children }) => {
         fetchHolds();
     }
 
+
+    const fetchUserStats = () => {
+        fetch(`${apiURL}/climbing/stats`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({angle: settings.angle})
+        })
+            .then(response => response.json())
+            .then(response => setStats(response))
+            .catch(error => console.log(error));
+    }
+
+
     useEffect(()=>{
         fetchAll();
     },[]);
@@ -217,6 +234,9 @@ export const GlobalStateProvider = ({ children }) => {
                 challenges,
                 setCurrentHolds,
                 currentHolds,
+                stats,
+                setStats,
+                fetchUserStats
         }}>
             {children}
         </GlobalStateContext.Provider>

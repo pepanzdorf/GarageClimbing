@@ -62,7 +62,7 @@ export default function TabLayout() {
                 }}
             />
             <Tabs.Screen
-                name="stats/index"
+                name="stats"
                 options={{
                     title: 'Žebříček',
                     tabBarIcon: ({ color }) => <FontAwesome5 size={28} name="medal" color={color} />,

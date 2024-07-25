@@ -14,7 +14,7 @@ export const gradeIdToGradeName = (gradeId, grading) => {
     } else if (grading == 3) {
         return frenchSportDict[gradeId];
     } else if (grading == 4) {
-        if (gradeId === 52) return "Těžší";
+        if (gradeId == 52) return "Těžší";
         return "Easy"
     }
 }

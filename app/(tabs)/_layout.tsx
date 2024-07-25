@@ -68,6 +68,13 @@ export default function TabLayout() {
                     tabBarIcon: ({ color }) => <FontAwesome5 size={28} name="medal" color={color} />,
                 }}
             />
+            <Tabs.Screen
+                name="info"
+                options={{
+                    title: 'Info',
+                    tabBarIcon: ({ color }) => <FontAwesome5 size={28} name="info" color={color} />,
+                }}
+            />
         </Tabs>
     );
 }

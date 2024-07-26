@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Modal, ScrollView,Button, FlatList, ImageBackground } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Modal, ScrollView,Button, FlatList, ImageBackground, Image } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { GlobalStateContext } from '../../context';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -76,6 +76,12 @@ export default function LogScreen() {
                                 <View style={styles.header}>
                                     <Text style={Fonts.h1}>{name}</Text>
                                 </View>
+                                {
+                                    userStats['icon'] &&
+                                    <View style={{alignItems: 'center'}}>
+                                        <Image source={{uri: apiURL + userStats['icon']}} style={{width: 64, height: 64}} />
+                                    </View>
+                                }
                                 <View style={styles.genericStats}>
                                     <Text style={Fonts.h3}>Skóre:</Text>
                                     <Text style={Fonts.plainBold}>{userStats['score']}</Text>

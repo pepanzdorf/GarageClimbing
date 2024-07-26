@@ -19,8 +19,8 @@ export default function Info(){
     }
 
     useEffect(() => {
-        if (holds) {
-            setNHolds(holds['true'].length + holds['false'].length);
+        if (holds && holds['true'] && holds['false']) {
+            setNHolds(holds['false'].length);
         }
     }
     , [holds]);

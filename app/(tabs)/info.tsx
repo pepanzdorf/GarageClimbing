@@ -9,6 +9,7 @@ import { Fonts } from '../../constants/Fonts'
 export default function Info(){
     const { holds, boulders, stats } = useContext(GlobalStateContext);
     const [ nHolds, setNHolds ] = useState(0);
+    const [ nVolumes, setNVolumes ] = useState(0);
 
     const calculateSends = () => {
         let sends = 0;
@@ -21,6 +22,7 @@ export default function Info(){
     useEffect(() => {
         if (holds && holds['true'] && holds['false']) {
             setNHolds(holds['false'].length);
+            setNVolumes(holds['true'].length);
         }
     }
     , [holds]);
@@ -40,6 +42,12 @@ export default function Info(){
                         <Text style={Fonts.h3}>Počet chytů: </Text>
                         {
                             holds && (<Text style={Fonts.plainBold}>{nHolds}</Text>)
+                        }
+                    </View>
+                    <View style={styles.field}>
+                        <Text style={Fonts.h3}>Počet struktur: </Text>
+                        {
+                            holds && (<Text style={Fonts.plainBold}>{nVolumes}</Text>)
                         }
                     </View>
                     <View style={styles.field}>

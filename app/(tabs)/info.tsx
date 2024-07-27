@@ -22,6 +22,7 @@ export default function Info(){
     const maxHeight = Dimensions.get('window').height - tabBarHeight*3;
     const imageAspectRatio = 820.5611 / 1198.3861;
     const isImageWider = windowAspectRatio < imageAspectRatio;
+    const zoomableViewRef = React.createRef<ReactNativeZoomableView>();
 
 
     const getColorForValue = (value, min, max) => {
@@ -116,6 +117,7 @@ export default function Info(){
                     {
                         maxCount > 0 &&
                         <ReactNativeZoomableView
+                            ref={zoomableViewRef}
                             maxZoom={20}
                             minZoom={1}
                             initialZoom={1}
@@ -183,7 +185,7 @@ export default function Info(){
                                         {
                                             return (
                                                 <View style={styles.row} key={grade}>
-                                                    <Text style={Fonts.plainBold}>{gradeIdToGradeName(grade)}</Text>
+                                                    <Text style={Fonts.plainBold}>{gradeIdToGradeName(grade, settings.grading)}</Text>
                                                     <Text style={Fonts.plainBold}>{bouldersByGrade[grade]}</Text>
                                                 </View>
                                             )

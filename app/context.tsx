@@ -10,7 +10,7 @@ export const GlobalStateProvider = ({ children }) => {
         sortby: 1,
         upperGrade: 52,
         lowerGrade: 0,
-        darkening: 0.3,
+        darkening: 0.5,
         darkenPreview: true,
         showUnsent: false,
         showFavourites: false,

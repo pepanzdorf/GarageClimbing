@@ -1,5 +1,5 @@
 export const gradeIdToGradeName = (gradeId, grading) => {
-    if (gradeId === -1) {
+    if (gradeId == -1) {
         return "Open"
     }
     if (grading == 0) {

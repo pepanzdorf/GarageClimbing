@@ -11,7 +11,7 @@ const StarRating = props => {
 
     if (props.rating === -1) {
         return (
-            <View style={{height: props.size, width: props.maxStars*props.size}}>
+            <View style={{height: props.size}}>
                 <Text style={Fonts.plainBold}>Nehodnoceno</Text>
             </View>
         );

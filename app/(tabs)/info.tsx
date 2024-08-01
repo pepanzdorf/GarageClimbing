@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView, Linking, Dimensions, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Linking, Dimensions, ImageBackground, Image } from 'react-native';
 import { GlobalStateContext } from '../context';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/Colors'
@@ -8,6 +8,8 @@ import { gradeIdToGradeName } from '../../scripts/utils';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { Svg, Path, Rect, ClipPath, Defs, G, Use, Mask, Pattern, Line } from 'react-native-svg'
 import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
+import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
+
 
 
 export default function Info(){
@@ -16,6 +18,8 @@ export default function Info(){
     const [ nVolumes, setNVolumes ] = useState(0);
     const [ bouldersByGrade, setBouldersByGrade ] = useState({});
     const [ maxCount, setMaxCount ] = useState(0);
+    const [ tableHead, setTableHead ] = useState(['V', 'Font', 'YDS', 'French sport', 'Melda-scale']);
+    const [ tableData, setTableData ] = useState();
 
     const windowAspectRatio = Dimensions.get('window').width / Dimensions.get('window').height;
     const tabBarHeight = useBottomTabBarHeight();
@@ -24,6 +28,17 @@ export default function Info(){
     const isImageWider = windowAspectRatio < imageAspectRatio;
     const zoomableViewRef = React.createRef<ReactNativeZoomableView>();
 
+    const makeTableData = () => {
+        let data = [];
+        for (let i = 0; i < 53; i += 1) {
+            const rowData = [];
+            for (let j = 0; j < 5; j += 1) {
+                rowData.push(gradeIdToGradeName(i, j));
+            }
+            data.push(rowData);
+        }
+        setTableData(data);
+    }
 
     const getColorForValue = (value, min, max) => {
         let normalizedValue = Math.log(value - min + 1) / Math.log(max - min + 1);
@@ -78,6 +93,10 @@ export default function Info(){
         calculateBouldersByGrade();
     }
     , [boulders]);
+
+    useEffect(() => {
+        makeTableData();
+    }, []);
 
     return (
         <SafeAreaView style={styles.container}>
@@ -195,6 +214,16 @@ export default function Info(){
                             </View>
                         )
                     }
+                    {
+                        tableData &&
+                        <View style={styles.container}>
+                            <Table borderStyle={{borderWidth: 2, borderColor: Colors.borderDark}}>
+                                <Row data={tableHead}/>
+                                <Rows data={tableData}/>
+                            </Table>
+                        </View>
+                    }
+                    <Image source={require("../../assets/images/icon.png")} style={{width: '100%', height: undefined, aspectRatio: 1}}/>
                     <View style={styles.field}>
                         <Text style={Fonts.h3}>Autor aplikace: </Text>
                         <Text style={Fonts.plainBold}>Melichar Konečný</Text>

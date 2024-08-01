@@ -33,6 +33,7 @@ export default function Settings(){
             {key:'6', value: 'Nejstarší'},
             {key:'7', value: 'Nejlepší'},
             {key:'8', value: 'Nejhorší'},
+            {key:'9', value: 'Náhodně'},
         ];
 
     const gradingOptions = [

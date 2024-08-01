@@ -36,9 +36,27 @@ export const sortBoulderBy = (sorter, boulders) => {
         return boulders.sort((a,b) => b.average_rating - a.average_rating);
     } else if(sorter == 8){
         return boulders.sort((a,b) => a.average_rating - b.average_rating);
+    } else if(sorter == 9) {
+        return shuffle(boulders);
     } else {
         return boulders;
     }
+}
+
+
+const shuffle = (array) => {
+    let currentIndex = array.length;
+    let newArray = [...array];
+
+    while (currentIndex != 0) {
+        let randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+
+        let temporaryValue = newArray[currentIndex];
+        newArray[currentIndex] = newArray[randomIndex];
+        newArray[randomIndex] = temporaryValue;
+    }
+    return newArray;
 }
 
 export const filterBoulders = (boulders, withOpen, lowerGrade, upperGrade, sent, favourite) => {

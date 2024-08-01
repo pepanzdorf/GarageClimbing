@@ -14,7 +14,8 @@ export default function Profile(){
     const [ password, setPassword ] = useState('');
     const [ confirmPassword, setConfirmPassword ] = useState('');
     const [ modalVisible, setModalVisible ] = useState(false);
-    const { setToken, saveToken, loggedUser, isAdmin } = useContext(GlobalStateContext);
+    const { setToken, saveToken, loggedUser, isAdmin, token } = useContext(GlobalStateContext);
+    const [ description, setDescription ] = useState('');
 
     const startSignup = () => {
         if (password !== '' && username !== '') {
@@ -82,6 +83,28 @@ export default function Profile(){
         saveToken('token');
     }
 
+    const sendDescription = async () => {
+        try {
+            const response = await fetch(`${apiURL}/climbing/set_description`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ description: description }),
+            });
+            if (response.ok) {
+                alert(await response.text());
+            } else if (response.status === 400) {
+                alert(await response.text());
+            } else {
+                alert('Server error');
+            }
+        } catch (error) {
+            alert('Server error');
+        }
+    }
+
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView>
@@ -124,6 +147,20 @@ export default function Profile(){
                             <FontAwesome5 name="user-shield" size={24} color="black" />
                         ) : null
                     }
+                </View>
+                <View style={styles.info}>
+                    <TextInput
+                        style={styles.commentInput}
+                        placeholder="Popisek u profilu"
+                        value={description}
+                        onChangeText={setDescription}
+                        multiline={true}
+                    />
+                    <TouchableOpacity onPress={sendDescription}>
+                        <View style={styles.button}>
+                            <Text style={Fonts.h3}>Uložit popisek</Text>
+                        </View>
+                    </TouchableOpacity>
                 </View>
             </ScrollView>
 
@@ -205,5 +242,14 @@ const styles = StyleSheet.create({
     userinfo: {
         padding: 10,
         gap: 20,
-    }
+    },
+    commentInput: {
+        height: 200,
+        borderColor: Colors.borderDark,
+        borderWidth: 2,
+        marginBottom: 20,
+        padding: 10,
+        multiline: true,
+        textAlignVertical: 'top',
+    },
 });

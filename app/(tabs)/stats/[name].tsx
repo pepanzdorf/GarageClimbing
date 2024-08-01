@@ -82,6 +82,12 @@ export default function LogScreen() {
                                         <Image source={{uri: apiURL + userStats['icon']}} style={{width: 200, height: 200}} />
                                     </View>
                                 }
+                                {
+                                    userStats['user_description'] &&
+                                    <View style={{alignItems: 'center'}}>
+                                        <Text style={Fonts.plainBold}>{userStats['user_description']}</Text>
+                                    </View>
+                                }
                                 <View style={styles.genericStats}>
                                     <Text style={Fonts.h3}>Skóre:</Text>
                                     <Text style={Fonts.plainBold}>{userStats['score']}</Text>

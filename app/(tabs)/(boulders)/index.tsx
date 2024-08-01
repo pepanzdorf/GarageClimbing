@@ -12,9 +12,18 @@ import { FontAwesome } from '@expo/vector-icons';
 
 
 export default function Home(){
-    const { settings, boulders, bouldersLoading, reloadBoulders, setCurrentBoulder } = useContext(GlobalStateContext);
+    const {
+        settings,
+        boulders,
+        bouldersLoading,
+        reloadBoulders,
+        setCurrentBoulder,
+        filteredBoulders,
+        setFilteredBoulders,
+        currentBoulderIndex,
+        setCurrentBoulderIndex,
+    } = useContext(GlobalStateContext);
     const [ search, setSearch ] = useState('');
-    const [ filteredBoulders, setFilteredBoulders ] = useState([]);
     const [ numberOfBoulders, setNumberOfBoulders ] = useState(0);
     const router = useRouter();
 
@@ -38,9 +47,9 @@ export default function Home(){
     }
     , [filteredBoulders]);
 
-    const renderBoulder = ({item}) => {
+    const renderBoulder = ({item, index}) => {
         return (
-            <TouchableOpacity onPress={() => {setCurrentBoulder(item); router.push(`${item.id}`)}}>
+            <TouchableOpacity onPress={() => {setCurrentBoulder(item); setCurrentBoulderIndex(index); router.push(`${item.id}`)}}>
                 <View style={styles.boulder}>
                     <View style={styles.firstRow}>
                         <Text style={[Fonts.h3, styles.name]}>

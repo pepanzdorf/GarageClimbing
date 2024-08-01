@@ -47,6 +47,10 @@ export const GlobalStateProvider = ({ children }) => {
 
     const [stats, setStats] = useState(null);
 
+    const [ filteredBoulders, setFilteredBoulders ] = useState([]);
+
+    const [ currentBoulderIndex, setCurrentBoulderIndex ] = useState();
+
     const fetchAll = () => {
         loadSettings();
         loadToken();
@@ -236,7 +240,11 @@ export const GlobalStateProvider = ({ children }) => {
                 currentHolds,
                 stats,
                 setStats,
-                fetchUserStats
+                fetchUserStats,
+                filteredBoulders,
+                setFilteredBoulders,
+                currentBoulderIndex,
+                setCurrentBoulderIndex
         }}>
             {children}
         </GlobalStateContext.Provider>

@@ -16,7 +16,22 @@ import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
 export default function DetailsScreen() {
     const { id } = useLocalSearchParams();
-    const { wallImage, settings, token, currentBoulder, reload, reloadBoulders, currentChallenge, setCurrentHolds, currentHolds, setReload } = useContext(GlobalStateContext);
+    const {
+        wallImage,
+        settings,
+        token,
+        currentBoulder,
+        reload,
+        reloadBoulders,
+        currentChallenge,
+        setCurrentHolds,
+        currentHolds,
+        setReload,
+        filteredBoulders,
+        currentBoulderIndex,
+        setCurrentBoulder,
+        setCurrentBoulderIndex
+    } = useContext(GlobalStateContext);
     const [holds, setHolds] = useState(null);
     const [sends, setSends] = useState([]);
     const [comments, setComments] = useState([]);
@@ -281,6 +296,17 @@ export default function DetailsScreen() {
         }
     }
 
+    const handlePreviousBoulder = () => {
+        setCurrentBoulder(filteredBoulders[currentBoulderIndex-1]);
+        setCurrentBoulderIndex(currentBoulderIndex-1);
+        router.replace(`${filteredBoulders[currentBoulderIndex-1].id}`);
+    }
+
+    const handleNextBoulder = () => {
+        setCurrentBoulder(filteredBoulders[currentBoulderIndex+1]);
+        setCurrentBoulderIndex(currentBoulderIndex+1);
+        router.replace(`${filteredBoulders[currentBoulderIndex+1].id}`);
+    }
 
     const RenderSendsCommentsChallenges = () => {
         if (show === 1) {
@@ -483,13 +509,22 @@ export default function DetailsScreen() {
                     </ImageBackground>
                     </View>
                 </ReactNativeZoomableView>
-                <TouchableOpacity onPress={() => router.push(`sends/${id}`)}>
-                    <View style={styles.button}>
-                        <Text style={Fonts.h3}>
-                            Log Send
-                        </Text>
-                    </View>
-                </TouchableOpacity>
+                <View style={styles.logRow}>
+                    {   currentBoulderIndex === 0 ? null :
+                        <FontAwesome name="arrow-left" size={40} color={Colors.primary} onPress={handlePreviousBoulder} />
+                    }
+                    <TouchableOpacity onPress={() => router.push(`sends/${id}`)} style={styles.logSendContainer}>
+                        <View style={styles.logSendButton}>
+                            <Text style={Fonts.h3}>
+                                Log Send
+                            </Text>
+                        </View>
+                    </TouchableOpacity>
+                    {
+                        currentBoulderIndex === filteredBoulders.length-1 ? null :
+                        <FontAwesome name="arrow-right" size={40} color={Colors.primary} onPress={handleNextBoulder} />
+                    }
+                </View>
                 <View style={styles.details}>
                     <View style={styles.row}>
                         <Text style={[Fonts.h1, styles.boulderName]}>
@@ -624,6 +659,10 @@ const styles = StyleSheet.create({
         flexDirection:"row",
         justifyContent:"space-between",
     },
+    logRow: {
+        flexDirection:"row",
+        margin: 10
+    },
     sendComContainer: {
         margin: 10,
         marginTop: 20,
@@ -641,6 +680,18 @@ const styles = StyleSheet.create({
         marginRight: 20,
         marginLeft: 20,
         marginBottom: 20,
+    },
+    logSendButton: {
+        backgroundColor: Colors.primary,
+        padding: 10,
+        alignItems: 'center',
+        borderWidth: 1,
+        borderRadius: 10,
+    },
+    logSendContainer: {
+        flex: 1,
+        marginLeft: 20,
+        marginRight: 20,
     },
     details: {
         padding: 10,

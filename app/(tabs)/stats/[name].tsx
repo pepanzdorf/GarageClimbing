@@ -79,7 +79,7 @@ export default function LogScreen() {
                                 {
                                     userStats['icon'] &&
                                     <View style={{alignItems: 'center'}}>
-                                        <Image source={{uri: apiURL + userStats['icon']}} style={{width: 64, height: 64}} />
+                                        <Image source={{uri: apiURL + userStats['icon']}} style={{width: 200, height: 200}} />
                                     </View>
                                 }
                                 <View style={styles.genericStats}>

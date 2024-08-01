@@ -271,6 +271,16 @@ export default function DetailsScreen() {
         router.push(`edit_boulder`);
     }
 
+    const createGradeString = () => {
+        if (settings.grading == 0) {
+            return `${gradeIdToGradeName(currentBoulder.average_grade, settings.grading)} (${gradeIdToGradeName(currentBoulder.average_grade, 1)})`;
+        } else if (settings.grading == 1) {
+            return `${gradeIdToGradeName(currentBoulder.average_grade, settings.grading)} (${gradeIdToGradeName(currentBoulder.average_grade, 0)})`;
+        } else {
+            return `${gradeIdToGradeName(currentBoulder.average_grade, settings.grading)} (${gradeIdToGradeName(currentBoulder.average_grade, 0)}) (${gradeIdToGradeName(currentBoulder.average_grade, 1)})`;
+        }
+    }
+
 
     const RenderSendsCommentsChallenges = () => {
         if (show === 1) {
@@ -537,7 +547,7 @@ export default function DetailsScreen() {
                     <View style={styles.row}>
                         <StarRating rating={currentBoulder.average_rating} maxStars={5} size={20}/>
                         <Text style={Fonts.plain}>
-                            {gradeIdToGradeName(currentBoulder.average_grade, settings.grading)}
+                            {createGradeString()}
                         </Text>
                     </View>
                 </View>

@@ -23,6 +23,7 @@ export default function LogScreen() {
             require('../../../assets/images/blank.png'),
             require('../../../assets/images/bronze.png'),
             require('../../../assets/images/gold.png'),
+            require('../../../assets/images/emerald.png'),
             require('../../../assets/images/diamond.png'),
         ];
         if (!userStats) {
@@ -32,14 +33,17 @@ export default function LogScreen() {
         if (userStats['score'] < 100) {
             setChosenBackground(backgrounds[0]);
         }
-        if (userStats['score'] >= 100 && userStats['score'] < 500) {
+        if (userStats['score'] >= 100 && userStats['score'] < 1000) {
             setChosenBackground(backgrounds[1]);
         }
-        if (userStats['score'] >= 500 && userStats['score'] < 5000) {
+        if (userStats['score'] >= 1000 && userStats['score'] < 5000) {
             setChosenBackground(backgrounds[2]);
         }
-        if (userStats['score'] >= 5000) {
+        if (userStats['score'] >= 5000 && userStats['score'] < 10000) {
             setChosenBackground(backgrounds[3]);
+        }
+        if (userStats['score'] >= 10000) {
+            setChosenBackground(backgrounds[4]);
         }
     }
 

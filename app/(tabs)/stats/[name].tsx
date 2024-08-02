@@ -16,6 +16,8 @@ export default function LogScreen() {
     const router = useRouter();
     const [userStats, setUserStats] = useState(null)
     const [chosenBackground, setChosenBackground] = useState(null)
+    const [seasonalModal, setSeasonalModal] = useState(false)
+    const [chosenSeason, setChosenSeason] = useState(null)
 
 
     const chooseBackground = () => {
@@ -47,6 +49,13 @@ export default function LogScreen() {
         }
     }
 
+    const scoreColor = (score) => {
+        if (score < 100) return 'gray';
+        if (score >= 100 && score < 1000) return '#CD7F32';
+        if (score >= 1000 && score < 5000) return 'gold';
+        if (score >= 5000 && score < 10000) return 'green';
+        if (score >= 10000) return 'blue';
+    }
 
     const thisUserStats = () => {
         if (stats) {
@@ -74,6 +83,7 @@ export default function LogScreen() {
         <SafeAreaView style={styles.container}>
             {
                 userStats && (
+                    <View style={{flex:1}}>
                     <ImageBackground source={chosenBackground} style={{width: '100%', height: '100%'}} imageStyle={styles.imageStyle}>
                         <View style={styles.userStats}>
                             <ScrollView>
@@ -117,6 +127,32 @@ export default function LogScreen() {
                                             })
                                         }
                                     </View>
+                                    <View style={{flexDirection:"row", flexWrap: 'wrap'}}>
+                                        {
+                                            userStats['previous_seasons'] &&
+                                            Object.keys(userStats['previous_seasons']).map((key) => {
+                                                return (
+                                                    <TouchableOpacity key={key} onPress={() => {setChosenSeason(key); setSeasonalModal(true)}}>
+                                                        <View style={styles.awardContainer}>
+                                                            <View>
+                                                                <FontAwesome5 name="trophy" size={40} color={scoreColor(userStats['previous_seasons'][key]['score'])} />
+                                                            </View>
+                                                            <View style={{position: 'absolute', top: 2}}>
+                                                                <Text style={Fonts.plainBold}>
+                                                                    {key.split(' ')[0]}
+                                                                </Text>
+                                                            </View>
+                                                            <View style={{position: 'absolute', top: 16}}>
+                                                                <Text style={Fonts.plainBold}>
+                                                                    {key.split(' ')[1]}
+                                                                </Text>
+                                                            </View>
+                                                        </View>
+                                                    </TouchableOpacity>
+                                                )
+                                            })
+                                        }
+                                    </View>
                                 </View>
                                 <View style={{gap: 5}}>
                                     {
@@ -139,6 +175,43 @@ export default function LogScreen() {
                             </ScrollView>
                         </View>
                     </ImageBackground>
+                    <Modal visible={seasonalModal}>
+                        {
+                            chosenSeason &&
+                            <View style={{flex:1, marginTop: 30, marginBottom: 30}}>
+                                <ScrollView style={{flex:1, marginLeft: 20, marginRight: 20}}>
+                                    <View style={{alignItems: 'center', gap:10, marginBottom: 20}}>
+                                        <Text style={Fonts.h1}>Sezóna: {chosenSeason}</Text>
+                                        <Text style={Fonts.h3}>Skóre: {userStats['previous_seasons'][chosenSeason]['score']}</Text>
+                                    </View>
+                                    <View style={{gap: 5}}>
+                                        {
+                                            Object.keys(userStats['previous_seasons'][chosenSeason]['unique_sends']).map((key) => {
+                                                return (
+                                                    <View key={key} style={styles.boulderStatsContainer}>
+                                                        <Text style={Fonts.h3}>{gradeIdToGradeName(key, settings.grading)}</Text>
+                                                        <View style={styles.row}>
+                                                            <Text style={Fonts.plainBold}>Výlezů:</Text>
+                                                            <Text style={Fonts.plainBold}>{userStats['previous_seasons'][chosenSeason]['unique_sends'][key]['sends']}</Text>
+                                                            <Text style={Fonts.plainBold}>Z toho flashů:</Text>
+                                                            <Text style={Fonts.plainBold}>{userStats['previous_seasons'][chosenSeason]['unique_sends'][key]['flashes']}</Text>
+                                                        </View>
+                                                    </View>
+                                                )
+                                            }
+                                            )
+                                        }
+                                    </View>
+                                </ScrollView>
+                                <TouchableOpacity onPress={() => setSeasonalModal(false)}>
+                                    <View style={styles.button}>
+                                        <Text style={Fonts.h3}>Zavřít</Text>
+                                    </View>
+                                </TouchableOpacity>
+                            </View>
+                        }
+                    </Modal>
+                </View>
                 )
             }
         </SafeAreaView>
@@ -189,4 +262,14 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         resizeMode: 'repeat',
     },
+    button: {
+         backgroundColor: Colors.primary,
+         padding: 10,
+         alignItems: 'center',
+         borderWidth: 1,
+         borderRadius: 10,
+         marginTop: 15,
+         marginRight: 20,
+         marginLeft: 20,
+     },
 });

@@ -79,7 +79,7 @@ export default function Home(){
                         <Text style={[Fonts.plain, styles.description]}>
                             {item.description}
                         </Text>
-                        <View style={{flex:1}}>
+                        <View>
                             <StarRating rating={item.average_rating} maxStars={5} size={20}/>
                             <Text style={[Fonts.plain, styles.description]}>
                                 {item.built_by}
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
         gap: 5,
     },
     description: {
-        flex:2,
+        flex:1,
         flexWrap: 'wrap',
         marginRight: 10,
     },

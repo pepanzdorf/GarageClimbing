@@ -297,12 +297,18 @@ export default function DetailsScreen() {
     }
 
     const handlePreviousBoulder = () => {
+        if (typeof filteredBoulders[currentBoulderIndex-1] === 'undefined') {
+            return;
+        }
         setCurrentBoulder(filteredBoulders[currentBoulderIndex-1]);
         setCurrentBoulderIndex(currentBoulderIndex-1);
         router.replace(`${filteredBoulders[currentBoulderIndex-1].id}`);
     }
 
     const handleNextBoulder = () => {
+        if (typeof filteredBoulders[currentBoulderIndex+1] === 'undefined') {
+            return;
+        }
         setCurrentBoulder(filteredBoulders[currentBoulderIndex+1]);
         setCurrentBoulderIndex(currentBoulderIndex+1);
         router.replace(`${filteredBoulders[currentBoulderIndex+1].id}`);

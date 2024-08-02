@@ -17,6 +17,7 @@ export const GlobalStateProvider = ({ children }) => {
         rating: 3,
         grading: 0,
         lineWidth: 8,
+        includeOpen: true,
     }
 
     const [boulders,setBoulders] = useState([]);

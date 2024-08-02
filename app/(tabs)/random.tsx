@@ -59,7 +59,7 @@ export default function Random(){
 
     function handleFilter() {
         const [minGrade, maxGrade] = gradeRange;
-        const chosenBoulders = filterBoulders(boulders, false, minGrade, maxGrade, false, false);
+        const chosenBoulders = filterBoulders(boulders, settings.includeOpen, minGrade, maxGrade, false, false);
 
         setBouldersInRange(chosenBoulders);
         setNBouldersInRange(chosenBoulders.length);

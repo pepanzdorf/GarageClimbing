@@ -23,6 +23,7 @@ export default function Settings(){
     const [ showFavourites, setShowFavourites ] = useState(settings.showFavourites);
     const [ defaultRating, setDefaultRating ] = useState(settings.rating);
     const [ selectedLineWidth, setSelectedLineWidth ] = useState(settings.lineWidth);
+    const [ selectedIncludeOpen, setSelectedIncludeOpen ] = useState(settings.includeOpen);
 
     const options = [
             {key:'1', value: 'Nejtěžší'},
@@ -59,6 +60,7 @@ export default function Settings(){
                 darkening: darkening,
                 grading: selectedGrading,
                 lineWidth: selectedLineWidth,
+                includeOpen: selectedIncludeOpen,
             }
         );
         alert(
@@ -71,6 +73,7 @@ Ztmavení: ${darkening}
 Ztmavit preview: ${darkenPreview ? 'Ano' : 'Ne'}
 Zobrazit pouze nevylezené: ${showUnsent ? 'Ano' : 'Ne'}
 Zobrazit pouze oblíbené: ${showFavourites ? 'Ano' : 'Ne'}
+Zobrazit bouldery bez obtížností: ${selectedIncludeOpen ? 'Ano' : 'Ne'}
 Defaultní hodnocení: ${defaultRating}
 Používat stupnici: ${gradingOptions.find(option => option.key == selectedGrading).value}
 Tloušťka čáry kolem chytů: ${selectedLineWidth}
@@ -184,6 +187,17 @@ Tloušťka čáry kolem chytů: ${selectedLineWidth}
                         thumbColor={showFavourites ? Colors.background : Colors.backgroundDarker}
                         onValueChange={setShowFavourites}
                         value={showFavourites}
+                    />
+                </View>
+                <View style={styles.switch}>
+                    <Text style={Fonts.h3}>
+                        {`Zobrazit bouldery bez obtížnosti: `}
+                    </Text>
+                    <Switch
+                        trackColor={styles.track}
+                        thumbColor={selectedIncludeOpen ? Colors.background : Colors.backgroundDarker}
+                        onValueChange={setSelectedIncludeOpen}
+                        value={selectedIncludeOpen}
                     />
                 </View>
                 <View style={styles.angle}>

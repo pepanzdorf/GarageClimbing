@@ -32,7 +32,7 @@ export default function Home(){
         setFilteredBoulders(
             filterBoulders(
                 sortBoulderBy(settings.sortby, filterBySearch(boulders, search)),
-                true,
+                settings.includeOpen,
                 settings.lowerGrade,
                 settings.upperGrade,
                 settings.showUnsent,

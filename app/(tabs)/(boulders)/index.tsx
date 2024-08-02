@@ -50,7 +50,7 @@ export default function Home(){
     const renderBoulder = ({item, index}) => {
         return (
             <TouchableOpacity onPress={() => {setCurrentBoulder(item); setCurrentBoulderIndex(index); router.push(`${item.id}`)}}>
-                <View style={styles.boulder}>
+                <View style={[styles.boulder, {borderColor: item.sent ? Colors.primary : Colors.borderDark}]}>
                     <View style={styles.firstRow}>
                         <Text style={[Fonts.h3, styles.name]}>
                             {item.name}
@@ -60,7 +60,7 @@ export default function Home(){
                                 {gradeIdToGradeName(item.average_grade, settings.grading)}
                             </Text>
                             {
-                                item.sent ? (
+                                item.sent_season ? (
                                     <FontAwesome name="check" size={24} color="green" />
                                 ) : (
                                     <FontAwesome name="times" size={24} color="red" />

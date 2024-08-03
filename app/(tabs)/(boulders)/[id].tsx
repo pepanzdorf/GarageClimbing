@@ -391,10 +391,14 @@ export default function DetailsScreen() {
                                     <StarRating rating={send.rating} maxStars={5} size={20}/>
                                     <Text style={Fonts.h3}>
                                         {
-                                            send.attempts === 1 ? (
-                                                attemptIdToAttemptName(send.attempts) + " pokusů"
-                                            ) : (
+                                            send.attempts === 0 ? (
                                                 attemptIdToAttemptName(send.attempts)
+                                            ) : (
+                                                send.attempts <= 3 ? (
+                                                    attemptIdToAttemptName(send.attempts) + " pokusy"
+                                                ) : (
+                                                    attemptIdToAttemptName(send.attempts) + " pokusů"
+                                                )
                                             )
                                         }
                                     </Text>

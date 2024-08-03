@@ -73,7 +73,7 @@ Ztmavení: ${darkening}
 Ztmavit preview: ${darkenPreview ? 'Ano' : 'Ne'}
 Zobrazit pouze nevylezené: ${showUnsent ? 'Ano' : 'Ne'}
 Zobrazit pouze oblíbené: ${showFavourites ? 'Ano' : 'Ne'}
-Zobrazit bouldery bez obtížností: ${selectedIncludeOpen ? 'Ano' : 'Ne'}
+Zobrazit open bouldery: ${selectedIncludeOpen ? 'Ano' : 'Ne'}
 Defaultní hodnocení: ${defaultRating}
 Používat stupnici: ${gradingOptions.find(option => option.key == selectedGrading).value}
 Tloušťka čáry kolem chytů: ${selectedLineWidth}
@@ -191,7 +191,7 @@ Tloušťka čáry kolem chytů: ${selectedLineWidth}
                 </View>
                 <View style={styles.switch}>
                     <Text style={Fonts.h3}>
-                        {`Zobrazit bouldery bez obtížnosti: `}
+                        {`Zobrazit open bouldery: `}
                     </Text>
                     <Switch
                         trackColor={styles.track}

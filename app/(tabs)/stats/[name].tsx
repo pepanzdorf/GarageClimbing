@@ -12,28 +12,41 @@ import { gradeIdToGradeName, gradeToColor } from '../../../scripts/utils';
 
 export default function LogScreen() {
     const { name } = useLocalSearchParams();
-    const { stats, settings } = useContext(GlobalStateContext);
+    const { stats, settings, loggedUser, token } = useContext(GlobalStateContext);
     const router = useRouter();
     const [userStats, setUserStats] = useState(null)
     const [chosenBorder, setChosenBorder] = useState(null)
     const [seasonalModal, setSeasonalModal] = useState(false)
+    const [borderModal, setBorderModal] = useState(false)
     const [chosenSeason, setChosenSeason] = useState(null)
     const [chosenBackground, setChosenBackground] = useState('#DADADA')
     const [borderDimensions, setBorderDimensions] = useState({width: 0, height: 0})
 
+    const borders = [
+        require('../../../assets/images/borders/blank_frame.png'), // free
+        require('../../../assets/images/borders/wood_frame.png'), // 1000 points
+        require('../../../assets/images/borders/bronze_frame.png'), // 5000 points
+        require('../../../assets/images/borders/silver_frame.png'), // 10000 points
+        require('../../../assets/images/borders/gold_frame.png'), // 20000 points
+        require('../../../assets/images/borders/plat_frame.png'), // 35000 points
+        require('../../../assets/images/borders/diamond_frame.png'), // 50000 points
+        require('../../../assets/images/borders/dragon_frame.png'), // 75000 points
+        require('../../../assets/images/borders/god_frame.png'), // 100000 points
+        require('../../../assets/images/borders/dirt_frame.png'), // brokolice V4-, dlouhá housenka V4+, Zimní květináč V4-, zeleninová V4-, Hedvábná stezka V3+
+        require('../../../assets/images/borders/animal_frame.png'), // kozel V3+, Mrtvá ryba V2-, Nabodnuté jablíčko V3-, protáhlá opice V3, Tupé bodliny V3, zvířecí trio V3-, Pro začátek dobrá V3+
+        require('../../../assets/images/borders/mud_frame.png'), // Mít boulder na 25+ pokusů
+        require('../../../assets/images/borders/stone_frame.png'), // Kamenný pilíř V4+, Malé šutry mezi prsty V5-, Přírodní lehká V4-, Intuitivní rotace V4-, zahřívačka V4-, Čekárnová V4+
+        require('../../../assets/images/borders/water_frame.png'), // Bazénová V4+, Kapka na plachtě V3+, Okapová l+p V4, Po dešti V3+, Procházka v dešti V4-, Tok proudu V3-, Z louže to klouže V4-
+        require('../../../assets/images/borders/muscle_frame.png'), // Dej si spoďák V5+, Školní kampus V4, Rozmáčkni nástup V5+, Pěkná se silovým startem V4-, píďalka na spoďáku V6, Míla a Srštnost V6
+        require('../../../assets/images/borders/bandage_frame.png'), // AU TO BOLÍ V4+, Pěstí loktem a do holeně V4, Rychlá bolest V3+, Uraženej kotník V4+, Dyno trénink V3-
+        require('../../../assets/images/borders/ice_frame.png'), // 10 sendů v zimě
+        require('../../../assets/images/borders/caveman_frame.png'), // huuh uggh V4, Krsštl V5, Sss V3, Vzpomínky na minulost V3-
+        require('../../../assets/images/borders/nature_frame.png'), // Definice dřevěnosti V3, Jabloň V4, Přírodní lehká V4-, Přírodní lišta V3, smlsnout malinu V4, Stisky jak dřevo V4, Z jablíčka na jablíčko V3+
+        require('../../../assets/images/borders/christmas_frame.png'), // christmas climbing 2024
+    ];
+
 
     const chooseBorder = () => {
-        const borders = [
-            require('../../../assets/images/borders/blank_frame.png'),
-            require('../../../assets/images/borders/wood_frame.png'),
-            require('../../../assets/images/borders/bronze_frame.png'),
-            require('../../../assets/images/borders/silver_frame.png'),
-            require('../../../assets/images/borders/gold_frame.png'),
-            require('../../../assets/images/borders/plat_frame.png'),
-            require('../../../assets/images/borders/diamond_frame.png'),
-            require('../../../assets/images/borders/dragon_frame.png'),
-            require('../../../assets/images/borders/god_frame.png'),
-        ];
         if (!userStats) {
             setChosenBorder(borders[0]);
             setBorderDimensions(Image.resolveAssetSource(borders[0]))
@@ -63,6 +76,45 @@ export default function LogScreen() {
             });
         }
     }
+
+    const renderBorder = ({item, index}) => {
+        // blurRadius={50}
+        return (
+            <TouchableOpacity onPress={() => handleChangeBorder(index)} key={index}>
+                <View style={{alignItems: 'center', justifyContent: 'center', borderWidth: 1}} key={`image-${index}`}>
+                    <Image source={item} style={styles.borderChoice} blurRadius={50}/>
+                </View>
+            </TouchableOpacity>
+        )
+    }
+
+    const handleChangeBorder = (border) => {
+        sendBorderChange(border);
+        setBorderModal(false);
+    }
+
+    const handleIconClick = () => {
+        if (loggedUser == name) {
+            setBorderModal(true);
+        }
+    }
+
+    const sendBorderChange = (border_id) => {
+        fetch(`${apiURL}/climbing/set_border/${border_id}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
+        })
+        .then(response =>  {
+            if (response.ok) {
+                setChosenBorder(borders[border_id]);
+                setBorderDimensions(Image.resolveAssetSource(borders[border_id]))
+            }
+        })
+        .catch(error => console.log(error));
+    }
+
 
     useEffect(() => {
         thisUserStats();
@@ -95,10 +147,12 @@ export default function LogScreen() {
                             {
                                 userStats['icon'] &&
                                 <View style={styles.iconContainer}>
-                                    <View style={[styles.borderedIcon, {aspectRatio: borderDimensions.width/borderDimensions.height}]}>
-                                        <Image source={{uri: apiURL + userStats['icon']}} style={styles.icon}/>
-                                        <Image source={chosenBorder} style={styles.border}/>
-                                    </View>
+                                    <TouchableOpacity onPress={handleIconClick}>
+                                        <View style={[styles.borderedIcon, {aspectRatio: borderDimensions.width/borderDimensions.height}]}>
+                                            <Image source={{uri: apiURL + userStats['icon']}} style={styles.icon}/>
+                                            <Image source={chosenBorder} style={styles.border}/>
+                                        </View>
+                                    </TouchableOpacity>
                                 </View>
                             }
                             {
@@ -215,6 +269,17 @@ export default function LogScreen() {
                             </View>
                         }
                     </Modal>
+                    <Modal visible={borderModal}>
+                        {
+                            <View style={{flex:1, marginTop: 30, marginBottom: 30}}>
+                                 <FlatList
+                                    data={borders}
+                                    renderItem={renderBorder}
+                                    keyExtractor={item => item.id}
+                                />
+                            </View>
+                        }
+                    </Modal>
                 </View>
                 )
             }
@@ -310,5 +375,9 @@ const styles = StyleSheet.create({
         height: '100%',
         width: '100%',
         position: 'absolute',
-    }
+    },
+    borderChoice: {
+        height: 300,
+        width: 300,
+    },
 });

@@ -27,10 +27,10 @@ export default function DetailsScreen() {
         setCurrentHolds,
         currentHolds,
         setReload,
-        filteredBoulders,
         currentBoulderIndex,
         setCurrentBoulder,
-        setCurrentBoulderIndex
+        setCurrentBoulderIndex,
+        arrowNavigationBoulders,
     } = useContext(GlobalStateContext);
     const [holds, setHolds] = useState(null);
     const [sends, setSends] = useState([]);
@@ -297,21 +297,21 @@ export default function DetailsScreen() {
     }
 
     const handlePreviousBoulder = () => {
-        if (typeof filteredBoulders[currentBoulderIndex-1] === 'undefined') {
+        if (typeof arrowNavigationBoulders[currentBoulderIndex-1] === 'undefined') {
             return;
         }
-        setCurrentBoulder(filteredBoulders[currentBoulderIndex-1]);
+        setCurrentBoulder(arrowNavigationBoulders[currentBoulderIndex-1]);
         setCurrentBoulderIndex(currentBoulderIndex-1);
-        router.replace(`${filteredBoulders[currentBoulderIndex-1].id}`);
+        router.replace(`${arrowNavigationBoulders[currentBoulderIndex-1].id}`);
     }
 
     const handleNextBoulder = () => {
-        if (typeof filteredBoulders[currentBoulderIndex+1] === 'undefined') {
+        if (typeof arrowNavigationBoulders[currentBoulderIndex+1] === 'undefined') {
             return;
         }
-        setCurrentBoulder(filteredBoulders[currentBoulderIndex+1]);
+        setCurrentBoulder(arrowNavigationBoulders[currentBoulderIndex+1]);
         setCurrentBoulderIndex(currentBoulderIndex+1);
-        router.replace(`${filteredBoulders[currentBoulderIndex+1].id}`);
+        router.replace(`${arrowNavigationBoulders[currentBoulderIndex+1].id}`);
     }
 
     const RenderSendsCommentsChallenges = () => {
@@ -531,7 +531,7 @@ export default function DetailsScreen() {
                         </View>
                     </TouchableOpacity>
                     {
-                        currentBoulderIndex === filteredBoulders.length-1 ? null :
+                        currentBoulderIndex === arrowNavigationBoulders.length-1 ? null :
                         <FontAwesome name="arrow-right" size={40} color={Colors.primary} onPress={handleNextBoulder} />
                     }
                 </View>

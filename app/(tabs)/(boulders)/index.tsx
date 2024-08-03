@@ -22,6 +22,7 @@ export default function Home(){
         setFilteredBoulders,
         currentBoulderIndex,
         setCurrentBoulderIndex,
+        setArrowNavigationBoulders,
     } = useContext(GlobalStateContext);
     const [ search, setSearch ] = useState('');
     const [ numberOfBoulders, setNumberOfBoulders ] = useState(0);
@@ -47,9 +48,17 @@ export default function Home(){
     }
     , [filteredBoulders]);
 
+
+    const handleGoToBoulder = (item, index) => {
+        setCurrentBoulder(item);
+        setCurrentBoulderIndex(index);
+        setArrowNavigationBoulders(filteredBoulders);
+        router.push(`${item.id}`);
+    }
+
     const renderBoulder = ({item, index}) => {
         return (
-            <TouchableOpacity onPress={() => {setCurrentBoulder(item); setCurrentBoulderIndex(index); router.push(`${item.id}`)}}>
+            <TouchableOpacity onPress={() => handleGoToBoulder(item, index)}>
                 <View style={[styles.boulder, {borderColor: item.sent ? Colors.primary : Colors.borderDark}]}>
                     <View style={styles.firstRow}>
                         <Text style={[Fonts.h3, styles.name]}>

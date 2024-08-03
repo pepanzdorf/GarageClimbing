@@ -541,17 +541,29 @@ export default function DetailsScreen() {
                         <Text style={[Fonts.h1, styles.boulderName]}>
                             {currentBoulder.name}
                         </Text>
-                        {
-                            isFavourite ? (
-                                <TouchableOpacity onPress={toggleFavourite}>
-                                    <FontAwesome name="heart" size={24} color="red" />
-                                </TouchableOpacity>
-                            ) : (
-                                <TouchableOpacity onPress={toggleFavourite}>
-                                    <FontAwesome name="heart-o" size={24} color="red" />
-                                </TouchableOpacity>
-                            )
-                        }
+                        <View style={{flexDirection: 'row'}}>
+                            {
+                                currentBoulder.sent ? (
+                                    <FontAwesome name="check" size={24} color={Colors.primary} />
+                                ) : null
+                            }
+                            {
+                                currentBoulder.sent_season ? (
+                                    <FontAwesome name="check" size={24} color='green' />
+                                ) : null
+                            }
+                            {
+                                isFavourite ? (
+                                    <TouchableOpacity onPress={toggleFavourite}>
+                                        <FontAwesome name="heart" size={24} color="red" />
+                                    </TouchableOpacity>
+                                ) : (
+                                    <TouchableOpacity onPress={toggleFavourite}>
+                                        <FontAwesome name="heart-o" size={24} color="red" />
+                                    </TouchableOpacity>
+                                )
+                            }
+                        </View>
                     </View>
                     <View style={styles.row}>
                         <Text style={Fonts.small}>

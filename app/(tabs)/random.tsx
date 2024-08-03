@@ -77,7 +77,7 @@ export default function Random(){
     function handleRandomChallenge() {
         if (challengeActive) {
             setChallengeActive(false);
-            setCurrentChallenge({id: 1, name: "Žádný", description: "nic", score: 0});
+            setCurrentChallenge({id: 1, name: "Žádný", description: "nic", score: 1});
         }
         else {
             setChallengeActive(true);

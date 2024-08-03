@@ -31,6 +31,7 @@ export default function DetailsScreen() {
         setCurrentBoulder,
         setCurrentBoulderIndex,
         arrowNavigationBoulders,
+        calculateScoreScript,
     } = useContext(GlobalStateContext);
     const [holds, setHolds] = useState(null);
     const [sends, setSends] = useState([]);
@@ -560,30 +561,35 @@ export default function DetailsScreen() {
                             {currentBoulder.built_by}
                         </Text>
                     </View>
-                    {
-                        currentChallenge.id === 1 ? null : (
-                            <View style={[styles.row, {marginTop:20}]}>
-                                {
-                                    completedChallenges ? (
-                                        completedChallenges["ids"].includes(currentChallenge.id) ? (
-                                            <FontAwesome5 name="crown" size={24} color='gold' />
-                                        ) : (
-                                            <FontAwesome5 name="crown" size={24} color={Colors.borderDark} />
-                                        )
-                                    ) : <FontAwesome5 name="crown" size={24} color={Colors.borderDark} />
-                                }
-                                <Text style={Fonts.plainBold}>
-                                    {currentChallenge.name}
-                                </Text>
-                            </View>
-                        )
-                    }
                     <Text style={Fonts.plain}>
                         {currentBoulder.description}
                     </Text>
+                    {
+                        currentChallenge ? (
+                            currentChallenge.id === 1 ? null : (
+                                <View style={[styles.row, {marginTop:20}]}>
+                                    {
+                                        completedChallenges ? (
+                                            completedChallenges["ids"].includes(currentChallenge.id) ? (
+                                                <FontAwesome5 name="crown" size={24} color='gold' />
+                                            ) : (
+                                                <FontAwesome5 name="crown" size={24} color={Colors.borderDark} />
+                                            )
+                                        ) : <FontAwesome5 name="crown" size={24} color={Colors.borderDark} />
+                                    }
+                                    <Text style={Fonts.plainBold}>
+                                        {currentChallenge.name}
+                                    </Text>
+                                </View>
+                            )
+                        ) : null
+                    }
                     <View style={styles.row}>
                         <Text style={Fonts.h3}>
                             Hodnocení:
+                        </Text>
+                        <Text style={Fonts.h3}>
+                            Bodů za flash:
                         </Text>
                         <Text style={Fonts.h3}>
                             Obtížnost:
@@ -591,7 +597,21 @@ export default function DetailsScreen() {
                     </View>
                     <View style={styles.row}>
                         <StarRating rating={currentBoulder.average_rating} maxStars={5} size={20}/>
-                        <Text style={Fonts.plain}>
+                        {
+                            calculateScoreScript ? (
+                                currentBoulder.average_grade == -1 ? (
+                                    <View style={styles.row}>
+
+                                        <Text style={Fonts.h3}>?</Text>
+                                    </View>
+                                    ) : (
+                                    <Text style={Fonts.h3}>
+                                        {calculateScoreScript(currentBoulder.average_grade, 0, currentChallenge.score)}
+                                    </Text>
+                                )
+                            ) : null
+                        }
+                        <Text style={Fonts.h3}>
                             {createGradeString()}
                         </Text>
                     </View>

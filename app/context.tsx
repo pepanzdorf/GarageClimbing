@@ -43,7 +43,7 @@ export const GlobalStateProvider = ({ children }) => {
 
     const [reload, setReload] = useState(false);
 
-    const [currentChallenge, setCurrentChallenge] = useState({id: 1, name: "Žádný", description: "nic", score: 0});
+    const [currentChallenge, setCurrentChallenge] = useState({id: 1, name: "Žádný", description: "nic", score: 1});
     const [challenges, setChallenges] = useState([]);
 
     const [stats, setStats] = useState(null);
@@ -54,6 +54,20 @@ export const GlobalStateProvider = ({ children }) => {
 
     const [ arrowNavigationBoulders, setArrowNavigationBoulders ] = useState([]);
 
+    const [ calculateScoreScript, setCalculateScoreScript ] = useState(null);
+
+    const loadScript = async () => {
+        try {
+            const response = await fetch(`${apiURL}/static/calculate_score.js`);
+            const scriptText = await response.text();
+
+            setCalculateScoreScript(() => new Function("grade, attempts, score", scriptText));
+
+        } catch (error) {
+            console.error('Error loading script:', error);
+        }
+    };
+
     const fetchAll = () => {
         loadSettings();
         loadToken();
@@ -63,6 +77,7 @@ export const GlobalStateProvider = ({ children }) => {
         fetchChallenges();
         whoami();
         fetchUserStats();
+        loadScript();
     }
 
     const whoami = () => {
@@ -250,6 +265,7 @@ export const GlobalStateProvider = ({ children }) => {
                 setCurrentBoulderIndex,
                 arrowNavigationBoulders,
                 setArrowNavigationBoulders,
+                calculateScoreScript,
         }}>
             {children}
         </GlobalStateContext.Provider>

@@ -3,7 +3,7 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity, Modal, ScrollView,
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { GlobalStateContext } from '../../context';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { FontAwesome5, FontAwesome } from '@expo/vector-icons';
+import { FontAwesome5, FontAwesome, Entypo } from '@expo/vector-icons';
 import { Colors } from '../../../constants/Colors'
 import { Fonts } from '../../../constants/Fonts'
 import { apiURL } from '../../../constants/Other';
@@ -15,46 +15,43 @@ export default function LogScreen() {
     const { stats, settings } = useContext(GlobalStateContext);
     const router = useRouter();
     const [userStats, setUserStats] = useState(null)
-    const [chosenBackground, setChosenBackground] = useState(null)
+    const [chosenBorder, setChosenBorder] = useState(null)
     const [seasonalModal, setSeasonalModal] = useState(false)
     const [chosenSeason, setChosenSeason] = useState(null)
+    const [chosenBackground, setChosenBackground] = useState('#DADADA')
+    const [borderDimensions, setBorderDimensions] = useState({width: 0, height: 0})
 
 
-    const chooseBackground = () => {
-        const backgrounds = [
-            require('../../../assets/images/blank.png'),
-            require('../../../assets/images/bronze.png'),
-            require('../../../assets/images/gold.png'),
-            require('../../../assets/images/emerald.png'),
-            require('../../../assets/images/diamond.png'),
+    const chooseBorder = () => {
+        const borders = [
+            require('../../../assets/images/borders/blank_frame.png'),
+            require('../../../assets/images/borders/wood_frame.png'),
+            require('../../../assets/images/borders/bronze_frame.png'),
+            require('../../../assets/images/borders/silver_frame.png'),
+            require('../../../assets/images/borders/gold_frame.png'),
+            require('../../../assets/images/borders/plat_frame.png'),
+            require('../../../assets/images/borders/diamond_frame.png'),
+            require('../../../assets/images/borders/dragon_frame.png'),
+            require('../../../assets/images/borders/god_frame.png'),
         ];
         if (!userStats) {
-            setChosenBackground(backgrounds[0]);
+            setChosenBorder(borders[0]);
+            setBorderDimensions(Image.resolveAssetSource(borders[0]))
             return;
         }
-        if (userStats['score'] < 100) {
-            setChosenBackground(backgrounds[0]);
-        }
-        if (userStats['score'] >= 100 && userStats['score'] < 1000) {
-            setChosenBackground(backgrounds[1]);
-        }
-        if (userStats['score'] >= 1000 && userStats['score'] < 5000) {
-            setChosenBackground(backgrounds[2]);
-        }
-        if (userStats['score'] >= 5000 && userStats['score'] < 10000) {
-            setChosenBackground(backgrounds[3]);
-        }
-        if (userStats['score'] >= 10000) {
-            setChosenBackground(backgrounds[4]);
-        }
+
+        setChosenBorder(borders[userStats['border']]);
+        setBorderDimensions(Image.resolveAssetSource(borders[userStats['border']]))
     }
 
     const scoreColor = (score) => {
-        if (score < 100) return 'gray';
+        if (score < 100) return '#DADADA';
         if (score >= 100 && score < 1000) return '#CD7F32';
-        if (score >= 1000 && score < 5000) return 'gold';
-        if (score >= 5000 && score < 10000) return 'green';
-        if (score >= 10000) return 'blue';
+        if (score >= 1000 && score < 5000) return '#F1D400';
+        if (score >= 5000 && score < 10000) return '#32CB88';
+        if (score >= 10000 && score < 20000) return '#41EDFF';
+        if (score >= 20000 && score < 50000) return '#8E00DB';
+        if (score >= 50000) return '#BF2C34';
     }
 
     const thisUserStats = () => {
@@ -69,12 +66,18 @@ export default function LogScreen() {
 
     useEffect(() => {
         thisUserStats();
-        chooseBackground();
+        chooseBorder();
+        if (userStats) {
+            setChosenBackground(scoreColor(userStats['score']));
+        }
     }
     , [stats, name]);
 
     useEffect(() => {
-        chooseBackground();
+        chooseBorder();
+        if (userStats) {
+            setChosenBackground(scoreColor(userStats['score']));
+        }
     }
     , [userStats]);
 
@@ -83,98 +86,99 @@ export default function LogScreen() {
         <SafeAreaView style={styles.container}>
             {
                 userStats && (
-                    <View style={{flex:1}}>
-                    <ImageBackground source={chosenBackground} style={{width: '100%', height: '100%'}} imageStyle={styles.imageStyle}>
-                        <View style={styles.userStats}>
-                            <ScrollView>
-                                <View style={styles.header}>
-                                    <Text style={Fonts.h1}>{name}</Text>
-                                </View>
-                                {
-                                    userStats['icon'] &&
-                                    <View style={{alignItems: 'center'}}>
-                                        <Image source={{uri: apiURL + userStats['icon']}} style={{width: 200, height: 200}} />
-                                    </View>
-                                }
-                                {
-                                    userStats['user_description'] &&
-                                    <View style={{alignItems: 'center'}}>
-                                        <Text style={Fonts.plainBold}>{userStats['user_description']}</Text>
-                                    </View>
-                                }
-                                <View style={styles.genericStats}>
-                                    <Text style={Fonts.h3}>Skóre:</Text>
-                                    <Text style={Fonts.plainBold}>{userStats['score']}</Text>
-                                    <Text style={Fonts.h3}>Počet výlezů (i duplicitní):</Text>
-                                    <Text style={Fonts.plainBold}>{userStats['all_sends']}</Text>
-                                    <Text style={Fonts.h3}>Splněných výzev (unikátní):</Text>
-                                    <Text style={Fonts.plainBold}>{userStats['challenges']}</Text>
-                                    <View style={{flexDirection:"row", flexWrap: 'wrap'}}>
-                                        {
-                                            userStats['completed_grades'].map((value) => {
-                                                return (
-                                                    <View style={styles.awardContainer} key={value}>
-                                                        <View>
-                                                            <FontAwesome5 name="award" size={40} color={gradeToColor(value)} />
-                                                        </View>
-                                                        <View style={{position: 'absolute', top: 4}}>
-                                                            <Text style={Fonts.plainBold}>
-                                                                V{value}
-                                                            </Text>
-                                                        </View>
-                                                    </View>
-                                                )
-                                            })
-                                        }
-                                    </View>
-                                    <View style={{flexDirection:"row", flexWrap: 'wrap'}}>
-                                        {
-                                            userStats['previous_seasons'] &&
-                                            Object.keys(userStats['previous_seasons']).map((key) => {
-                                                return (
-                                                    <TouchableOpacity key={key} onPress={() => {setChosenSeason(key); setSeasonalModal(true)}}>
-                                                        <View style={styles.awardContainer}>
-                                                            <View>
-                                                                <FontAwesome5 name="trophy" size={40} color={scoreColor(userStats['previous_seasons'][key]['score'])} />
-                                                            </View>
-                                                            <View style={{position: 'absolute', top: 2}}>
-                                                                <Text style={Fonts.plainBold}>
-                                                                    {key.split(' ')[0]}
-                                                                </Text>
-                                                            </View>
-                                                            <View style={{position: 'absolute', top: 16}}>
-                                                                <Text style={Fonts.plainBold}>
-                                                                    {key.split(' ')[1]}
-                                                                </Text>
-                                                            </View>
-                                                        </View>
-                                                    </TouchableOpacity>
-                                                )
-                                            })
-                                        }
+                <View style={{flex:1}}>
+                    <View style={[styles.userStats, {backgroundColor: chosenBackground}]}>
+                        <ScrollView>
+                            <View style={styles.header}>
+                                <Text style={Fonts.h1}>{name}</Text>
+                            </View>
+                            {
+                                userStats['icon'] &&
+                                <View style={styles.iconContainer}>
+                                    <View style={[styles.borderedIcon, {aspectRatio: borderDimensions.width/borderDimensions.height}]}>
+                                        <Image source={{uri: apiURL + userStats['icon']}} style={styles.icon}/>
+                                        <Image source={chosenBorder} style={styles.border}/>
                                     </View>
                                 </View>
-                                <View style={{gap: 5}}>
+                            }
+                            {
+                                userStats['user_description'] &&
+                                <View style={styles.description}>
+                                    <Text style={Fonts.plainBold}>{userStats['user_description']}</Text>
+                                </View>
+                            }
+                            <View style={styles.genericStats}>
+                                <Text style={Fonts.h3}>Skóre:</Text>
+                                <Text style={Fonts.plainBold}>{userStats['score']}</Text>
+                                <Text style={Fonts.h3}>Počet výlezů (i duplicitní):</Text>
+                                <Text style={Fonts.plainBold}>{userStats['all_sends']}</Text>
+                                <Text style={Fonts.h3}>Splněných výzev (unikátní):</Text>
+                                <Text style={Fonts.plainBold}>{userStats['challenges']}</Text>
+                                <View style={{flexDirection:"row", flexWrap: 'wrap'}}>
                                     {
-                                        Object.keys(userStats['unique_sends']).map((key) => {
+                                        userStats['completed_grades'].map((value) => {
                                             return (
-                                                <View key={key} style={styles.boulderStatsContainer}>
-                                                    <Text style={Fonts.h3}>{gradeIdToGradeName(key, settings.grading)}</Text>
-                                                    <View style={styles.row}>
-                                                        <Text style={Fonts.plainBold}>Výlezů:</Text>
-                                                        <Text style={Fonts.plainBold}>{userStats['unique_sends'][key]['sends']}</Text>
-                                                        <Text style={Fonts.plainBold}>Z toho flashů:</Text>
-                                                        <Text style={Fonts.plainBold}>{userStats['unique_sends'][key]['flashes']}</Text>
+                                                <View style={styles.awardContainer} key={value}>
+                                                    <View>
+                                                        <FontAwesome5 name="award" size={40} color={gradeToColor(value)} />
+                                                    </View>
+                                                    <View style={{position: 'absolute', top: 4}}>
+                                                        <Text style={Fonts.plainBold}>
+                                                            V{value}
+                                                        </Text>
                                                     </View>
                                                 </View>
                                             )
-                                        }
-                                        )
+                                        })
                                     }
                                 </View>
-                            </ScrollView>
-                        </View>
-                    </ImageBackground>
+                                <View style={{flexDirection:"row", flexWrap: 'wrap'}}>
+                                    {
+                                        userStats['previous_seasons'] &&
+                                        Object.keys(userStats['previous_seasons']).map((key) => {
+                                            return (
+                                                <TouchableOpacity key={key} onPress={() => {setChosenSeason(key); setSeasonalModal(true)}}>
+                                                    <View style={styles.awardContainer}>
+                                                        <View>
+                                                            <Entypo name="trophy" size={40} color={scoreColor(userStats['previous_seasons'][key]['score'])} />
+                                                        </View>
+                                                        <View style={{position: 'absolute', top: 2}}>
+                                                            <Text style={Fonts.small}>
+                                                                {key.split(' ')[0]}
+                                                            </Text>
+                                                        </View>
+                                                        <View style={{position: 'absolute', top: 16}}>
+                                                            <Text style={Fonts.small}>
+                                                                {key.split(' ')[1]}
+                                                            </Text>
+                                                        </View>
+                                                    </View>
+                                                </TouchableOpacity>
+                                            )
+                                        })
+                                    }
+                                </View>
+                            </View>
+                            <View style={{gap: 5}}>
+                                {
+                                    Object.keys(userStats['unique_sends']).map((key) => {
+                                        return (
+                                            <View key={key} style={styles.boulderStatsContainer}>
+                                                <Text style={Fonts.h3}>{gradeIdToGradeName(key, settings.grading)}</Text>
+                                                <View style={styles.row}>
+                                                    <Text style={Fonts.plainBold}>Výlezů:</Text>
+                                                    <Text style={Fonts.plainBold}>{userStats['unique_sends'][key]['sends']}</Text>
+                                                    <Text style={Fonts.plainBold}>Z toho flashů:</Text>
+                                                    <Text style={Fonts.plainBold}>{userStats['unique_sends'][key]['flashes']}</Text>
+                                                </View>
+                                            </View>
+                                        )
+                                    }
+                                    )
+                                }
+                            </View>
+                        </ScrollView>
+                    </View>
                     <Modal visible={seasonalModal}>
                         {
                             chosenSeason &&
@@ -229,6 +233,10 @@ const styles = StyleSheet.create({
     header: {
         alignItems: 'center',
         marginBottom: 20,
+        borderRadius: 25,
+        backgroundColor: Colors.transparentWhite,
+        borderWidth: 1,
+        borderColor: Colors.borderDark,
     },
     row: {
         flexDirection:"row",
@@ -244,7 +252,7 @@ const styles = StyleSheet.create({
     boulderStatsContainer: {
         padding: 10,
         gap: 10,
-        backgroundColor: Colors.primary,
+        backgroundColor: Colors.transparentPrimary,
         borderRadius: 25,
         borderWidth: 1,
         borderColor: Colors.border,
@@ -253,14 +261,15 @@ const styles = StyleSheet.create({
         gap: 10,
         marginBottom: 20,
         padding: 10,
+        backgroundColor: Colors.transparentWhite,
+        borderRadius: 25,
+        marginTop: 10,
+        borderWidth: 1,
+        borderColor: Colors.borderDark,
     },
     awardContainer: {
         alignItems: 'center',
         justifyContent: 'center',
-    },
-    imageStyle: {
-        borderRadius: 25,
-        resizeMode: 'repeat',
     },
     button: {
          backgroundColor: Colors.primary,
@@ -272,4 +281,34 @@ const styles = StyleSheet.create({
          marginRight: 20,
          marginLeft: 20,
      },
+    description: {
+        alignItems: 'center',
+        padding: 10,
+        backgroundColor: Colors.transparentWhite,
+        borderRadius: 25,
+        marginTop: 20,
+        borderWidth: 1,
+        borderColor: Colors.borderDark,
+    },
+    iconContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+    },
+    borderedIcon: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: undefined,
+        width: 280,
+    },
+    icon: {
+        width: 170,
+        height: 170,
+        borderRadius: 5,
+    },
+    border: {
+        height: '100%',
+        width: '100%',
+        position: 'absolute',
+    }
 });

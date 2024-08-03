@@ -9,5 +9,7 @@ export const Colors = {
     highlight: '#ea1531',
     first: '#FFC400',
     second: '#d0d0d0',
-    third: '#cd7f32'
+    third: '#cd7f32',
+    transparentWhite: 'rgba(255,255,255,0.7)',
+    transparentPrimary: 'rgba(52,193,246,0.7)',
 };

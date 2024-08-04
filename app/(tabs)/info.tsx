@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView, Linking, Dimensions, ImageBackground, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Linking, Dimensions, ImageBackground, Image, Alert } from 'react-native';
 import { GlobalStateContext } from '../context';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/Colors'
@@ -50,11 +50,19 @@ export default function Info(){
     const calculateMaxCount = () => {
         let mc = 0;
         holds['false'].forEach((hold) => {
-            if (hold.count > mc) {
-                mc = hold.count;
+            if (calcHoldCount(hold) > mc) {
+                mc = calcHoldCount(hold);
             }
         });
         setMaxCount(mc);
+    }
+
+    const calcHoldCount = (hold) => {
+        let count = 0;
+        Object.keys(hold.types_counts).forEach((key) => {
+            count += hold.types_counts[key];
+        });
+        return count;
     }
 
     const calculateBouldersByGrade = () => {
@@ -78,6 +86,23 @@ export default function Info(){
             sends += stat[1]['all_sends'];
         });
         return sends;
+    }
+
+    const handleHoldPress = (hold) => {
+        const tops = hold.types_counts['0'] ? hold.types_counts['0'] : 0;
+        const feet = hold.types_counts['1'] ? hold.types_counts['1'] : 0;
+        const middle = hold.types_counts['2'] ? hold.types_counts['2'] : 0;
+        const starts = hold.types_counts['3'] ? hold.types_counts['3'] : 0;
+        const count = tops + feet + middle + starts;
+        let message = `Vyskytuje se v ${count} boulderech\nTop: ${tops}\nNoha: ${feet}\nRuka: ${middle}\nStart: ${starts}`;
+        if (count > 0) {
+            message += "\n\nBouldery:\n";
+            hold['boulders'].forEach((boulder) => {
+                message += boulder[0] + " - " + gradeIdToGradeName(boulder[1], settings.grading) + "\n";
+            });
+        }
+
+        Alert.alert(`Stisknut chyt ID: ${hold.id}`, message);
     }
 
     useEffect(() => {
@@ -156,9 +181,10 @@ export default function Info(){
                                                     <Path
                                                         key={hold.hold_id}
                                                         fill= 'none'
-                                                        stroke={getColorForValue(hold.count, 0, maxCount)}
+                                                        stroke={getColorForValue(calcHoldCount(hold), 0, maxCount)}
                                                         strokeWidth={settings.lineWidth}
                                                         d={hold.path}
+                                                        onPress={() => handleHoldPress(hold)}
                                                     />
                                                 ))}
                                             </G>

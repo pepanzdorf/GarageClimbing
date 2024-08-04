@@ -70,9 +70,9 @@ export default function LogScreen() {
 
     const thisUserStats = () => {
         if (stats) {
-            stats.forEach((item) => {
-                if (item[0] == name) {
-                    setUserStats(item[1]);
+            stats['users'].forEach((user) => {
+                if (user[0] == name) {
+                    setUserStats(user[1]);
                 }
             });
         }
@@ -191,6 +191,10 @@ export default function LogScreen() {
                                 <Text style={Fonts.plainBold}>{userStats['score']}</Text>
                                 <Text style={Fonts.h3}>Skóre (historicky):</Text>
                                 <Text style={Fonts.plainBold}>{userStats['overall_score']}</Text>
+                                <Text style={Fonts.h3}>Počet lezení:</Text>
+                                <Text style={Fonts.plainBold}>{userStats['sessions']['overall']}/{stats['sessions']['overall']}</Text>
+                                <Text style={Fonts.h3}>Počet lezení (sezóna):</Text>
+                                <Text style={Fonts.plainBold}>{userStats['sessions']['current']}/{stats['sessions']['current']}</Text>
                                 <Text style={Fonts.h3}>Počet výlezů (i duplicitní):</Text>
                                 <Text style={Fonts.plainBold}>{userStats['all_sends']}</Text>
                                 <Text style={Fonts.h3}>Splněných výzev (unikátní):</Text>

@@ -20,6 +20,7 @@ export default function Info(){
     const [ maxCount, setMaxCount ] = useState(0);
     const [ tableHead, setTableHead ] = useState(['V', 'Font', 'YDS', 'French sport', 'Melda-scale']);
     const [ tableData, setTableData ] = useState();
+    const [ savings, setSavings ] = useState(0);
 
     const windowAspectRatio = Dimensions.get('window').width / Dimensions.get('window').height;
     const tabBarHeight = useBottomTabBarHeight();
@@ -82,10 +83,18 @@ export default function Info(){
 
     const calculateSends = () => {
         let sends = 0;
-        stats.forEach((stat) => {
-            sends += stat[1]['all_sends'];
+        stats['users'].forEach((user) => {
+            sends += user[1]['all_sends'];
         });
         return sends;
+    }
+
+    const calculateSavings = () => {
+        let savings = 0;
+        stats['users'].forEach((user) => {
+            savings += user[1]['sessions']['overall'] * 200;
+        });
+        setSavings(savings);
     }
 
     const handleHoldPress = (hold) => {
@@ -123,6 +132,10 @@ export default function Info(){
         makeTableData();
     }, []);
 
+    useEffect(() => {
+        calculateSavings();
+    }, [stats]);
+
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView>
@@ -156,6 +169,18 @@ export default function Info(){
                         <Text style={Fonts.h3}>Počet výlezů: </Text>
                         {
                             stats && (<Text style={Fonts.plainBold}>{calculateSends()}</Text>)
+                        }
+                    </View>
+                    <View style={styles.field}>
+                        <Text style={Fonts.h3}>Počet lezení: </Text>
+                        {
+                            stats && (<Text style={Fonts.plainBold}>{stats['sessions']['overall']}</Text>)
+                        }
+                    </View>
+                    <View style={styles.field}>
+                        <Text style={Fonts.h3}>Ušetřeno za vstupné: </Text>
+                        {
+                            stats && (<Text style={Fonts.plainBold}>{savings} Kč</Text>)
                         }
                     </View>
                     {
@@ -256,7 +281,7 @@ export default function Info(){
                     </View>
                     <View style={styles.field}>
                         <Text style={Fonts.h3}>Verze aplikace: </Text>
-                        <Text style={Fonts.plainBold}>1.1.0</Text>
+                        <Text style={Fonts.plainBold}>1.1.2</Text>
                     </View>
                 </View>
             </ScrollView>

@@ -53,7 +53,7 @@ export default function Stats(){
                         <Text style={Fonts.h1}>Žebříček</Text>
                     </View>
                     <FlatList
-                        data={stats}
+                        data={stats['users']}
                         renderItem={renderUser}
                         keyExtractor={item => item[0]}
                     />

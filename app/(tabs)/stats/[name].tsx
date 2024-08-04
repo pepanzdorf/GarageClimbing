@@ -23,38 +23,38 @@ export default function LogScreen() {
     const [borderDimensions, setBorderDimensions] = useState({width: 0, height: 0})
 
     const borders = [
-        require('../../../assets/images/borders/blank_frame.png'), // free
-        require('../../../assets/images/borders/wood_frame.png'), // 1000 points
-        require('../../../assets/images/borders/bronze_frame.png'), // 5000 points
-        require('../../../assets/images/borders/silver_frame.png'), // 10000 points
-        require('../../../assets/images/borders/gold_frame.png'), // 20000 points
-        require('../../../assets/images/borders/plat_frame.png'), // 35000 points
-        require('../../../assets/images/borders/diamond_frame.png'), // 50000 points
-        require('../../../assets/images/borders/dragon_frame.png'), // 75000 points
-        require('../../../assets/images/borders/god_frame.png'), // 100000 points
-        require('../../../assets/images/borders/dirt_frame.png'), // brokolice V4-, dlouhá housenka V4+, Zimní květináč V4-, zeleninová V4-, Hedvábná stezka V3+
-        require('../../../assets/images/borders/animal_frame.png'), // kozel V3+, Mrtvá ryba V2-, Nabodnuté jablíčko V3-, protáhlá opice V3, Tupé bodliny V3, zvířecí trio V3-, Pro začátek dobrá V3+
-        require('../../../assets/images/borders/mud_frame.png'), // Mít boulder na 25+ pokusů
-        require('../../../assets/images/borders/stone_frame.png'), // Kamenný pilíř V4+, Malé šutry mezi prsty V5-, Přírodní lehká V4-, Intuitivní rotace V4-, zahřívačka V4-, Čekárnová V4+
-        require('../../../assets/images/borders/water_frame.png'), // Bazénová V4+, Kapka na plachtě V3+, Okapová l+p V4, Po dešti V3+, Procházka v dešti V4-, Tok proudu V3-, Z louže to klouže V4-
-        require('../../../assets/images/borders/muscle_frame.png'), // Dej si spoďák V5+, Školní kampus V4, Rozmáčkni nástup V5+, Pěkná se silovým startem V4-, píďalka na spoďáku V6, Míla a Srštnost V6
-        require('../../../assets/images/borders/bandage_frame.png'), // AU TO BOLÍ V4+, Pěstí loktem a do holeně V4, Rychlá bolest V3+, Uraženej kotník V4+, Dyno trénink V3-
-        require('../../../assets/images/borders/ice_frame.png'), // 10 sendů v zimě
-        require('../../../assets/images/borders/caveman_frame.png'), // huuh uggh V4, Krsštl V5, Sss V3, Vzpomínky na minulost V3-
-        require('../../../assets/images/borders/nature_frame.png'), // Definice dřevěnosti V3, Jabloň V4, Přírodní lehká V4-, Přírodní lišta V3, smlsnout malinu V4, Stisky jak dřevo V4, Z jablíčka na jablíčko V3+
-        require('../../../assets/images/borders/christmas_frame.png'), // christmas climbing 2024
+        {'image': require('../../../assets/images/borders/blank_frame.png'), 'hint': 'zadarmo'}, // free
+        {'image': require('../../../assets/images/borders/wood_frame.png'), 'hint': '1000+ bodů'}, // 1000 points
+        {'image': require('../../../assets/images/borders/bronze_frame.png'), 'hint': '5000+ bodů'}, // 5000 points
+        {'image': require('../../../assets/images/borders/silver_frame.png'), 'hint': '10000+ bodů'}, // 10000 points
+        {'image': require('../../../assets/images/borders/gold_frame.png'), 'hint': '20000+ bodů'}, // 20000 points
+        {'image': require('../../../assets/images/borders/plat_frame.png'), 'hint': '35000+ bodů'}, // 35000 points
+        {'image': require('../../../assets/images/borders/diamond_frame.png'), 'hint': '50000+ bodů'}, // 50000 points
+        {'image': require('../../../assets/images/borders/dragon_frame.png'), 'hint': '75000+ bodů'}, // 75000 points
+        {'image': require('../../../assets/images/borders/god_frame.png'), 'hint': '100000+ bodů'}, // 100000 points
+        {'image': require('../../../assets/images/borders/dirt_frame.png'), 'hint': 'brokolice\ndlouhá housenka\nZimní květináč\nzeleninová\nHedvábná stezka'}, // brokolice V4-, dlouhá housenka V4+, Zimní květináč V4-, zeleninová V4-, Hedvábná stezka V3+
+        {'image': require('../../../assets/images/borders/animal_frame.png'), 'hint': 'kozel\nMrtvá ryba\nNabodnuté jablíčko\nprotáhlá opice\nTupé bodliny\nzvířecí trio\nPro začátek dobrá'}, // kozel V3+, Mrtvá ryba V2-, Nabodnuté jablíčko V3-, protáhlá opice V3, Tupé bodliny V3, zvířecí trio V3-, Pro začátek dobrá V3+
+        {'image': require('../../../assets/images/borders/mud_frame.png'), 'hint': 'Někdy ten výlez pár pokusů zabere'}, // Mít boulder na 25+ pokusů
+        {'image': require('../../../assets/images/borders/stone_frame.png'), 'hint': 'Kamenný pilíř\nMalé šutry mezi prsty\nPřírodní lehká\nIntuitivní rotace\nzahřívačka\nČekárnová'}, // Kamenný pilíř V4+, Malé šutry mezi prsty V5-, Přírodní lehká V4-, Intuitivní rotace V4-, zahřívačka V4-, Čekárnová V4+
+        {'image': require('../../../assets/images/borders/water_frame.png'), 'hint': 'Bazénová\nKapka na plachtě\nOkapová levá\nOkapová pravá\nPo dešti\nProcházka v dešti\nTok proudu\nZ louže to klouže'}, // Bazénová V4+, Kapka na plachtě V3+, Okapová l+p V4, Po dešti V3+, Procházka v dešti V4-, Tok proudu V3-, Z louže to klouže V4-
+        {'image': require('../../../assets/images/borders/muscle_frame.png'), 'hint': 'Dej si spoďák\nŠkolní kampus\nRozmáčkni nástup\nPěkná se silovým startem\npíďalka na spoďáku\nMíla a Srštnost'}, // Dej si spoďák V5+, Školní kampus V4, Rozmáčkni nástup V5+, Pěkná se silovým startem V4-, píďalka na spoďáku V6, Míla a Srštnost V6
+        {'image': require('../../../assets/images/borders/bandage_frame.png'), 'hint': 'AU TO BOLÍ\nPěstí loktem a do holeně\nRychlá bolest\nUraženej kotník\nDyno trénink'}, // AU TO BOLÍ V4+, Pěstí loktem a do holeně V4, Rychlá bolest V3+, Uraženej kotník V4+, Dyno trénink V3-
+        {'image': require('../../../assets/images/borders/ice_frame.png'), 'hint': 'V zimě se leze nejlépe'}, // 10 sendů v zimě
+        {'image': require('../../../assets/images/borders/caveman_frame.png'), 'hint': 'huug uggh\nKrsštl\nSss\nVzpomínky na minulost'}, // huuh uggh V4, Krsštl V5, Sss V3, Vzpomínky na minulost V3-
+        {'image': require('../../../assets/images/borders/nature_frame.png'), 'hint': 'Definice dřevěnosti\nJabloň\nPřírodní lehká\nPřírodní lišta\nsmlsnout malinu\nStisky jak dřevo\nZ jablíčka na jablíčko'}, // Definice dřevěnosti V3, Jabloň V4, Přírodní lehká V4-, Přírodní lišta V3, smlsnout malinu V4, Stisky jak dřevo V4, Z jablíčka na jablíčko V3+
+        {'image': require('../../../assets/images/borders/christmas_frame.png'), 'hint': 'Proč na Vánoce dávat dárky, když můžeš lézt'}, // christmas climbing 2024
     ];
 
 
     const chooseBorder = () => {
         if (!userStats) {
-            setChosenBorder(borders[0]);
-            setBorderDimensions(Image.resolveAssetSource(borders[0]))
+            setChosenBorder(borders[0].image);
+            setBorderDimensions(Image.resolveAssetSource(borders[0].image))
             return;
         }
 
-        setChosenBorder(borders[userStats['border']]);
-        setBorderDimensions(Image.resolveAssetSource(borders[userStats['border']]))
+        setChosenBorder(borders[userStats['border']].image);
+        setBorderDimensions(Image.resolveAssetSource(borders[userStats['border']].image))
     }
 
     const scoreColor = (score) => {
@@ -78,14 +78,22 @@ export default function LogScreen() {
     }
 
     const renderBorder = ({item, index}) => {
-        // blurRadius={50}
-        return (
-            <TouchableOpacity onPress={() => handleChangeBorder(index)} key={index}>
+        if (userStats['unlocked_borders'].includes(index)) {
+            return (
+                <TouchableOpacity onPress={() => handleChangeBorder(index)} key={index}>
+                    <View style={{alignItems: 'center', justifyContent: 'center', borderWidth: 1}} key={`image-${index}`}>
+                        <Image source={item.image} style={styles.borderChoice}/>
+                    </View>
+                </TouchableOpacity>
+            )
+        } else {
+            return (
                 <View style={{alignItems: 'center', justifyContent: 'center', borderWidth: 1}} key={`image-${index}`}>
-                    <Image source={item} style={styles.borderChoice} blurRadius={50}/>
+                    <Image source={item.image} style={styles.borderChoice} blurRadius={50}/>
+                    <Text style={[Fonts.plain, {position: 'absolute'}]}>{item.hint}</Text>
                 </View>
-            </TouchableOpacity>
-        )
+            )
+        }
     }
 
     const handleChangeBorder = (border) => {
@@ -108,8 +116,8 @@ export default function LogScreen() {
         })
         .then(response =>  {
             if (response.ok) {
-                setChosenBorder(borders[border_id]);
-                setBorderDimensions(Image.resolveAssetSource(borders[border_id]))
+                setChosenBorder(borders[border_id].image);
+                setBorderDimensions(Image.resolveAssetSource(borders[border_id].image))
             }
         })
         .catch(error => console.log(error));

@@ -8,6 +8,7 @@ import { Colors } from '../../../constants/Colors'
 import { Fonts } from '../../../constants/Fonts'
 import { apiURL } from '../../../constants/Other';
 import { gradeIdToGradeName, gradeToColor } from '../../../scripts/utils';
+import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
 
 
 export default function LogScreen() {
@@ -155,12 +156,21 @@ export default function LogScreen() {
                             {
                                 userStats['icon'] &&
                                 <View style={styles.iconContainer}>
-                                    <TouchableOpacity onPress={handleIconClick}>
-                                        <View style={[styles.borderedIcon, {aspectRatio: borderDimensions.width/borderDimensions.height}]}>
-                                            <Image source={{uri: apiURL + userStats['icon']}} style={styles.icon}/>
-                                            <Image source={chosenBorder} style={styles.border}/>
-                                        </View>
-                                    </TouchableOpacity>
+                                    <ReactNativeZoomableView
+                                        maxZoom={20}
+                                        minZoom={1}
+                                        initialZoom={1}
+                                        bindToBorders={true}
+                                        onZoomAfter={this.logOutZoomState}
+                                        disablePanOnInitialZoom={true}
+                                    >
+                                        <TouchableOpacity onPress={handleIconClick}>
+                                            <View style={[styles.borderedIcon, {aspectRatio: borderDimensions.width/borderDimensions.height}]}>
+                                                <Image source={{uri: apiURL + userStats['icon']}} style={styles.icon}/>
+                                                <Image source={chosenBorder} style={styles.border}/>
+                                            </View>
+                                        </TouchableOpacity>
+                                    </ReactNativeZoomableView>
                                 </View>
                             }
                             {

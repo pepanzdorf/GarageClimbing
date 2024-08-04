@@ -170,8 +170,10 @@ export default function LogScreen() {
                                 </View>
                             }
                             <View style={styles.genericStats}>
-                                <Text style={Fonts.h3}>Skóre:</Text>
+                                <Text style={Fonts.h3}>Skóre (sezóna):</Text>
                                 <Text style={Fonts.plainBold}>{userStats['score']}</Text>
+                                <Text style={Fonts.h3}>Skóre (historicky):</Text>
+                                <Text style={Fonts.plainBold}>{userStats['overall_score']}</Text>
                                 <Text style={Fonts.h3}>Počet výlezů (i duplicitní):</Text>
                                 <Text style={Fonts.plainBold}>{userStats['all_sends']}</Text>
                                 <Text style={Fonts.h3}>Splněných výzev (unikátní):</Text>

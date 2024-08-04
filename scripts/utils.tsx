@@ -71,6 +71,14 @@ export const filterBySearch = (boulders, search) => {
     return boulders.filter(boulder => boulder.name.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "").replace(" ", "").includes(search.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "").replace(" ", "")));
 }
 
+export const findBoulderById = (id, bdrs) => {
+    for (let i = 0; i < bdrs.length; i++) {
+        if (bdrs[i].id === id) {
+            return bdrs[i];
+        }
+    }
+}
+
 export const attemptIdToAttemptName = (attemptId) => {
     if (attemptId === 0) return "Flash";
     if (attemptId === 9) return "10-24";

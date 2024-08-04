@@ -7,13 +7,13 @@ import { FontAwesome5, FontAwesome, Entypo } from '@expo/vector-icons';
 import { Colors } from '../../../constants/Colors'
 import { Fonts } from '../../../constants/Fonts'
 import { apiURL } from '../../../constants/Other';
-import { gradeIdToGradeName, gradeToColor } from '../../../scripts/utils';
+import { gradeIdToGradeName, gradeToColor, findBoulderById } from '../../../scripts/utils';
 import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
 
 
 export default function LogScreen() {
     const { name } = useLocalSearchParams();
-    const { stats, settings, loggedUser, token } = useContext(GlobalStateContext);
+    const { stats, settings, loggedUser, token, boulders } = useContext(GlobalStateContext);
     const router = useRouter();
     const [userStats, setUserStats] = useState(null)
     const [chosenBorder, setChosenBorder] = useState(null)
@@ -33,16 +33,16 @@ export default function LogScreen() {
         {'image': require('../../../assets/images/borders/diamond_frame.png'), 'hint': '50000+ bodů'}, // 50000 points
         {'image': require('../../../assets/images/borders/dragon_frame.png'), 'hint': '75000+ bodů'}, // 75000 points
         {'image': require('../../../assets/images/borders/god_frame.png'), 'hint': '100000+ bodů'}, // 100000 points
-        {'image': require('../../../assets/images/borders/dirt_frame.png'), 'hint': 'brokolice\ndlouhá housenka\nZimní květináč\nzeleninová\nHedvábná stezka'}, // brokolice V4-, dlouhá housenka V4+, Zimní květináč V4-, zeleninová V4-, Hedvábná stezka V3+
-        {'image': require('../../../assets/images/borders/animal_frame.png'), 'hint': 'kozel\nMrtvá ryba\nNabodnuté jablíčko\nprotáhlá opice\nTupé bodliny\nzvířecí trio\nPro začátek dobrá'}, // kozel V3+, Mrtvá ryba V2-, Nabodnuté jablíčko V3-, protáhlá opice V3, Tupé bodliny V3, zvířecí trio V3-, Pro začátek dobrá V3+
+        {'image': require('../../../assets/images/borders/dirt_frame.png'), 'hint': ''}, // brokolice V4-, dlouhá housenka V4+, Zimní květináč V4-, zeleninová V4-, Hedvábná stezka V3+
+        {'image': require('../../../assets/images/borders/animal_frame.png'), 'hint': ''}, // kozel V3+, Mrtvá ryba V2-, Nabodnuté jablíčko V3-, protáhlá opice V3, Tupé bodliny V3, zvířecí trio V3-, Pro začátek dobrá V3+
         {'image': require('../../../assets/images/borders/mud_frame.png'), 'hint': 'Někdy ten výlez pár pokusů zabere'}, // Mít boulder na 25+ pokusů
-        {'image': require('../../../assets/images/borders/stone_frame.png'), 'hint': 'Kamenný pilíř\nMalé šutry mezi prsty\nPřírodní lehká\nIntuitivní rotace\nzahřívačka\nČekárnová'}, // Kamenný pilíř V4+, Malé šutry mezi prsty V5-, Přírodní lehká V4-, Intuitivní rotace V4-, zahřívačka V4-, Čekárnová V4+
-        {'image': require('../../../assets/images/borders/water_frame.png'), 'hint': 'Bazénová\nKapka na plachtě\nOkapová levá\nOkapová pravá\nPo dešti\nProcházka v dešti\nTok proudu\nZ louže to klouže'}, // Bazénová V4+, Kapka na plachtě V3+, Okapová l+p V4, Po dešti V3+, Procházka v dešti V4-, Tok proudu V3-, Z louže to klouže V4-
-        {'image': require('../../../assets/images/borders/muscle_frame.png'), 'hint': 'Dej si spoďák\nŠkolní kampus\nRozmáčkni nástup\nPěkná se silovým startem\npíďalka na spoďáku\nMíla a Srštnost'}, // Dej si spoďák V5+, Školní kampus V4, Rozmáčkni nástup V5+, Pěkná se silovým startem V4-, píďalka na spoďáku V6, Míla a Srštnost V6
-        {'image': require('../../../assets/images/borders/bandage_frame.png'), 'hint': 'AU TO BOLÍ\nPěstí loktem a do holeně\nRychlá bolest\nUraženej kotník\nDyno trénink'}, // AU TO BOLÍ V4+, Pěstí loktem a do holeně V4, Rychlá bolest V3+, Uraženej kotník V4+, Dyno trénink V3-
+        {'image': require('../../../assets/images/borders/stone_frame.png'), 'hint': ''}, // Kamenný pilíř V4+, Malé šutry mezi prsty V5-, Přírodní lehká V4-, Intuitivní rotace V4-, zahřívačka V4-, Čekárnová V4+
+        {'image': require('../../../assets/images/borders/water_frame.png'), 'hint': ''}, // Bazénová V4+, Kapka na plachtě V3+, Okapová l+p V4, Po dešti V3+, Procházka v dešti V4-, Tok proudu V3-, Z louže to klouže V4-
+        {'image': require('../../../assets/images/borders/muscle_frame.png'), 'hint': ''}, // Dej si spoďák V5+, Školní kampus V4, Rozmáčkni nástup V5+, Pěkná se silovým startem V4-, píďalka na spoďáku V6, Míla a Srštnost V6
+        {'image': require('../../../assets/images/borders/bandage_frame.png'), 'hint': ''}, // AU TO BOLÍ V4+, Pěstí loktem a do holeně V4, Rychlá bolest V3+, Uraženej kotník V4+, Dyno trénink V3-
         {'image': require('../../../assets/images/borders/ice_frame.png'), 'hint': 'V zimě se leze nejlépe'}, // 10 sendů v zimě
-        {'image': require('../../../assets/images/borders/caveman_frame.png'), 'hint': 'huug uggh\nKrsštl\nSss\nVzpomínky na minulost'}, // huuh uggh V4, Krsštl V5, Sss V3, Vzpomínky na minulost V3-
-        {'image': require('../../../assets/images/borders/nature_frame.png'), 'hint': 'Definice dřevěnosti\nJabloň\nPřírodní lehká\nPřírodní lišta\nsmlsnout malinu\nStisky jak dřevo\nZ jablíčka na jablíčko'}, // Definice dřevěnosti V3, Jabloň V4, Přírodní lehká V4-, Přírodní lišta V3, smlsnout malinu V4, Stisky jak dřevo V4, Z jablíčka na jablíčko V3+
+        {'image': require('../../../assets/images/borders/caveman_frame.png'), 'hint': ''}, // huuh uggh V4, Krsštl V5, Sss V3, Vzpomínky na minulost V3-
+        {'image': require('../../../assets/images/borders/nature_frame.png'), 'hint': ''}, // Definice dřevěnosti V3, Jabloň V4, Přírodní lehká V4-, Přírodní lišta V3, smlsnout malinu V4, Stisky jak dřevo V4, Z jablíčka na jablíčko V3+
         {'image': require('../../../assets/images/borders/christmas_frame.png'), 'hint': 'Proč na Vánoce dávat dárky, když můžeš lézt'}, // christmas climbing 2024
     ];
 
@@ -88,10 +88,17 @@ export default function LogScreen() {
                 </TouchableOpacity>
             )
         } else {
+            let longHint = item.hint;
+            if (userStats['to_unlock'][index]) {
+                for (let i = 0; i < userStats['to_unlock'][index].length; i++) {
+                    let boulder = findBoulderById(userStats['to_unlock'][index][i], boulders);
+                    longHint += "\n" + boulder.name + " - " + gradeIdToGradeName(boulder.average_grade, settings.grading);
+                }
+            }
             return (
                 <View style={{alignItems: 'center', justifyContent: 'center', borderWidth: 1}} key={`image-${index}`}>
                     <Image source={item.image} style={styles.borderChoice} blurRadius={50}/>
-                    <Text style={[Fonts.plain, {position: 'absolute'}]}>{item.hint}</Text>
+                    <Text style={[Fonts.plain, {position: 'absolute'}]}>{longHint}</Text>
                 </View>
             )
         }

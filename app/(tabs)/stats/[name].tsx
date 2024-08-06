@@ -13,7 +13,7 @@ import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-vi
 
 export default function LogScreen() {
     const { name } = useLocalSearchParams();
-    const { stats, settings, loggedUser, token, boulders } = useContext(GlobalStateContext);
+    const { stats, settings, loggedUser, token, boulders, fetchUserStats } = useContext(GlobalStateContext);
     const router = useRouter();
     const [userStats, setUserStats] = useState(null)
     const [chosenBorder, setChosenBorder] = useState(null)
@@ -22,6 +22,7 @@ export default function LogScreen() {
     const [chosenSeason, setChosenSeason] = useState(null)
     const [chosenBackground, setChosenBackground] = useState('#DADADA')
     const [borderDimensions, setBorderDimensions] = useState({width: 0, height: 0})
+    const [sortedBorders, setSortedBorders] = useState([])
 
     const borders = [
         {'image': require('../../../assets/images/borders/blank_frame.png'), 'hint': 'zadarmo'}, // free
@@ -44,7 +45,32 @@ export default function LogScreen() {
         {'image': require('../../../assets/images/borders/caveman_frame.png'), 'hint': ''}, // huuh uggh V4, Krsštl V5, Sss V3, Vzpomínky na minulost V3-
         {'image': require('../../../assets/images/borders/nature_frame.png'), 'hint': ''}, // Definice dřevěnosti V3, Jabloň V4, Přírodní lehká V4-, Přírodní lišta V3, smlsnout malinu V4, Stisky jak dřevo V4, Z jablíčka na jablíčko V3+
         {'image': require('../../../assets/images/borders/christmas_frame.png'), 'hint': 'Proč na Vánoce dávat dárky, když můžeš lézt'}, // christmas climbing 2024
+        {'image': require('../../../assets/images/borders/flash_frame.png'), 'hint': 'Proč lézt dvakrát, když stačí jednou'}, // 50 flashes (unique boulders)
+        {'image': require('../../../assets/images/borders/builder_frame.png'), 'hint': 'Lezecká stěna je k ničemu, když na ní nejsou žádné cesty'}, // build 20 boulders
+        {'image': require('../../../assets/images/borders/donation_frame.png'), 'hint': '?'}, // For donation
+        {'image': require('../../../assets/images/borders/sun_frame.png'), 'hint': 'Jednou ascendnout nestačí'}, // climb ascension 50 times
+        {'image': require('../../../assets/images/borders/hold_frame.png'), 'hint': ''}, // Přímá lehká V1, Jedle za 500 V2, NATAHOVACÍ V3, Kolečko Uno V4, Srdcovka V5, lamač kostí a drtič šlach V6, Projekt: Rozlet orla V7, MarMel 4 V8?
+        {'image': require('../../../assets/images/borders/frog_frame.png'), 'hint': ''}, // Podeber a skoč, Dyno trénink, Double dyno, Příjemné koule, Dva kroky, (Ne)skok, nemysli a běž
+        {'image': require('../../../assets/images/borders/sushi_frame.png'), 'hint': ''}, // Pro pocit, Dlouhá housenka, Inverzní sněhulák, Nepříjemná Barbora, píďalka na spoďáku
+        {'image': require('../../../assets/images/borders/wing_frame.png'), 'hint': 'Okřídlený lezec nohy nepotřebuje'}, // 15 sends with campus challenge
     ];
+
+
+    const sortBorders = () => {
+        let unlocked = [];
+        let locked = [];
+        let selected = [];
+        for (let i = 0; i < borders.length; i++) {
+            if (userStats['border'] == i) {
+                selected.push({'id': i, 'data': borders[i]});
+            } else if (userStats['unlocked_borders'].includes(i)) {
+                unlocked.push({'id': i, 'data': borders[i]});
+            } else {
+                locked.push({'id': i, 'data': borders[i]});
+            }
+        }
+        setSortedBorders([...selected, ...unlocked, ...locked]);
+    }
 
 
     const chooseBorder = () => {
@@ -79,25 +105,38 @@ export default function LogScreen() {
     }
 
     const renderBorder = ({item, index}) => {
-        if (userStats['unlocked_borders'].includes(index)) {
+        if (index == 0) {
             return (
-                <TouchableOpacity onPress={() => handleChangeBorder(index)} key={index}>
-                    <View style={{alignItems: 'center', justifyContent: 'center', borderWidth: 1}} key={`image-${index}`}>
-                        <Image source={item.image} style={styles.borderChoice}/>
+                <TouchableOpacity onPress={() => handleChangeBorder(item.id)} key={item.id}>
+                    <View style={{alignItems: 'center', justifyContent: 'center',  borderWidth: 1, backgroundColor: Colors.primary}} key={`image-${item.id}`}>
+                        <Image source={item.data.image} style={styles.borderChoice}/>
+                    </View>
+                </TouchableOpacity>
+            )
+        }
+        if (userStats['unlocked_borders'].includes(item.id)) {
+            return (
+                <TouchableOpacity onPress={() => handleChangeBorder(item.id)} key={item.id}>
+                    <View style={{alignItems: 'center', justifyContent: 'center', borderWidth: 1}} key={`image-${item.id}`}>
+                        <Image source={item.data.image} style={styles.borderChoice}/>
                     </View>
                 </TouchableOpacity>
             )
         } else {
-            let longHint = item.hint;
-            if (userStats['to_unlock'][index]) {
-                for (let i = 0; i < userStats['to_unlock'][index].length; i++) {
-                    let boulder = findBoulderById(userStats['to_unlock'][index][i], boulders);
-                    longHint += "\n" + boulder.name + " - " + gradeIdToGradeName(boulder.average_grade, settings.grading);
+            let longHint = item.data.hint;
+            if (userStats['to_unlock'][item.id]) {
+                if (typeof userStats['to_unlock'][item.id] == 'string') {
+                    longHint += "\n" + userStats['to_unlock'][item.id];
+                } else {
+                    for (let i = 0; i < userStats['to_unlock'][item.id].length; i++) {
+                        let boulder = findBoulderById(userStats['to_unlock'][item.id][i], boulders);
+                        longHint += "\n" + boulder.name + " - " + gradeIdToGradeName(boulder.average_grade, settings.grading);
+                    }
                 }
             }
             return (
-                <View style={{alignItems: 'center', justifyContent: 'center', borderWidth: 1}} key={`image-${index}`}>
-                    <Image source={item.image} style={styles.borderChoice} blurRadius={50}/>
+                <View style={{alignItems: 'center', justifyContent: 'center', borderWidth: 1}} key={`image-${item.id}`}>
+                    <Image source={item.data.image} style={styles.borderChoice} blurRadius={50}/>
                     <Text style={[Fonts.plain, {position: 'absolute'}]}>{longHint}</Text>
                 </View>
             )
@@ -126,6 +165,7 @@ export default function LogScreen() {
             if (response.ok) {
                 setChosenBorder(borders[border_id].image);
                 setBorderDimensions(Image.resolveAssetSource(borders[border_id].image))
+                fetchUserStats();
             }
         })
         .catch(error => console.log(error));
@@ -137,6 +177,7 @@ export default function LogScreen() {
         chooseBorder();
         if (userStats) {
             setChosenBackground(scoreColor(userStats['score']));
+            sortBorders();
         }
     }
     , [stats, name]);
@@ -145,6 +186,7 @@ export default function LogScreen() {
         chooseBorder();
         if (userStats) {
             setChosenBackground(scoreColor(userStats['score']));
+            sortBorders();
         }
     }
     , [userStats]);
@@ -304,7 +346,7 @@ export default function LogScreen() {
                         {
                             <View style={{flex:1, marginTop: 30, marginBottom: 30}}>
                                  <FlatList
-                                    data={borders}
+                                    data={sortedBorders}
                                     renderItem={renderBorder}
                                     keyExtractor={item => item.id}
                                 />

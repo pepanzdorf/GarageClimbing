@@ -80,8 +80,10 @@ export default function Random(){
             setCurrentChallenge({id: 1, name: "Žádný", description: "nic", score: 1});
         }
         else {
-            setChallengeActive(true);
-            setCurrentChallenge(randomChallenge);
+            if (randomChallenge) {
+                setChallengeActive(true);
+                setCurrentChallenge(randomChallenge);
+            }
         }
     }
 

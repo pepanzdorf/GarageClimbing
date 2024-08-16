@@ -22,10 +22,14 @@ export default function LogScreen() {
 
     const angleData = Array(46).fill().map((_, i) => i);
     const gradeData = Array(53).fill().map((_, i) => gradeIdToGradeName(i, settings.grading));
-    const attemptsData = Array(11).fill().map((_, i) => attemptIdToAttemptName(i));
+    const attemptsData = Array(12).fill().map((_, i) => attemptIdToAttemptName(i-1));
 
 
     const logSend = () => {
+        if (selectedAttempts === 0) {
+            alert("Musíte zadat počet pokusů.");
+            return;
+        }
         fetch(`${apiURL}/climbing/log_send`, {
             method: 'POST',
             headers: {
@@ -36,7 +40,7 @@ export default function LogScreen() {
                 boulder_id: id,
                 angle: selectedAngle,
                 grade: selectedGrade,
-                attempts: selectedAttempts,
+                attempts: selectedAttempts-1,
                 rating: selectedRating,
                 challenge: currentChallenge.id,
             }),

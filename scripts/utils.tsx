@@ -80,6 +80,7 @@ export const findBoulderById = (id, bdrs) => {
 }
 
 export const attemptIdToAttemptName = (attemptId) => {
+    if (attemptId === -1) return "-";
     if (attemptId === 0) return "Flash";
     if (attemptId === 9) return "10-24";
     if (attemptId === 10) return "25+";

@@ -81,6 +81,7 @@ export default function Profile(){
     const logOut = () => {
         setToken('token');
         saveToken('token');
+        alert('Odhlášen');
     }
 
     const sendDescription = async () => {

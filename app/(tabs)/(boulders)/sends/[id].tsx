@@ -25,12 +25,12 @@ export default function LogScreen() {
     const attemptsData = Array(12).fill().map((_, i) => attemptIdToAttemptName(i-1));
 
 
-    const logSend = () => {
+    const logSend = async () => {
         if (selectedAttempts === 0) {
             alert("Musíte zadat počet pokusů.");
             return;
         }
-        fetch(`${apiURL}/climbing/log_send`, {
+        const response = await fetch(`${apiURL}/climbing/log_send`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -45,10 +45,13 @@ export default function LogScreen() {
                 challenge: currentChallenge.id,
             }),
         })
-        .then(response => response.text())
-        .then(jsonResponse => console.log(jsonResponse))
-        .catch(error => console.log(error))
-        .finally(() => {setReload(true); router.back()});
+        const jsonResponse = await response.text();
+        if (!response.ok) {
+            alert(jsonResponse);
+            return;
+        }
+        setReload(true);
+        router.back();
     }
 
     const setDefaults = () => {

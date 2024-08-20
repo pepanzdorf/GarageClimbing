@@ -228,6 +228,10 @@ export const tagIdToIconName = (tagId) => {
             return "🦵";
         case 28:
             return "🪝";
+        case 29:
+            return "🪵";
+        case 30:
+            return "🥤";
         default:
             return "❓";
     }

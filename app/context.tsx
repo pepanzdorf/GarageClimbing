@@ -18,6 +18,7 @@ export const GlobalStateProvider = ({ children }) => {
         grading: 0,
         lineWidth: 8,
         includeOpen: true,
+        tags: [],
     }
 
     const [boulders,setBoulders] = useState([]);
@@ -56,6 +57,53 @@ export const GlobalStateProvider = ({ children }) => {
 
     const [ calculateScoreScript, setCalculateScoreScript ] = useState(null);
 
+    const [ tags, setTags ] = useState([]);
+
+
+    const checkSettings = () => {
+        if (settings.angle === undefined) {
+            settings.angle = 20;
+        }
+        if (settings.sortby === undefined) {
+            settings.sortby = 1;
+        }
+        if (settings.upperGrade === undefined) {
+            settings.upperGrade = 52;
+        }
+        if (settings.lowerGrade === undefined) {
+            settings.lowerGrade = 0;
+        }
+        if (settings.darkening === undefined) {
+            settings.darkening = 0.5;
+        }
+        if (settings.darkenPreview === undefined) {
+            settings.darkenPreview = true;
+        }
+        if (settings.showUnsent === undefined) {
+            settings.showUnsent = false;
+        }
+        if (settings.showFavourites === undefined) {
+            settings.showFavourites = false;
+        }
+        if (settings.rating === undefined) {
+            settings.rating = 3;
+        }
+        if (settings.grading === undefined) {
+            settings.grading = 0;
+        }
+        if (settings.lineWidth === undefined) {
+            settings.lineWidth = 8;
+        }
+        if (settings.includeOpen === undefined) {
+            settings.includeOpen = true;
+        }
+        if (settings.tags === undefined) {
+            settings.tags = [];
+        }
+        saveSettings();
+    }
+
+
     const loadScript = async () => {
         try {
             const response = await fetch(`${apiURL}/static/calculate_score.js`);
@@ -78,6 +126,7 @@ export const GlobalStateProvider = ({ children }) => {
         whoami();
         fetchUserStats();
         loadScript();
+        fetchTags();
     }
 
     const whoami = () => {
@@ -123,7 +172,8 @@ export const GlobalStateProvider = ({ children }) => {
         try {
             const persistentSettings = await AsyncStorage.getItem("settings");
             if (persistentSettings !== null) {
-                setSettings(JSON.parse(persistentSettings));
+                await setSettings(JSON.parse(persistentSettings));
+                checkSettings();
             } else {
                 rewriteToDefaultSettings();
             }
@@ -209,6 +259,14 @@ export const GlobalStateProvider = ({ children }) => {
     }
 
 
+    const fetchTags = () => {
+        fetch(`${apiURL}/climbing/get_tags`)
+            .then(response => response.json())
+            .then(jsonResponse => setTags(jsonResponse))
+            .catch(error => console.log(error));
+    }
+
+
     useEffect(()=>{
         fetchAll();
     },[]);
@@ -266,6 +324,7 @@ export const GlobalStateProvider = ({ children }) => {
                 arrowNavigationBoulders,
                 setArrowNavigationBoulders,
                 calculateScoreScript,
+                tags,
         }}>
             {children}
         </GlobalStateContext.Provider>

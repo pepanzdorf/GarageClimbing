@@ -7,11 +7,12 @@ import { GlobalStateContext } from '../../context';
 import { Svg, Path, Rect, ClipPath, Defs, G, Use, Mask, Pattern, Line } from 'react-native-svg'
 import { apiURL } from '../../../constants/Other';
 import { StarRating } from '../../../components/StarRating';
-import { gradeIdToGradeName, attemptIdToAttemptName, numberToStrokeColor, numberToFillColor } from '../../../scripts/utils';
+import { gradeIdToGradeName, attemptIdToAttemptName, numberToStrokeColor, numberToFillColor, tagIdToIconName } from '../../../scripts/utils';
 import { Colors } from '../../../constants/Colors'
 import { Fonts } from '../../../constants/Fonts'
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import { EmojiIcon } from '../../../components/EmojiIcon';
 
 
 export default function DetailsScreen() {
@@ -32,6 +33,7 @@ export default function DetailsScreen() {
         setCurrentBoulderIndex,
         arrowNavigationBoulders,
         calculateScoreScript,
+        tags,
     } = useContext(GlobalStateContext);
     const [holds, setHolds] = useState(null);
     const [sends, setSends] = useState([]);
@@ -444,6 +446,15 @@ export default function DetailsScreen() {
         }
     }
 
+    const renderTag = (item) => {
+        const tag = tags.find(tag => tag.id === item);
+        return (
+            <View style={[styles.tag, {borderWidth: 2, borderColor: Colors.primary}]} key={item.id}>
+                <EmojiIcon emoji={tagIdToIconName(tag.id)} size={30} color={Colors.primary}/>
+                <Text style={[Fonts.h3, {color: Colors.primary}]}>{tag.name}</Text>
+            </View>
+        )
+    }
 
     return (
         currentHolds ? (
@@ -628,6 +639,27 @@ export default function DetailsScreen() {
                         </Text>
                     </View>
                 </View>
+                {
+                    currentBoulder.tags[0] &&
+                    <View style={styles.tagsContainer}>
+                        <View style={styles.tags}>
+                            {
+                                currentBoulder.tags.map(tag =>
+                                    renderTag(tag))
+                            }
+                        </View>
+                    </View>
+                }
+                <View style={styles.sendComContainer}>
+                    <TouchableOpacity onPress={() => setShow((show+1)%3)}>
+                        <View style={styles.button}>
+                            <Text style={Fonts.h3}>
+                                { tabNames[show] }
+                            </Text>
+                        </View>
+                    </TouchableOpacity>
+                    <RenderSendsCommentsChallenges />
+                </View>
                 <View style={styles.twoButtons}>
                     <TouchableOpacity onPress={handleDeleteBoulder}>
                         <View style={styles.editButtons}>
@@ -639,16 +671,6 @@ export default function DetailsScreen() {
                             <Text style={Fonts.h3}>Upravit</Text>
                         </View>
                     </TouchableOpacity>
-                </View>
-                <View style={styles.sendComContainer}>
-                    <TouchableOpacity onPress={() => setShow((show+1)%3)}>
-                        <View style={styles.button}>
-                            <Text style={Fonts.h3}>
-                                { tabNames[show] }
-                            </Text>
-                        </View>
-                    </TouchableOpacity>
-                    <RenderSendsCommentsChallenges />
                 </View>
             </ScrollView>
 
@@ -777,5 +799,19 @@ const styles = StyleSheet.create({
         marginTop: 15,
         marginRight: 20,
         marginLeft: 20,
+    },
+    tagsContainer: {
+        padding: 10,
+        gap: 15,
+    },
+    tags: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 10,
+    },
+    tag: {
+        alignItems: 'center',
+        padding: 10,
+        borderRadius: 10,
     }
 });

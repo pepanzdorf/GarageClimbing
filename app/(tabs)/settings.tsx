@@ -5,14 +5,15 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import { SelectList } from 'react-native-dropdown-select-list'
 import { FontAwesome } from '@expo/vector-icons';
-import { gradeIdToGradeName } from '../../scripts/utils';
+import { gradeIdToGradeName, tagIdToIconName } from '../../scripts/utils';
 import { StarRatingClickable } from '../../components/StarRatingClickable';
+import { EmojiIcon } from '../../components/EmojiIcon';
 import { Colors } from '../../constants/Colors'
 import { Fonts } from '../../constants/Fonts'
 
 
 export default function Settings(){
-    const { settings, setSettings, saveSettings, settingsLoading } = useContext(GlobalStateContext);
+    const { settings, setSettings, saveSettings, settingsLoading, tags } = useContext(GlobalStateContext);
     const [ angle, setAngle ] = useState(settings.angle);
     const [ selectedSort, setSelectedSort ] = useState(settings.sortby);
     const [ selectedGrading, setSelectedGrading ] = useState(settings.grading);
@@ -24,6 +25,7 @@ export default function Settings(){
     const [ defaultRating, setDefaultRating ] = useState(settings.rating);
     const [ selectedLineWidth, setSelectedLineWidth ] = useState(settings.lineWidth);
     const [ selectedIncludeOpen, setSelectedIncludeOpen ] = useState(settings.includeOpen);
+    const [ selectedTags, setSelectedTags ] = useState(settings.tags);
 
     const options = [
             {key:'1', value: 'Nejtěžší'},
@@ -61,6 +63,7 @@ export default function Settings(){
                 grading: selectedGrading,
                 lineWidth: selectedLineWidth,
                 includeOpen: selectedIncludeOpen,
+                tags: selectedTags,
             }
         );
         alert(
@@ -79,6 +82,40 @@ Používat stupnici: ${gradingOptions.find(option => option.key == selectedGradi
 Tloušťka čáry kolem chytů: ${selectedLineWidth}
             `
         )
+    }
+
+    const renderTag = (item) => {
+        let borderStyle = {
+            borderColor: Colors.borderDark,
+            borderWidth: 2,
+        }
+
+        let iconColor = Colors.borderDark;
+
+        if (selectedTags.includes(item.id)) {
+            borderStyle = {
+                borderColor: Colors.primary,
+                borderWidth: 2,
+            }
+            iconColor = Colors.primary;
+        }
+
+        return (
+            <TouchableOpacity onPress={() => handleTagPress(item.id)} key={item.id}>
+                <View style={[styles.tag, borderStyle]} key={item.id}>
+                    <EmojiIcon emoji={tagIdToIconName(item.id)} size={30} color={iconColor}/>
+                    <Text style={[Fonts.h3, {color: iconColor}]}>{item.name}</Text>
+                </View>
+            </TouchableOpacity>
+        )
+    }
+
+    const handleTagPress = (id) => {
+        if (selectedTags.includes(id)) {
+            setSelectedTags(selectedTags.filter(tag => tag !== id));
+        } else {
+            setSelectedTags([...selectedTags, id]);
+        }
     }
 
     return (
@@ -237,6 +274,17 @@ Tloušťka čáry kolem chytů: ${selectedLineWidth}
                         touchDimensions={styles.touchDimensions}
                     />
                 </View>
+                <View style={styles.tagsContainer}>
+                    <Text style={Fonts.h3}>
+                        Zobrazit bouldery s tagy:
+                    </Text>
+                    <View style={styles.tags}>
+                        {
+                            tags.map(tag =>
+                                renderTag(tag))
+                        }
+                    </View>
+                </View>
             </ScrollView>
             <TouchableOpacity onPress={savePress}>
                 <View style={styles.button}>
@@ -311,6 +359,20 @@ const styles = StyleSheet.create({
         padding: 10,
         gap: 20,
     },
+    tagsContainer: {
+        padding: 10,
+        gap: 15,
+    },
+    tags: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 10,
+    },
+    tag: {
+        alignItems: 'center',
+        padding: 10,
+        borderRadius: 10,
+    }
 });
 
 

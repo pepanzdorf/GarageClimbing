@@ -59,10 +59,18 @@ const shuffle = (array) => {
     return newArray;
 }
 
-export const filterBoulders = (boulders, withOpen, lowerGrade, upperGrade, sent, favourite) => {
+export const filterBoulders = (boulders, withOpen, lowerGrade, upperGrade, sent, favourite, tags) => {
     const chosenBoulders = boulders.filter(boulder => {
             const boulderGrade = boulder.average_grade;
-            return ((boulderGrade >= lowerGrade && boulderGrade <= upperGrade) || (withOpen && boulderGrade === -1)) && (!sent || !boulder.sent) && (!favourite || boulder.favourite);
+            let hasAllTags = true;
+            if (boulder.tags && tags.length > 0) {
+                tags.forEach(tag => {
+                    if (!boulder.tags.includes(tag)) {
+                        hasAllTags = false;
+                    }
+                });
+            }
+            return ((boulderGrade >= lowerGrade && boulderGrade <= upperGrade) || (withOpen && boulderGrade === -1)) && (!sent || !boulder.sent) && (!favourite || boulder.favourite) && hasAllTags;
         });
     return chosenBoulders;
 }
@@ -162,6 +170,16 @@ export const gradeToColor = (grade) => {
     }
 }
 
+export const tagIdToIconName = (tagId) => {
+    switch(tagId){
+        case 1:
+            return "💪";
+        case 2:
+            return "🦖";
+        default:
+            return "❓";
+    }
+}
 
 
 const fontDict = {

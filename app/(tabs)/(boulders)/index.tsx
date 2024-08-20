@@ -37,7 +37,8 @@ export default function Home(){
                 settings.lowerGrade,
                 settings.upperGrade,
                 settings.showUnsent,
-                settings.showFavourites
+                settings.showFavourites,
+                settings.tags,
             )
         );
     }

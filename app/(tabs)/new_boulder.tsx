@@ -7,16 +7,17 @@ import { GlobalStateContext } from '../context';
 import { Svg, Path, Rect, ClipPath, Defs, G, Use, Mask, Pattern, Line } from 'react-native-svg'
 import { apiURL } from '../../constants/Other';
 import { StarRating } from '../../components/StarRating';
-import { gradeIdToGradeName, attemptIdToAttemptName, numberToStrokeColor, numberToFillColor } from '../../scripts/utils';
+import { gradeIdToGradeName, attemptIdToAttemptName, numberToStrokeColor, numberToFillColor, tagIdToIconName } from '../../scripts/utils';
 import { Colors } from '../../constants/Colors'
 import { Fonts } from '../../constants/Fonts'
 import { FontAwesome, FontAwesome6 } from '@expo/vector-icons';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import { EmojiIcon } from '../../components/EmojiIcon';
 
 
 
 export default function NewBoulder(){
-    const { token, settings, holds, wallImage } = useContext(GlobalStateContext);
+    const { token, settings, holds, wallImage, tags } = useContext(GlobalStateContext);
     const windowAspectRatio = Dimensions.get('window').width / Dimensions.get('window').height;
     const tabBarHeight = useBottomTabBarHeight();
     const maxHeight = Dimensions.get('window').height - tabBarHeight*3;
@@ -28,6 +29,7 @@ export default function NewBoulder(){
     const [selectedColor, setSelectedColor] = useState(0);
     const [boulderName, setBoulderName] = useState('');
     const [boulderDescription, setBoulderDescription] = useState('');
+    const [selectedTags, setSelectedTags] = useState([]);
 
     const handleColorChange = (index, isVolume) => {
         if (isVolume) {
@@ -42,6 +44,7 @@ export default function NewBoulder(){
         setColorsVolumes(Array.from({length: holds["true"].length}, () => -1));
         setBoulderName('');
         setBoulderDescription('');
+        setSelectedTags([]);
     }
 
     const convertToListOfHolds = () => {
@@ -70,6 +73,7 @@ export default function NewBoulder(){
             holds: convertToListOfHolds(),
             edit: false,
             bid: null,
+            tags: selectedTags,
         }
         try {
             const response = await fetch(`${apiURL}/climbing/boulder`, {
@@ -91,6 +95,39 @@ export default function NewBoulder(){
         }
     }
 
+    const renderTag = (item) => {
+        let borderStyle = {
+            borderColor: Colors.borderDark,
+            borderWidth: 2,
+        }
+
+        let iconColor = Colors.borderDark;
+
+        if (selectedTags.includes(item.id)) {
+            borderStyle = {
+                borderColor: Colors.primary,
+                borderWidth: 2,
+            }
+            iconColor = Colors.primary;
+        }
+
+        return (
+            <TouchableOpacity onPress={() => handleTagPress(item.id)} key={item.id}>
+                <View style={[styles.tag, borderStyle]} key={item.id}>
+                    <EmojiIcon emoji={tagIdToIconName(item.id)} size={30} color={iconColor}/>
+                    <Text style={[Fonts.h3, {color: iconColor}]}>{item.name}</Text>
+                </View>
+            </TouchableOpacity>
+        )
+    }
+
+    const handleTagPress = (id) => {
+        if (selectedTags.includes(id)) {
+            setSelectedTags(selectedTags.filter(tag => tag !== id));
+        } else {
+            setSelectedTags([...selectedTags, id]);
+        }
+    }
 
     useEffect(() => {
         if (holds) {
@@ -247,6 +284,14 @@ export default function NewBoulder(){
                         value={boulderDescription}
                         onChangeText={setBoulderDescription}
                     />
+                    <View style={styles.tagsContainer}>
+                        <View style={styles.tags}>
+                            {
+                                tags.map(tag =>
+                                    renderTag(tag))
+                            }
+                        </View>
+                    </View>
                 </View>
                 <TouchableOpacity onPress={handleSave}>
                     <View style={styles.button}>
@@ -254,7 +299,7 @@ export default function NewBoulder(){
                     </View>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={handleCancel}>
-                    <View style={styles.button}>
+                    <View style={[styles.button, {backgroundColor: Colors.highlight}]}>
                         <Text style={Fonts.h3}>Smazat</Text>
                     </View>
                 </TouchableOpacity>
@@ -351,4 +396,18 @@ const styles = StyleSheet.create({
         borderWidth: 4,
         borderColor: Colors.primary,
     },
+    tagsContainer: {
+        padding: 10,
+        gap: 15,
+    },
+    tags: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 10,
+    },
+    tag: {
+        alignItems: 'center',
+        padding: 10,
+        borderRadius: 10,
+    }
 });

@@ -172,8 +172,7 @@ export const GlobalStateProvider = ({ children }) => {
         try {
             const persistentSettings = await AsyncStorage.getItem("settings");
             if (persistentSettings !== null) {
-                await setSettings(JSON.parse(persistentSettings));
-                checkSettings();
+                setSettings(JSON.parse(persistentSettings));
             } else {
                 rewriteToDefaultSettings();
             }
@@ -280,6 +279,7 @@ export const GlobalStateProvider = ({ children }) => {
     useEffect(() => {
         saveSettings(settings);
         fetchBoulders(settings.angle);
+        checkSettings();
     }
     , [settings]);
 

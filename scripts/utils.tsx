@@ -199,7 +199,7 @@ export const tagIdToIconName = (tagId) => {
         case 13:
             return "🔞";
         case 14:
-            return "✅";
+            return "🍼";
         case 15:
             return "🦶🚫️";
         case 16:
@@ -221,7 +221,7 @@ export const tagIdToIconName = (tagId) => {
         case 24:
             return "💎";
         case 25:
-            return "⚠";
+            return "⚰️";
         case 26:
             return "Ⓜ️";
         case 27:
@@ -232,6 +232,8 @@ export const tagIdToIconName = (tagId) => {
             return "🪵";
         case 30:
             return "🥤";
+        case 31:
+            return "🦿";
         default:
             return "❓";
     }

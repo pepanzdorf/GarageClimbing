@@ -53,6 +53,7 @@ export default function LogScreen() {
         {'image': require('../../../assets/images/borders/frog_frame.png'), 'hint': ''}, // Podeber a skoč, Dyno trénink, Double dyno, Příjemné koule, Dva kroky, (Ne)skok, nemysli a běž
         {'image': require('../../../assets/images/borders/sushi_frame.png'), 'hint': ''}, // Pro pocit, Dlouhá housenka, Inverzní sněhulák, Nepříjemná Barbora, píďalka na spoďáku
         {'image': require('../../../assets/images/borders/wing_frame.png'), 'hint': 'Okřídlený lezec nohy nepotřebuje'}, // 15 sends with campus challenge
+        {'image': require('../../../assets/images/borders/bbq_frame.png'), 'hint': '?'}, // Bbq climbing
     ];
 
 

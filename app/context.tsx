@@ -59,6 +59,8 @@ export const GlobalStateProvider = ({ children }) => {
 
     const [ tags, setTags ] = useState([]);
 
+    const [ wallConfig, setWallConfig ] = useState(null);
+
 
     const checkSettings = () => {
         if (settings.angle === undefined) {
@@ -127,6 +129,7 @@ export const GlobalStateProvider = ({ children }) => {
         fetchUserStats();
         loadScript();
         fetchTags();
+        fetchWallConfig();
     }
 
     const whoami = () => {
@@ -266,6 +269,13 @@ export const GlobalStateProvider = ({ children }) => {
     }
 
 
+    const fetchWallConfig = () => {
+        fetch(`${apiURL}/climbing/get_config`)
+            .then(response => response.json())
+            .then(jsonResponse => setWallConfig(jsonResponse))
+            .catch(error => console.log(error));
+    }
+
     useEffect(()=>{
         fetchAll();
     },[]);
@@ -325,6 +335,8 @@ export const GlobalStateProvider = ({ children }) => {
                 setArrowNavigationBoulders,
                 calculateScoreScript,
                 tags,
+                wallConfig,
+                setWallConfig,
         }}>
             {children}
         </GlobalStateContext.Provider>

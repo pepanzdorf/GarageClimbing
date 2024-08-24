@@ -10,11 +10,13 @@ import { StarRatingClickable } from '../../components/StarRatingClickable';
 import { EmojiIcon } from '../../components/EmojiIcon';
 import { Colors } from '../../constants/Colors'
 import { Fonts } from '../../constants/Fonts'
+import { apiURL } from '../../constants/Other';
 
 
 export default function Settings(){
-    const { settings, setSettings, saveSettings, settingsLoading, tags } = useContext(GlobalStateContext);
+    const { settings, setSettings, saveSettings, settingsLoading, tags, wallConfig, setWallConfig, isAdmin, token } = useContext(GlobalStateContext);
     const [ angle, setAngle ] = useState(settings.angle);
+    const [ selectedWallAngle, setSelectedWallAngle ] = useState(wallConfig.angle);
     const [ selectedSort, setSelectedSort ] = useState(settings.sortby);
     const [ selectedGrading, setSelectedGrading ] = useState(settings.grading);
     const [ gradeRange, setGradeRange ] = useState([0, 53]);
@@ -47,7 +49,21 @@ export default function Settings(){
         {key:'4', value: 'Melda-scale'},
     ];
 
+    const saveWallAngle = () => {
+        fetch(`${apiURL}/climbing/set_angle/${selectedWallAngle}`, {
+            headers: {
+                'Authorization': 'Bearer ' + token,
+            },
+        })
+        .then(response => response.ok ? setWallConfig({...wallConfig, 'angle': selectedWallAngle}) : alert('Úhel stěny se nepodařilo změnit'))
+    }
+
+
     const savePress = () => {
+        if (isAdmin && selectedWallAngle !== wallConfig.angle) {
+            saveWallAngle();
+        }
+
         setSettings(
             {
                 ...settings,
@@ -127,6 +143,26 @@ Tloušťka čáry kolem chytů: ${selectedLineWidth}
             </View>
             {settingsLoading && <ActivityIndicator size="large" color="#0000ff" />}
             <ScrollView contentContainerStyle={styles.settingsContainer}>
+                {
+                    isAdmin &&
+                    <View style={styles.angle}>
+                        <Text style={Fonts.h3}>
+                            {`Globální úhel stěny: ${selectedWallAngle}˚`}
+                        </Text>
+                        <MultiSlider
+                            values={[selectedWallAngle]}
+                            sliderLength={280}
+                            min={0}
+                            max={45}
+                            step={1}
+                            onValuesChange={values => setSelectedWallAngle(values[0])}
+                            markerStyle={styles.markerStyle}
+                            selectedStyle={{backgroundColor: Colors.primary}}
+                            unselectedStyle={{backgroundColor: Colors.border}}
+                            touchDimensions={styles.touchDimensions}
+                        />
+                    </View>
+                }
                 <View style={styles.angle}>
                     <Text style={Fonts.h3}>
                         {`Úhel: ${angle}˚`}

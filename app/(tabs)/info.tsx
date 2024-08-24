@@ -13,7 +13,7 @@ import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-ta
 
 
 export default function Info(){
-    const { holds, boulders, stats, wallImage, settings } = useContext(GlobalStateContext);
+    const { holds, boulders, stats, wallImage, settings, wallConfig } = useContext(GlobalStateContext);
     const [ nHolds, setNHolds ] = useState(0);
     const [ nVolumes, setNVolumes ] = useState(0);
     const [ bouldersByGrade, setBouldersByGrade ] = useState({});
@@ -172,6 +172,12 @@ export default function Info(){
                         }
                     </View>
                     <View style={styles.field}>
+                        <Text style={Fonts.h3}>Aktuální úhel stěny: </Text>
+                        {
+                            wallConfig && (<Text style={Fonts.plainBold}>{wallConfig.angle}˚</Text>)
+                        }
+                    </View>
+                    <View style={styles.field}>
                         <Text style={Fonts.h3}>Počet lezení: </Text>
                         {
                             stats && (<Text style={Fonts.plainBold}>{stats['sessions']['overall']}</Text>)
@@ -281,7 +287,7 @@ export default function Info(){
                     </View>
                     <View style={styles.field}>
                         <Text style={Fonts.h3}>Verze aplikace: </Text>
-                        <Text style={Fonts.plainBold}>1.1.5</Text>
+                        <Text style={Fonts.plainBold}>1.1.6</Text>
                     </View>
                 </View>
             </ScrollView>

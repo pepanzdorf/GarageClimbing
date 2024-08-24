@@ -13,7 +13,7 @@ import { Colors } from '../../../../constants/Colors';
 
 export default function LogScreen() {
     const { id } = useLocalSearchParams();
-    const { settings, token, currentBoulder, setReload, currentChallenge } = useContext(GlobalStateContext);
+    const { settings, token, currentBoulder, setReload, currentChallenge, wallConfig } = useContext(GlobalStateContext);
     const [ selectedAngle, setSelectedAngle ] = useState(settings.angle);
     const [ selectedRating, setSelectedRating ] = useState(settings.rating);
     const [ selectedGrade, setSelectedGrade ] = useState(currentBoulder.average_grade == -1 ? 0 : currentBoulder.average_grade);
@@ -114,6 +114,14 @@ export default function LogScreen() {
                     />
                 </View>
                 <StarRatingClickable maxStars={5} initialRating={settings.rating} onRatingChange={setSelectedRating} size={48}/>
+                {
+                    wallConfig && selectedAngle !== wallConfig.angle &&
+                    (
+                        <View style={{backgroundColor: Colors.highlight, padding: 10, borderRadius: 10, marginTop: 10}}>
+                            <Text style={Fonts.h3}>Vybraný úhel {selectedAngle} se liší od skutečného úhlu stěny {wallConfig.angle}!</Text>
+                        </View>
+                    )
+                }
             </ScrollView>
             <TouchableOpacity onPress={logSend}>
                 <View style={styles.button}>

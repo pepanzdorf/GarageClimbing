@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView, Linking, Dimensions, ImageBackground, Image, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Linking, Dimensions, ImageBackground, Image, Alert, Modal, TouchableOpacity } from 'react-native';
 import { GlobalStateContext } from '../context';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/Colors'
@@ -9,11 +9,11 @@ import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { Svg, Path, Rect, ClipPath, Defs, G, Use, Mask, Pattern, Line } from 'react-native-svg'
 import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
 import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
-
+import { useRouter } from 'expo-router';
 
 
 export default function Info(){
-    const { holds, boulders, stats, wallImage, settings, wallConfig } = useContext(GlobalStateContext);
+    const { holds, boulders, stats, wallImage, settings, wallConfig, setCurrentBoulder } = useContext(GlobalStateContext);
     const [ nHolds, setNHolds ] = useState(0);
     const [ nVolumes, setNVolumes ] = useState(0);
     const [ bouldersByGrade, setBouldersByGrade ] = useState({});
@@ -21,6 +21,8 @@ export default function Info(){
     const [ tableHead, setTableHead ] = useState(['V', 'Font', 'YDS', 'French sport', 'Melda-scale']);
     const [ tableData, setTableData ] = useState();
     const [ savings, setSavings ] = useState(0);
+    const [ modalVisible, setModalVisible ] = useState(false);
+    const [ pressedHold, setPressedHold ] = useState();
 
     const windowAspectRatio = Dimensions.get('window').width / Dimensions.get('window').height;
     const tabBarHeight = useBottomTabBarHeight();
@@ -28,6 +30,7 @@ export default function Info(){
     const imageAspectRatio = 820.5611 / 1198.3861;
     const isImageWider = windowAspectRatio < imageAspectRatio;
     const zoomableViewRef = React.createRef<ReactNativeZoomableView>();
+    const router = useRouter();
 
     const makeTableData = () => {
         let data = [];
@@ -97,21 +100,43 @@ export default function Info(){
         setSavings(savings);
     }
 
-    const handleHoldPress = (hold) => {
+    const handleReroute = (boulder_id) => {
+        const clickedBoulder = boulders.find(boulder => boulder.id == boulder_id);
+        setCurrentBoulder(clickedBoulder);
+        setModalVisible(false);
+        router.push(`${boulder_id}`);
+    }
+
+    const renderBoulderInfo = (boulder) => {
+        return (
+            <TouchableOpacity key={boulder[2]} onPress={() => handleReroute(boulder[2])}>
+                <View>
+                    <Text style={{fontSize: 18}}>{boulder[0]} - {gradeIdToGradeName(boulder[1], settings.grading)}</Text>
+                </View>
+            </TouchableOpacity>
+        );
+    }
+
+    const createHoldInfo = (hold) => {
         const tops = hold.types_counts['0'] ? hold.types_counts['0'] : 0;
         const feet = hold.types_counts['1'] ? hold.types_counts['1'] : 0;
         const middle = hold.types_counts['2'] ? hold.types_counts['2'] : 0;
         const starts = hold.types_counts['3'] ? hold.types_counts['3'] : 0;
         const count = tops + feet + middle + starts;
-        let message = `Vyskytuje se v ${count} boulderech\nTop: ${tops}\nNoha: ${feet}\nRuka: ${middle}\nStart: ${starts}`;
-        if (count > 0) {
-            message += "\n\nBouldery:\n";
-            hold['boulders'].forEach((boulder) => {
-                message += boulder[0] + " - " + gradeIdToGradeName(boulder[1], settings.grading) + "\n";
-            });
-        }
+        let message = `Vyskytuje se v ${count} boulderech\nTop: ${tops}\nNoha: ${feet}\nRuka: ${middle}\nStart: ${starts}\n\nBouldery:\n`;
 
-        Alert.alert(`Stisknut chyt ID: ${hold.id}`, message);
+        return (
+            <ScrollView>
+                <View style={styles.modalView}>
+                    <Text style={Fonts.h1}>Stisknut chyt ID: {hold.id}</Text>
+                    <Text style={Fonts.h3}>{message}</Text>
+                    {
+                        count > 0 &&
+                        hold['boulders'].map(boulder => renderBoulderInfo(boulder))
+                    }
+                </View>
+            </ScrollView>
+        );
     }
 
     useEffect(() => {
@@ -215,7 +240,7 @@ export default function Info(){
                                                         stroke={getColorForValue(calcHoldCount(hold), 0, maxCount)}
                                                         strokeWidth={settings.lineWidth}
                                                         d={hold.path}
-                                                        onPress={() => handleHoldPress(hold)}
+                                                        onPress={() => {setModalVisible(true); setPressedHold(hold);}}
                                                     />
                                                 ))}
                                             </G>
@@ -291,6 +316,15 @@ export default function Info(){
                     </View>
                 </View>
             </ScrollView>
+
+            <Modal visible={modalVisible}>
+                {pressedHold && createHoldInfo(pressedHold)}
+                <TouchableOpacity onPress={() => setModalVisible(false)}>
+                    <View style={styles.button}>
+                        <Text style={styles.textStyle}>OK</Text>
+                    </View>
+                </TouchableOpacity>
+            </Modal>
         </SafeAreaView>
     );
 };
@@ -338,4 +372,17 @@ const styles = StyleSheet.create({
         height: undefined,
         aspectRatio: 820.5611 / 1198.3861,
     },
+    modalView: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 20,
+    },
+    button: {
+        backgroundColor: Colors.primary,
+        padding: 10,
+        margin: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+    }
 });

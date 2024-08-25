@@ -41,17 +41,18 @@ export default function UserStats() {
                             <View style={styles.genericStats}>
                                 <Text style={Fonts.h1}>Horizontální spára</Text>
                                 {
+                                    userCrackStats['horizontal'] &&
                                     Object.keys(userCrackStats['horizontal']).map((crack) => {
                                         return (
-                                            <View>
+                                            <View key={crack}>
                                                 <Text style={Fonts.h2}>{crackIdToCrackName(parseInt(crack)+1)}</Text>
                                                 <View style={styles.row}>
-                                                    <Text style={Fonts.h3}>Celkově:</Text>
-                                                    <Text style={Fonts.h3}>{userCrackStats['horizontal'][crack]['climbed_distance']} m</Text>
+                                                    <Text style={Fonts.plain}>Celkově:</Text>
+                                                    <Text style={Fonts.plain}>{userCrackStats['horizontal'][crack]['climbed_distance']} m</Text>
                                                 </View>
                                                 <View style={styles.row}>
-                                                    <Text style={Fonts.h3}>Nejlepší po sobě:</Text>
-                                                    <Text style={Fonts.h3}>{userCrackStats['horizontal'][crack]['best_consecutive']} m</Text>
+                                                    <Text style={Fonts.plain}>Nejlepší po sobě:</Text>
+                                                    <Text style={Fonts.plain}>{userCrackStats['horizontal'][crack]['best_consecutive']} m</Text>
                                                 </View>
                                             </View>
                                         )
@@ -61,17 +62,18 @@ export default function UserStats() {
                             <View style={styles.genericStats}>
                                 <Text style={Fonts.h1}>Vertikální spára</Text>
                                 {
+                                    userCrackStats['vertical'] &&
                                     Object.keys(userCrackStats['vertical']).map((crack) => {
                                         return (
-                                            <View>
+                                            <View key={crack}>
                                                 <Text style={Fonts.h2}>{crackIdToCrackName(parseInt(crack)+1)}</Text>
                                                 <View style={styles.row}>
-                                                    <Text style={Fonts.h3}>Celkově:</Text>
-                                                    <Text style={Fonts.h3}>{userCrackStats['vertical'][crack]['climbed_distance']} m</Text>
+                                                    <Text style={Fonts.plain}>Celkově:</Text>
+                                                    <Text style={Fonts.plain}>{userCrackStats['vertical'][crack]['climbed_distance']} m</Text>
                                                 </View>
                                                 <View style={styles.row}>
-                                                    <Text style={Fonts.h3}>Nejlepší po sobě:</Text>
-                                                    <Text style={Fonts.h3}>{userCrackStats['vertical'][crack]['best_consecutive']} m</Text>
+                                                    <Text style={Fonts.plain}>Nejlepší po sobě:</Text>
+                                                    <Text style={Fonts.plain}>{userCrackStats['vertical'][crack]['best_consecutive']} m</Text>
                                                 </View>
                                             </View>
                                         )

@@ -18,11 +18,14 @@ export default function CrackLogScreen() {
     const [ selectedDecimalTimes, setSelectedDecimalTimes ] = useState(0);
 
     const crackTypeData = Array(6).fill().map((_, i) => crackIdToCrackName(i));
+    const horizontalCrackTypeData = crackTypeData.slice(0, 3);
     const wholeTimesData = Array(52).fill().map((_, i) => i === 0 ? "-" : `${i-1}.`);
     const decimalTimesData = Array(11).fill().map((_, i) => i === 0 ? "-" : i-1);
+    const typeRef = React.useRef();
+    const wholeRef = React.useRef();
+    const decimalRef = React.useRef();
 
     const logSend = async () => {
-        console.log(isVertical, selectedCrackType, selectedWholeTimes, selectedDecimalTimes);
         if (selectedCrackType === 0) {
             alert("Musíte zadat typ spáry.");
             return;
@@ -59,6 +62,17 @@ export default function CrackLogScreen() {
     }
 
     const setDefaults = () => {
+        setSelectedCrackType(0);
+        setSelectedWholeTimes(0);
+        setSelectedDecimalTimes(0);
+        typeRef.current && typeRef.current.scrollToTargetIndex(0);
+        wholeRef.current && wholeRef.current.scrollToTargetIndex(0);
+        decimalRef.current && decimalRef.current.scrollToTargetIndex(0);
+    }
+
+    const switchChange = (value) => {
+        setIsVertical(value);
+        setDefaults();
     }
 
     useEffect(() => {
@@ -78,7 +92,7 @@ export default function CrackLogScreen() {
                         <Switch
                             trackColor={styles.track}
                             thumbColor={isVertical ? Colors.background : Colors.backgroundDarker}
-                            onValueChange={setIsVertical}
+                            onValueChange={switchChange}
                             value={isVertical}
                         />
                         <Text style={Fonts.h3}>Vertikální</Text>
@@ -87,7 +101,8 @@ export default function CrackLogScreen() {
                 <View style={styles.picker}>
                     <Text style={Fonts.h2}>Typ spáry:</Text>
                     <ScrollPicker
-                        dataSource={crackTypeData}
+                        ref={typeRef}
+                        dataSource={isVertical ? crackTypeData : horizontalCrackTypeData}
                         selectedIndex={0}
                         wrapperHeight={styles.pickerHeight}
                         wrapperBackground="#FFFFFF"
@@ -104,6 +119,7 @@ export default function CrackLogScreen() {
                     <Text style={Fonts.plain}>(kolikrát, druhý výběr je desetinná část)</Text>
                     <View style={styles.row}>
                         <ScrollPicker
+                            ref={wholeRef}
                             dataSource={wholeTimesData}
                             selectedIndex={selectedWholeTimes}
                             wrapperHeight={styles.pickerHeight}
@@ -116,6 +132,7 @@ export default function CrackLogScreen() {
                             onValueChange={(_, index) => setSelectedWholeTimes(index)}
                         />
                         <ScrollPicker
+                            ref={decimalRef}
                             dataSource={decimalTimesData}
                             selectedIndex={selectedDecimalTimes}
                             wrapperHeight={styles.pickerHeight}

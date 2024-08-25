@@ -19,6 +19,23 @@ export const gradeIdToGradeName = (gradeId, grading) => {
     }
 }
 
+export const crackIdToCrackName = (crackId) => {
+    switch(crackId){
+        case 0:
+            return "-";
+        case 1:
+            return "Dlaň";
+        case 2:
+            return "Pěst";
+        case 3:
+            return "Komín";
+        case 4:
+            return "Prsty";
+        case 5:
+            return "Off-width";
+    }
+}
+
 export const sortBoulderBy = (sorter, boulders) => {
     if(sorter == 1){
         return boulders.sort((a,b) => b.average_grade - a.average_grade);

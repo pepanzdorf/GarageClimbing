@@ -8,6 +8,7 @@ export default function Layout() {
             <GlobalStateProvider>
                 <Stack>
                     <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                    <Stack.Screen name="(crack)" options={{ headerShown: false }} />
                 </Stack>
             </GlobalStateProvider>
         </SafeAreaProvider>

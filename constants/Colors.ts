@@ -12,4 +12,6 @@ export const Colors = {
     third: '#cd7f32',
     transparentWhite: 'rgba(255,255,255,0.7)',
     transparentPrimary: 'rgba(52,193,246,0.7)',
+    crackPrimary: '#cf4e4e',
+    crackSecondary: '#7b3232',
 };

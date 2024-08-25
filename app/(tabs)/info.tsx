@@ -94,6 +94,9 @@ export default function Info(){
 
     const calculateSavings = () => {
         let savings = 0;
+        if (!stats) {
+            return;
+        }
         stats['users'].forEach((user) => {
             savings += user[1]['sessions']['overall'] * 200;
         });
@@ -168,6 +171,11 @@ export default function Info(){
                     <Text style={Fonts.h1}>Garážové lezení</Text>
                 </View>
                 <View style={styles.info}>
+                    <TouchableOpacity onPress={() => router.navigate('/(crack)/log')}>
+                        <View style={styles.crackLink}>
+                            <Text style={Fonts.h3}>Jít na spáru</Text>
+                        </View>
+                    </TouchableOpacity>
                     <View style={styles.field}>
                         <Text style={Fonts.h3}>Youtube: </Text>
                         <Text style={styles.link} onPress={() => Linking.openURL('https://www.youtube.com/@KokosKokosovic')}>https://www.youtube.com/@KokosKokosovic</Text>
@@ -384,5 +392,16 @@ const styles = StyleSheet.create({
         margin: 10,
         borderRadius: 5,
         alignItems: 'center',
-    }
+    },
+    crackLink: {
+        flex: 1,
+        marginBottom: 20,
+        backgroundColor: Colors.primary,
+        borderWidth: 1,
+        borderColor: Colors.borderDark,
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+    },
 });

@@ -61,6 +61,8 @@ export const GlobalStateProvider = ({ children }) => {
 
     const [ wallConfig, setWallConfig ] = useState(null);
 
+    const [ savedBoulderAttempts, setSavedBoulderAttempts ] = useState();
+
 
     const checkSettings = () => {
         if (settings.angle === undefined) {
@@ -130,6 +132,7 @@ export const GlobalStateProvider = ({ children }) => {
         loadScript();
         fetchTags();
         fetchWallConfig();
+        loadSavedBoulderAttempts();
     }
 
     const whoami = () => {
@@ -170,6 +173,19 @@ export const GlobalStateProvider = ({ children }) => {
         .catch(error => console.log(error))
         .finally(() => setHoldsLoading(false));
     };
+
+    const loadSavedBoulderAttempts = async () => {
+        try {
+            const boulderAttempts = await AsyncStorage.getItem("boulderAttempts");
+            if (boulderAttempts) {
+                setSavedBoulderAttempts(JSON.parse(boulderAttempts));
+            } else {
+                setSavedBoulderAttempts({});
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     const loadSettings = async () => {
         try {
@@ -214,6 +230,14 @@ export const GlobalStateProvider = ({ children }) => {
     const saveToken = async (token) => {
         try {
             await AsyncStorage.setItem("token", token);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const saveBoulderAttempts = async () => {
+        try {
+            await AsyncStorage.setItem("boulderAttempts", JSON.stringify(savedBoulderAttempts));
         } catch (error) {
             console.log(error);
         }
@@ -293,7 +317,10 @@ export const GlobalStateProvider = ({ children }) => {
     }
     , [settings]);
 
-
+    useEffect(() => {
+        savedBoulderAttempts && saveBoulderAttempts();
+    }
+    , [savedBoulderAttempts]);
 
     return (
         <GlobalStateContext.Provider
@@ -337,6 +364,8 @@ export const GlobalStateProvider = ({ children }) => {
                 tags,
                 wallConfig,
                 setWallConfig,
+                savedBoulderAttempts,
+                setSavedBoulderAttempts,
         }}>
             {children}
         </GlobalStateContext.Provider>

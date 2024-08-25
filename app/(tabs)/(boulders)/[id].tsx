@@ -13,7 +13,7 @@ import { Fonts } from '../../../constants/Fonts'
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { EmojiIcon } from '../../../components/EmojiIcon';
-
+import ScrollPicker from "react-native-wheel-scrollview-picker";
 
 export default function DetailsScreen() {
     const { id } = useLocalSearchParams();
@@ -34,6 +34,8 @@ export default function DetailsScreen() {
         arrowNavigationBoulders,
         calculateScoreScript,
         tags,
+        savedBoulderAttempts,
+        setSavedBoulderAttempts,
     } = useContext(GlobalStateContext);
     const [holds, setHolds] = useState(null);
     const [sends, setSends] = useState([]);
@@ -46,6 +48,7 @@ export default function DetailsScreen() {
     const [show, setShow] = useState(0);
     const [completedChallenges, setCompletedChallenges] = useState(null);
     const [randomHold, setRandomHold] = useState(null);
+
     const windowAspectRatio = Dimensions.get('window').width / Dimensions.get('window').height;
     const tabBarHeight = useBottomTabBarHeight();
     const maxHeight = Dimensions.get('window').height - tabBarHeight*3;
@@ -54,6 +57,8 @@ export default function DetailsScreen() {
     const router = useRouter();
     const tabNames = ["Zobrazit komentáře", "Zobrazit splněné výzvy", "Zobrazit výlezy"];
     const zoomableViewRef = React.createRef<ReactNativeZoomableView>();
+    const attemptsData = Array(26).fill().map((_, i) => i);
+    const scrollRef = React.useRef();
 
 
     useEffect(() => {
@@ -62,6 +67,7 @@ export default function DetailsScreen() {
         fetchSends();
         fetchComments();
         fetchCompletedChallenges();
+        scrollRef.current && scrollRef.current.scrollToTargetIndex(savedBoulderAttempts[id]);
     }, [id]);
 
     useEffect(() => {
@@ -449,7 +455,7 @@ export default function DetailsScreen() {
     const renderTag = (item) => {
         const tag = tags.find(tag => tag.id === item);
         return (
-            <View style={[styles.tag, {borderWidth: 2, borderColor: Colors.primary}]} key={item.id}>
+            <View style={[styles.tag, {borderWidth: 2, borderColor: Colors.primary}]} key={tag.id}>
                 <EmojiIcon emoji={tagIdToIconName(tag.id)} size={30} color={Colors.primary}/>
                 <Text style={[Fonts.h3, {color: Colors.primary}]}>{tag.name}</Text>
             </View>
@@ -650,6 +656,20 @@ export default function DetailsScreen() {
                         </View>
                     </View>
                 }
+                <View style={styles.picker}>
+                    <Text style={Fonts.h3}>Zatím pokusů:</Text>
+                    <ScrollPicker
+                        ref={scrollRef}
+                        dataSource={attemptsData}
+                        selectedIndex={savedBoulderAttempts[id]}
+                        wrapperHeight={75}
+                        highlightColor={Colors.border}
+                        highlightBorderWidth={2}
+                        itemTextStyle={Fonts.h3}
+                        activeItemTextStyle={[Fonts.h3, {color: Colors.primary}]}
+                        onValueChange={(_, index) => {setSavedBoulderAttempts({...savedBoulderAttempts, [id]: index})}}
+                    />
+                </View>
                 <View style={styles.sendComContainer}>
                     <TouchableOpacity onPress={() => setShow((show+1)%3)}>
                         <View style={styles.button}>
@@ -813,5 +833,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 10,
         borderRadius: 10,
-    }
+    },
+    picker: {
+        paddingHorizontal: 15,
+        gap: 10,
+    },
 });

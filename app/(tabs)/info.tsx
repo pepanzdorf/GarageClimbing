@@ -243,7 +243,7 @@ export default function Info(){
                                             <G id="holds">
                                                 {holds["false"].map((hold) => (
                                                     <Path
-                                                        key={hold.hold_id}
+                                                        key={hold.id}
                                                         fill= 'none'
                                                         stroke={getColorForValue(calcHoldCount(hold), 0, maxCount)}
                                                         strokeWidth={settings.lineWidth}

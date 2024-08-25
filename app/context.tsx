@@ -63,6 +63,8 @@ export const GlobalStateProvider = ({ children }) => {
 
     const [ savedBoulderAttempts, setSavedBoulderAttempts ] = useState();
 
+    const [ crackStats, setCrackStats ] = useState(null);
+
 
     const checkSettings = () => {
         if (settings.angle === undefined) {
@@ -133,6 +135,7 @@ export const GlobalStateProvider = ({ children }) => {
         fetchTags();
         fetchWallConfig();
         loadSavedBoulderAttempts();
+        fetchCrackStats();
     }
 
     const whoami = () => {
@@ -284,6 +287,13 @@ export const GlobalStateProvider = ({ children }) => {
             .catch(error => console.log(error));
     }
 
+    const fetchCrackStats = () => {
+        fetch(`${apiURL}/climbing/crack/stats`)
+            .then(response => response.json())
+            .then(response => setCrackStats(response))
+            .catch(error => console.log(error));
+    }
+
 
     const fetchTags = () => {
         fetch(`${apiURL}/climbing/get_tags`)
@@ -366,6 +376,8 @@ export const GlobalStateProvider = ({ children }) => {
                 setWallConfig,
                 savedBoulderAttempts,
                 setSavedBoulderAttempts,
+                crackStats,
+                fetchCrackStats,
         }}>
             {children}
         </GlobalStateContext.Provider>

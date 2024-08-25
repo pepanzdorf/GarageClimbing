@@ -11,7 +11,7 @@ import { gradeIdToGradeName, gradeToColor, findBoulderById } from '../../../scri
 import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
 
 
-export default function LogScreen() {
+export default function UserStats() {
     const { name } = useLocalSearchParams();
     const { stats, settings, loggedUser, token, boulders, fetchUserStats } = useContext(GlobalStateContext);
     const router = useRouter();

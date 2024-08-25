@@ -19,9 +19,21 @@ export default function Info(){
                 <View style={styles.info}>
                     <TouchableOpacity onPress={() => router.navigate('/')}>
                         <View style={styles.bouldersLink}>
-                            <Text style={Fonts.h3}>Jít na boulder</Text>
+                            <Text style={Fonts.h3}>Jít na bouldery</Text>
                         </View>
                     </TouchableOpacity>
+                    <View style={styles.field}>
+                        <Text style={Fonts.h3}>Horizontální spára: </Text>
+                        <Text style={Fonts.plainBold}>
+                            Horizontální spára je samostojná délky 4 metry. Lze na ní lézt dlaň nebo pěst.
+                        </Text>
+                    </View>
+                    <View style={styles.field}>
+                        <Text style={Fonts.h3}>Vertikální spára: </Text>
+                        <Text style={Fonts.plainBold}>
+                            Vertikální spára má 5 metrů. Je nastavitelná, takže na ní lze lézt od prstů až po komín.
+                        </Text>
+                    </View>
                 </View>
             </ScrollView>
         </SafeAreaView>

@@ -1,3 +1,5 @@
+import { Audio } from 'expo-av';
+
 export const gradeIdToGradeName = (gradeId, grading) => {
     if (gradeId == -1) {
         return "Open"
@@ -110,6 +112,19 @@ export const attemptIdToAttemptName = (attemptId) => {
     if (attemptId === 9) return "10-24";
     if (attemptId === 10) return "25+";
     return attemptId+1;
+}
+
+export const playSound = (name, sound) => {
+    console.log('Playing '+name);
+    Audio.Sound.createAsync(
+        sound,
+        { shouldPlay: true }
+    ).then((res)=>{
+        res.sound.setOnPlaybackStatusUpdate((status)=>{
+            if(!status.didJustFinish) return;
+            res.sound.unloadAsync().catch(()=>{});
+        });
+    }).catch((error)=>{});
 }
 
 export const numberToStrokeColor = (num) => {

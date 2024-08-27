@@ -4,11 +4,10 @@ import { GlobalStateContext } from '../context';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import { useRouter } from 'expo-router';
-import { gradeIdToGradeName, filterBoulders } from '../../scripts/utils';
+import { gradeIdToGradeName, filterBoulders, playSound } from '../../scripts/utils';
 import { Colors } from '../../constants/Colors'
 import { Fonts } from '../../constants/Fonts'
 import { FontAwesome } from '@expo/vector-icons';
-import { Audio } from 'expo-av';
 
 
 export default function Random(){
@@ -24,6 +23,7 @@ export default function Random(){
 
 
     const multiSliderValuesChange = values => {setGradeRange(values)};
+    const honk = require('../../assets/audio/honk.wav');
 
 
     function handleReroute() {
@@ -87,20 +87,6 @@ export default function Random(){
             }
         }
     }
-
-    function playSound(name, sound){
-        console.log('Playing '+name);
-        Audio.Sound.createAsync(
-            sound,
-            { shouldPlay: true }
-        ).then((res)=>{
-            res.sound.setOnPlaybackStatusUpdate((status)=>{
-                if(!status.didJustFinish) return;
-                res.sound.unloadAsync().catch(()=>{});
-            });
-        }).catch((error)=>{});
-    }
-    const honk = require('../../assets/audio/honk.wav');
 
     useEffect(() => {
         handleFilter();

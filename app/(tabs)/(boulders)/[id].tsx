@@ -36,6 +36,7 @@ export default function DetailsScreen() {
         tags,
         savedBoulderAttempts,
         setSavedBoulderAttempts,
+        loggedUser,
     } = useContext(GlobalStateContext);
     const [holds, setHolds] = useState(null);
     const [sends, setSends] = useState([]);
@@ -48,6 +49,7 @@ export default function DetailsScreen() {
     const [show, setShow] = useState(0);
     const [completedChallenges, setCompletedChallenges] = useState(null);
     const [randomHold, setRandomHold] = useState(null);
+    const [userSavedAttempts, setUserSavedAttempts] = useState(null);
 
     const windowAspectRatio = Dimensions.get('window').width / Dimensions.get('window').height;
     const tabBarHeight = useBottomTabBarHeight();
@@ -67,8 +69,22 @@ export default function DetailsScreen() {
         fetchSends();
         fetchComments();
         fetchCompletedChallenges();
-        scrollRef.current && scrollRef.current.scrollToTargetIndex(savedBoulderAttempts[id]);
     }, [id]);
+
+    useEffect(() => {
+        setSavedBoulderAttempts({...savedBoulderAttempts, [loggedUser]: userSavedAttempts});
+    }, [userSavedAttempts]);
+
+    useEffect(() => {
+        const usa = savedBoulderAttempts[loggedUser];
+        if (!usa) {
+            setUserSavedAttempts({});
+        } else {
+            setUserSavedAttempts(usa);
+        }
+        scrollRef.current && scrollRef.current.scrollToTargetIndex(usa[id]);
+    }
+    , [loggedUser]);
 
     useEffect(() => {
         setIsFavourite(currentBoulder.favourite);
@@ -656,20 +672,23 @@ export default function DetailsScreen() {
                         </View>
                     </View>
                 }
-                <View style={styles.picker}>
-                    <Text style={Fonts.h3}>Zatím pokusů:</Text>
-                    <ScrollPicker
-                        ref={scrollRef}
-                        dataSource={attemptsData}
-                        selectedIndex={savedBoulderAttempts[id]}
-                        wrapperHeight={75}
-                        highlightColor={Colors.border}
-                        highlightBorderWidth={2}
-                        itemTextStyle={Fonts.h3}
-                        activeItemTextStyle={[Fonts.h3, {color: Colors.primary}]}
-                        onValueChange={(_, index) => {setSavedBoulderAttempts({...savedBoulderAttempts, [id]: index})}}
-                    />
-                </View>
+                {
+                    userSavedAttempts &&
+                    <View style={styles.picker}>
+                        <Text style={Fonts.h3}>Zatím pokusů:</Text>
+                        <ScrollPicker
+                            ref={scrollRef}
+                            dataSource={attemptsData}
+                            selectedIndex={userSavedAttempts[id]}
+                            wrapperHeight={75}
+                            highlightColor={Colors.border}
+                            highlightBorderWidth={2}
+                            itemTextStyle={Fonts.h3}
+                            activeItemTextStyle={[Fonts.h3, {color: Colors.primary}]}
+                            onValueChange={(_, index) => {setUserSavedAttempts({...userSavedAttempts, [id]: index})}}
+                        />
+                    </View>
+                }
                 <View style={styles.sendComContainer}>
                     <TouchableOpacity onPress={() => setShow((show+1)%3)}>
                         <View style={styles.button}>

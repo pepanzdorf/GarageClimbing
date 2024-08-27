@@ -9,6 +9,7 @@ import { Fonts } from '../../../constants/Fonts'
 import { apiURL } from '../../../constants/Other';
 import { gradeIdToGradeName, gradeToColor, findBoulderById } from '../../../scripts/utils';
 import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
+import { Audio } from 'expo-av';
 
 
 export default function UserStats() {
@@ -56,7 +57,23 @@ export default function UserStats() {
         {'image': require('../../../assets/images/borders/sushi_frame.png'), 'hint': ''}, // Pro pocit, Dlouhá housenka, Inverzní sněhulák, Nepříjemná Barbora, píďalka na spoďáku
         {'image': require('../../../assets/images/borders/wing_frame.png'), 'hint': 'Okřídlený lezec nohy nepotřebuje'}, // 15 sends with campus challenge
         {'image': require('../../../assets/images/borders/bbq_frame.png'), 'hint': '?'}, // Bbq climbing
+        {'image': require('../../../assets/images/borders/goose_frame.png'), 'hint': 'Stiskni mě 🔊'},
     ];
+
+
+    function playSound(name, sound){
+        console.log('Playing '+name);
+        Audio.Sound.createAsync(
+            sound,
+            { shouldPlay: true }
+        ).then((res)=>{
+            res.sound.setOnPlaybackStatusUpdate((status)=>{
+                if(!status.didJustFinish) return;
+                res.sound.unloadAsync().catch(()=>{});
+            });
+        }).catch((error)=>{});
+    }
+    const honk = require('../../../assets/audio/honk.wav');
 
 
     const sortBorders = () => {
@@ -130,6 +147,16 @@ export default function UserStats() {
             if (userStats['to_unlock'][item.id]) {
                 if (typeof userStats['to_unlock'][item.id] == 'string') {
                     longHint += "\n" + userStats['to_unlock'][item.id];
+                    if (item.id == 29) {
+                        return (
+                            <TouchableOpacity onPress={() => playSound('honk', honk)} key={item.id}>
+                                <View style={{alignItems: 'center', justifyContent: 'center', borderWidth: 1}} key={`image-${item.id}`}>
+                                    <Image source={item.data.image} style={styles.borderChoice} blurRadius={50}/>
+                                    <Text style={[Fonts.plain, {position: 'absolute'}]}>{longHint}</Text>
+                                </View>
+                            </TouchableOpacity>
+                        )
+                    }
                 } else {
                     for (let i = 0; i < userStats['to_unlock'][item.id].length; i++) {
                         let boulder = findBoulderById(userStats['to_unlock'][item.id][i], boulders);

@@ -8,6 +8,7 @@ import { gradeIdToGradeName, filterBoulders } from '../../scripts/utils';
 import { Colors } from '../../constants/Colors'
 import { Fonts } from '../../constants/Fonts'
 import { FontAwesome } from '@expo/vector-icons';
+import { Audio } from 'expo-av';
 
 
 export default function Random(){
@@ -87,6 +88,20 @@ export default function Random(){
         }
     }
 
+    function playSound(name, sound){
+        console.log('Playing '+name);
+        Audio.Sound.createAsync(
+            sound,
+            { shouldPlay: true }
+        ).then((res)=>{
+            res.sound.setOnPlaybackStatusUpdate((status)=>{
+                if(!status.didJustFinish) return;
+                res.sound.unloadAsync().catch(()=>{});
+            });
+        }).catch((error)=>{});
+    }
+    const honk = require('../../assets/audio/honk.wav');
+
     useEffect(() => {
         handleFilter();
     }, [boulders, settings]);
@@ -163,6 +178,9 @@ export default function Random(){
                                         setRandomChallenge(challenge);
                                         if (challengeActive) {
                                             setCurrentChallenge(challenge);
+                                        }
+                                        if (challenge.id == 15) {
+                                            playSound('honk', honk);
                                         }
                                     }
                                 }>

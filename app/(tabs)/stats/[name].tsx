@@ -13,16 +13,18 @@ import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-vi
 
 export default function UserStats() {
     const { name } = useLocalSearchParams();
-    const { stats, settings, loggedUser, token, boulders, fetchUserStats } = useContext(GlobalStateContext);
+    const { stats, settings, loggedUser, token, boulders, fetchUserStats, setCurrentBoulder } = useContext(GlobalStateContext);
     const router = useRouter();
     const [userStats, setUserStats] = useState(null)
     const [chosenBorder, setChosenBorder] = useState(null)
     const [seasonalModal, setSeasonalModal] = useState(false)
     const [borderModal, setBorderModal] = useState(false)
+    const [bouldersModal, setBouldersModal] = useState(false)
     const [chosenSeason, setChosenSeason] = useState(null)
     const [chosenBackground, setChosenBackground] = useState('#DADADA')
     const [borderDimensions, setBorderDimensions] = useState({width: 0, height: 0})
     const [sortedBorders, setSortedBorders] = useState([])
+    const [modalBoulders, setModalBoulders] = useState([])
 
     const borders = [
         {'image': require('../../../assets/images/borders/blank_frame.png'), 'hint': 'zadarmo'}, // free
@@ -172,6 +174,35 @@ export default function UserStats() {
         .catch(error => console.log(error));
     }
 
+    const createGradeSetInfo = (bds) => {
+        return (
+            <ScrollView>
+                <View style={styles.modalView}>
+                    <Text style={Fonts.h1}>Vylezené bouldery</Text>
+                    {
+                        bds.map(boulder => renderBoulderInfo(boulder))
+                    }
+                </View>
+            </ScrollView>
+        );
+    }
+
+    const renderBoulderInfo = (boulder_id) => {
+        let boulder = findBoulderById(boulder_id, boulders);
+        return (
+            <TouchableOpacity key={boulder.id} onPress={() => handleReroute(boulder)}>
+                <View>
+                    <Text style={{fontSize: 18}}>{boulder.name}</Text>
+                </View>
+            </TouchableOpacity>
+        );
+    }
+
+    const handleReroute = (boulder) => {
+        setCurrentBoulder(boulder);
+        setBouldersModal(false);
+        router.push(`${boulder.id}`);
+    }
 
     useEffect(() => {
         thisUserStats();
@@ -291,15 +322,17 @@ export default function UserStats() {
                                 {
                                     Object.keys(userStats['unique_sends']).map((key) => {
                                         return (
-                                            <View key={key} style={styles.boulderStatsContainer}>
-                                                <Text style={Fonts.h3}>{gradeIdToGradeName(key, settings.grading)}</Text>
-                                                <View style={styles.row}>
-                                                    <Text style={Fonts.plainBold}>Výlezů:</Text>
-                                                    <Text style={Fonts.plainBold}>{userStats['unique_sends'][key]['sends']}</Text>
-                                                    <Text style={Fonts.plainBold}>Z toho flashů:</Text>
-                                                    <Text style={Fonts.plainBold}>{userStats['unique_sends'][key]['flashes']}</Text>
+                                            <TouchableOpacity key={key} onPress={() => {setModalBoulders(userStats['unique_sends'][key]['boulders']); setBouldersModal(true)}}>
+                                                <View key={key} style={styles.boulderStatsContainer}>
+                                                    <Text style={Fonts.h3}>{gradeIdToGradeName(key, settings.grading)}</Text>
+                                                    <View style={styles.row}>
+                                                        <Text style={Fonts.plainBold}>Výlezů:</Text>
+                                                        <Text style={Fonts.plainBold}>{userStats['unique_sends'][key]['sends']}</Text>
+                                                        <Text style={Fonts.plainBold}>Z toho flashů:</Text>
+                                                        <Text style={Fonts.plainBold}>{userStats['unique_sends'][key]['flashes']}</Text>
+                                                    </View>
                                                 </View>
-                                            </View>
+                                            </TouchableOpacity>
                                         )
                                     }
                                     )
@@ -353,6 +386,14 @@ export default function UserStats() {
                                 />
                             </View>
                         }
+                    </Modal>
+                    <Modal visible={bouldersModal}>
+                        {modalBoulders && createGradeSetInfo(modalBoulders)}
+                        <TouchableOpacity onPress={() => setBouldersModal(false)}>
+                            <View style={styles.modalOk}>
+                                <Text style={styles.textStyle}>OK</Text>
+                            </View>
+                        </TouchableOpacity>
                     </Modal>
                 </View>
                 )
@@ -453,5 +494,18 @@ const styles = StyleSheet.create({
     borderChoice: {
         height: 300,
         width: 300,
+    },
+    modalOk: {
+        backgroundColor: Colors.primary,
+        padding: 10,
+        margin: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+    },
+    modalView: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 20,
     },
 });

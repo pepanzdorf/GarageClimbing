@@ -65,6 +65,8 @@ export const GlobalStateProvider = ({ children }) => {
 
     const [ crackStats, setCrackStats ] = useState(null);
 
+    const [userSavedAttempts, setUserSavedAttempts] = useState(null);
+
 
     const checkSettings = () => {
         if (settings.angle === undefined) {
@@ -378,6 +380,8 @@ export const GlobalStateProvider = ({ children }) => {
                 setSavedBoulderAttempts,
                 crackStats,
                 fetchCrackStats,
+                userSavedAttempts,
+                setUserSavedAttempts,
         }}>
             {children}
         </GlobalStateContext.Provider>

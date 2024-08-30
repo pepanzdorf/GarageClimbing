@@ -37,6 +37,8 @@ export default function DetailsScreen() {
         savedBoulderAttempts,
         setSavedBoulderAttempts,
         loggedUser,
+        userSavedAttempts,
+        setUserSavedAttempts,
     } = useContext(GlobalStateContext);
     const [holds, setHolds] = useState(null);
     const [sends, setSends] = useState([]);
@@ -49,7 +51,6 @@ export default function DetailsScreen() {
     const [show, setShow] = useState(0);
     const [completedChallenges, setCompletedChallenges] = useState(null);
     const [randomHold, setRandomHold] = useState(null);
-    const [userSavedAttempts, setUserSavedAttempts] = useState(null);
 
     const windowAspectRatio = Dimensions.get('window').width / Dimensions.get('window').height;
     const tabBarHeight = useBottomTabBarHeight();

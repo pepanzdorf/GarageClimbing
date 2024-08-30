@@ -13,7 +13,7 @@ import { Colors } from '../../../../constants/Colors';
 
 export default function LogScreen() {
     const { id } = useLocalSearchParams();
-    const { settings, token, currentBoulder, setReload, currentChallenge, wallConfig } = useContext(GlobalStateContext);
+    const { settings, token, currentBoulder, setReload, currentChallenge, wallConfig, userSavedAttempts } = useContext(GlobalStateContext);
     const [ selectedAngle, setSelectedAngle ] = useState(settings.angle);
     const [ selectedRating, setSelectedRating ] = useState(settings.rating);
     const [ selectedGrade, setSelectedGrade ] = useState(currentBoulder.average_grade == -1 ? 0 : currentBoulder.average_grade);
@@ -101,6 +101,7 @@ export default function LogScreen() {
                 </View>
                 <View style={styles.picker}>
                     <Text style={Fonts.h3}>Počet pokusů</Text>
+                    <Text style={Fonts.plain}>Zatím pokusů: {userSavedAttempts[id]}</Text>
                     <ScrollPicker
                         dataSource={attemptsData}
                         wrapperHeight={styles.pickerHeight}

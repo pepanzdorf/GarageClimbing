@@ -57,6 +57,8 @@ export default function UserStats() {
         {'image': require('../../../assets/images/borders/wing_frame.png'), 'hint': 'Okřídlený lezec nohy nepotřebuje'}, // 15 sends with campus challenge
         {'sound': require('../../../assets/audio/minecraft_eating.mp3'), 'image': require('../../../assets/images/borders/bbq_frame.png'), 'hint': '?'}, // Bbq climbing
         {'sound': require('../../../assets/audio/honk.wav'), 'image': require('../../../assets/images/borders/goose_frame.png'), 'hint': 'Stiskni mě 🔊'}, // climb 50 times with goose challenge
+        {'image': require('../../../assets/images/borders/sandbag_frame.png'), 'hint': 'Profesionální podceňovač boulderů'}, // rate 10 boulders two grades lower than average
+        {'image': require('../../../assets/images/borders/balloon_frame.png'), 'hint': 'Profesionální přeceňovač boulderů'}, // rate 10 boulders two grades higher than average
     ];
 
     const sortBorders = () => {

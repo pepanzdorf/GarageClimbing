@@ -40,15 +40,15 @@ export default function UserStats() {
         {'image': require('../../../assets/images/borders/animal_frame.png'), 'hint': ''}, // kozel V3+, Mrtvá ryba V2-, Nabodnuté jablíčko V3-, protáhlá opice V3, Tupé bodliny V3, zvířecí trio V3-, Pro začátek dobrá V3+
         {'image': require('../../../assets/images/borders/mud_frame.png'), 'hint': 'Někdy ten výlez pár pokusů zabere'}, // Mít boulder na 25+ pokusů
         {'image': require('../../../assets/images/borders/stone_frame.png'), 'hint': ''}, // Kamenný pilíř V4+, Malé šutry mezi prsty V5-, Přírodní lehká V4-, Intuitivní rotace V4-, zahřívačka V4-, Čekárnová V4+
-        {'image': require('../../../assets/images/borders/water_frame.png'), 'hint': ''}, // Bazénová V4+, Kapka na plachtě V3+, Okapová l+p V4, Po dešti V3+, Procházka v dešti V4-, Tok proudu V3-, Z louže to klouže V4-
+        {'sound': require('../../../assets/audio/splash.mp3'), 'image': require('../../../assets/images/borders/water_frame.png'), 'hint': ''}, // Bazénová V4+, Kapka na plachtě V3+, Okapová l+p V4, Po dešti V3+, Procházka v dešti V4-, Tok proudu V3-, Z louže to klouže V4-
         {'image': require('../../../assets/images/borders/muscle_frame.png'), 'hint': ''}, // Dej si spoďák V5+, Školní kampus V4, Rozmáčkni nástup V5+, Pěkná se silovým startem V4-, píďalka na spoďáku V6, Míla a Srštnost V6
-        {'image': require('../../../assets/images/borders/bandage_frame.png'), 'hint': ''}, // AU TO BOLÍ V4+, Pěstí loktem a do holeně V4, Rychlá bolest V3+, Uraženej kotník V4+, Dyno trénink V3-
+        {'sound': require('../../../assets/audio/oof.mp3'), 'image': require('../../../assets/images/borders/bandage_frame.png'), 'hint': ''}, // AU TO BOLÍ V4+, Pěstí loktem a do holeně V4, Rychlá bolest V3+, Uraženej kotník V4+, Dyno trénink V3-
         {'image': require('../../../assets/images/borders/ice_frame.png'), 'hint': 'V zimě se leze nejlépe'}, // 10 sendů v zimě
         {'sound': require('../../../assets/audio/caveman.mp3'), 'image': require('../../../assets/images/borders/caveman_frame.png'), 'hint': ''}, // huuh uggh V4, Krsštl V5, Sss V3, Vzpomínky na minulost V3-
-        {'image': require('../../../assets/images/borders/nature_frame.png'), 'hint': ''}, // Definice dřevěnosti V3, Jabloň V4, Přírodní lehká V4-, Přírodní lišta V3, smlsnout malinu V4, Stisky jak dřevo V4, Z jablíčka na jablíčko V3+
+        {'sound': require('../../../assets/audio/wind.mp3'), 'image': require('../../../assets/images/borders/nature_frame.png'), 'hint': ''}, // Definice dřevěnosti V3, Jabloň V4, Přírodní lehká V4-, Přírodní lišta V3, smlsnout malinu V4, Stisky jak dřevo V4, Z jablíčka na jablíčko V3+
         {'image': require('../../../assets/images/borders/christmas_frame.png'), 'hint': 'Proč na Vánoce dávat dárky, když můžeš lézt'}, // christmas climbing 2024
         {'sound': require('../../../assets/audio/lightning.mp3'), 'image': require('../../../assets/images/borders/flash_frame.png'), 'hint': 'Proč lézt dvakrát, když stačí jednou'}, // 50 flashes (unique boulders)
-        {'image': require('../../../assets/images/borders/builder_frame.png'), 'hint': 'Lezecká stěna je k ničemu, když na ní nejsou žádné cesty'}, // build 20 boulders
+        {'sound': require('../../../assets/audio/saw.mp3'), 'image': require('../../../assets/images/borders/builder_frame.png'), 'hint': 'Lezecká stěna je k ničemu, když na ní nejsou žádné cesty'}, // build 20 boulders
         {'image': require('../../../assets/images/borders/donation_frame.png'), 'hint': '?'}, // For donation
         {'sound': require('../../../assets/audio/ascend.mp3'), 'image': require('../../../assets/images/borders/sun_frame.png'), 'hint': 'Jednou ascendnout nestačí'}, // climb ascension 50 times
         {'image': require('../../../assets/images/borders/hold_frame.png'), 'hint': ''}, // Přímá lehká V1, Jedle za 500 V2, NATAHOVACÍ V3, Kolečko Uno V4, Srdcovka V5, lamač kostí a drtič šlach V6, Projekt: Rozlet orla V7, MarMel 4 V8?

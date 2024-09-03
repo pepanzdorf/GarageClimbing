@@ -67,6 +67,10 @@ export const GlobalStateProvider = ({ children }) => {
 
     const [userSavedAttempts, setUserSavedAttempts] = useState(null);
 
+    const [ sessionSends, setSessionSends ] = useState([]);
+
+    const [ chosenDate, setChosenDate ] = useState(new Date())
+
 
     const checkSettings = () => {
         if (settings.angle === undefined) {
@@ -138,6 +142,7 @@ export const GlobalStateProvider = ({ children }) => {
         fetchWallConfig();
         loadSavedBoulderAttempts();
         fetchCrackStats();
+        fetchSessionSends(chosenDate);
     }
 
     const whoami = () => {
@@ -312,6 +317,15 @@ export const GlobalStateProvider = ({ children }) => {
             .catch(error => console.log(error));
     }
 
+    const fetchSessionSends = (date) => {
+        let date_string = date.toLocaleDateString('cs-CZ');
+        date_string = date_string.split('. ').reverse().join('-');
+        fetch(`${apiURL}/climbing/sends/${date_string}`)
+            .then(response => response.json())
+            .then(jsonResponse => setSessionSends(jsonResponse))
+            .catch(error => console.log(error));
+    }
+
     useEffect(()=>{
         fetchAll();
     },[]);
@@ -333,6 +347,11 @@ export const GlobalStateProvider = ({ children }) => {
         savedBoulderAttempts && saveBoulderAttempts();
     }
     , [savedBoulderAttempts]);
+
+    useEffect(() => {
+        fetchSessionSends(chosenDate);
+    }
+    , [chosenDate]);
 
     return (
         <GlobalStateContext.Provider
@@ -382,6 +401,10 @@ export const GlobalStateProvider = ({ children }) => {
                 fetchCrackStats,
                 userSavedAttempts,
                 setUserSavedAttempts,
+                sessionSends,
+                chosenDate,
+                setChosenDate,
+                fetchSessionSends,
         }}>
             {children}
         </GlobalStateContext.Provider>

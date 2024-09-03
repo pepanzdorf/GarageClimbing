@@ -4,11 +4,12 @@ import { SearchBar } from 'react-native-elements';
 import { useRouter } from 'expo-router';
 import { GlobalStateContext } from '../../context';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { gradeIdToGradeName, sortBoulderBy, filterBoulders, filterBySearch } from '../../../scripts/utils';
+import { gradeIdToGradeName, sortBoulderBy, filterBoulders, filterBySearch, attemptIdToAttemptName } from '../../../scripts/utils';
 import { Colors } from '../../../constants/Colors'
 import { Fonts } from '../../../constants/Fonts'
 import { StarRating } from '../../../components/StarRating';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
+import DatePicker from 'react-native-date-picker';
 
 
 export default function Home(){
@@ -23,9 +24,16 @@ export default function Home(){
         currentBoulderIndex,
         setCurrentBoulderIndex,
         setArrowNavigationBoulders,
+        sessionSends,
+        chosenDate,
+        setChosenDate,
+        fetchSessionSends,
     } = useContext(GlobalStateContext);
     const [ search, setSearch ] = useState('');
     const [ numberOfBoulders, setNumberOfBoulders ] = useState(0);
+    const [ numberOfSessionSends, setNumberOfSessionSends ] = useState(0);
+    const [ showFeed, setShowFeed ] = useState(false);
+    const [ openDatePicker, setOpenDatePicker ] = useState(false);
     const router = useRouter();
 
 
@@ -49,6 +57,12 @@ export default function Home(){
     }
     , [filteredBoulders]);
 
+    useEffect(() => {
+        if (sessionSends) {
+            setNumberOfSessionSends(sessionSends.length);
+        }
+    }
+    , [sessionSends]);
 
     const handleGoToBoulder = (item, index) => {
         setCurrentBoulder(item);
@@ -101,41 +115,139 @@ export default function Home(){
         )
     }
 
+    const renderSend = ({item, index}) => {
+        const send = item;
+        return (
+            <View key={send.id} style={styles.sendContainer}>
+                <View style={styles.row}>
+                    <Text style={Fonts.h3}>
+                        {send.name}
+                    </Text>
+                </View>
+                <View style={styles.row}>
+                    <Text style={Fonts.h3}>
+                        {send.username}
+                    </Text>
+                    <Text style={Fonts.h3}>
+                        {gradeIdToGradeName(send.grade, settings.grading)}
+                    </Text>
+                </View>
+                <View style={styles.row}>
+                    <Text style={Fonts.small}>
+                        {new Date(send.sent_date).toLocaleDateString() + " " + new Date(send.sent_date).toLocaleTimeString()}
+                    </Text>
+                    {(send.challenge_id != 1) ? (
+                        <View style={styles.crownContainer}>
+                            <View>
+                                <FontAwesome5 name="crown" size={20} color='gold' />
+                            </View>
+                            <View style={{position: 'absolute'}}>
+                                <Text style={Fonts.small}>
+                                    {send.challenge_id}
+                                </Text>
+                            </View>
+                        </View>) : null }
+                </View>
+                <View style={styles.row}>
+                    <StarRating rating={send.rating} maxStars={5} size={20}/>
+                    <Text style={Fonts.h3}>
+                        {
+                            send.attempts === 0 ? (
+                                attemptIdToAttemptName(send.attempts)
+                            ) : (
+                                send.attempts <= 3 ? (
+                                    attemptIdToAttemptName(send.attempts) + " pokusy"
+                                ) : (
+                                    attemptIdToAttemptName(send.attempts) + " pokusů"
+                                )
+                            )
+                        }
+                    </Text>
+                </View>
+            </View>
+        )
+    }
+
     return (
         <SafeAreaView style={{flex:1}}>
             <View style={styles.menuContainer}>
-                <TouchableOpacity onPress={() => reloadBoulders()}>
+                <TouchableOpacity onPress={() => {fetchSessionSends(chosenDate); reloadBoulders()}}>
                     <View style={styles.refresh}>
                         <Text style={Fonts.h3}>
                             Refresh
                         </Text>
-                        <Text style={Fonts.plain}>
-                            { numberOfBoulders }/{ boulders.length }
-                        </Text>
+                        { showFeed ? (
+                            <Text style={Fonts.plain}>
+                                { numberOfSessionSends }/{ sessionSends.length }
+                            </Text>
+                        ) : (
+                            <Text style={Fonts.plain}>
+                                { numberOfBoulders }/{ boulders.length }
+                            </Text>
+                        )}
                     </View>
                 </TouchableOpacity>
-                <View style={styles.search}>
-                    <SearchBar
-                        placeholder="Vyhledat"
-                        value={search}
-                        onChangeText={setSearch}
-                        containerStyle={styles.searchContainer}
-                        inputContainerStyle={styles.searchInputContainer}
-                    />
-                </View>
-                <TouchableOpacity onPress={() => router.push('new_boulder')}>
-                    <FontAwesome name="plus" size={36} color={Colors.primary} />
-                </TouchableOpacity>
-            </View>
-            <View style={styles.boulders}>
-                { bouldersLoading ? ( <ActivityIndicator size="large" color="black" /> ) : (
-                     <FlatList
-                        data={ filteredBoulders }
-                        renderItem={renderBoulder}
-                        keyExtractor={item => item.id}
-                    />
+                { showFeed ? (
+                    <TouchableOpacity onPress={() => setOpenDatePicker(true)}>
+                        <View style={styles.date}>
+                            <Text style={Fonts.h3}>
+                                {chosenDate.toLocaleDateString()}
+                            </Text>
+                        </View>
+                    </TouchableOpacity>
+                ) : (
+                    <View style={styles.search}>
+                        <SearchBar
+                            placeholder="Vyhledat"
+                            value={search}
+                            onChangeText={setSearch}
+                            containerStyle={styles.searchContainer}
+                            inputContainerStyle={styles.searchInputContainer}
+                        />
+                    </View>
                 ) }
+                <View style={styles.clickableIcons}>
+                    <TouchableOpacity onPress={() => setShowFeed(!showFeed)}>
+                        <FontAwesome name="stack-exchange" size={36} color={Colors.primary} />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => router.push('new_boulder')}>
+                        <FontAwesome name="plus" size={36} color={Colors.primary} />
+                    </TouchableOpacity>
+                </View>
             </View>
+            { showFeed ? (
+                <View style={styles.boulders}>
+                    { sessionSends ? (
+                            <FlatList
+                                data={ sessionSends }
+                                renderItem={ renderSend }
+                                keyExtractor={ item => item.id }
+                            />
+                        ) : ( <ActivityIndicator size="large" color="black" /> )
+                    }
+                </View>
+            ) : (
+                <View style={styles.boulders}>
+                    { bouldersLoading ? ( <ActivityIndicator size="large" color="black" /> ) : (
+                         <FlatList
+                            data={ filteredBoulders }
+                            renderItem={renderBoulder}
+                            keyExtractor={item => item.id}
+                        />
+                    ) }
+                </View>
+            )}
+            <DatePicker
+                modal
+                open={openDatePicker}
+                date={ chosenDate }
+                mode="date"
+                onConfirm={(date) => {
+                    setOpenDatePicker(false);
+                    setChosenDate(date);
+                }}
+                onCancel={() => setOpenDatePicker(false)}
+            />
         </SafeAreaView>
     )
 }
@@ -210,6 +322,38 @@ const styles = StyleSheet.create({
         flex:1,
         flexWrap: 'wrap',
         marginRight: 10,
-    }
+    },
+    crownContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    sendContainer: {
+        padding: 10,
+        borderWidth: 1,
+        borderColor: Colors.borderDark,
+        borderRadius: 10,
+        backgroundColor: Colors.darkerBackground,
+        marginTop: 10,
+        marginLeft: 15,
+        marginRight: 15,
+    },
+    row: {
+        flexDirection:"row",
+        justifyContent:"space-between",
+    },
+    clickableIcons: {
+        flexDirection: 'row',
+        gap: 10,
+    },
+    date: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: Colors.primary,
+        padding: 10,
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: Colors.borderDark,
+    },
 });
 

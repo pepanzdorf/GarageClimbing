@@ -23,6 +23,7 @@
     "@react-native-picker/picker": "2.7.5",
     "@react-navigation/native": "^6.0.2",
     "expo": "~51.0.18",
+    "expo-av": "~14.0.7",
     "expo-constants": "~16.0.2",
     "expo-dev-client": "~4.0.19",
     "expo-font": "~12.0.9",
@@ -35,6 +36,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.74.3",
+    "react-native-date-picker": "^5.0.7",
     "react-native-dropdown-select-list": "^2.0.5",
     "react-native-elements": "^3.4.3",
     "react-native-gesture-handler": "~2.16.1",
@@ -44,8 +46,7 @@
     "react-native-svg": "15.2.0",
     "react-native-table-component": "github:sturmenta/react-native-table-component#e1582aaba92b7e070c31c98b116eea9c23e17f6d",
     "react-native-web": "~0.19.10",
-    "react-native-wheel-scrollview-picker": "^2.0.4",
-    "expo-av": "~14.0.7"
+    "react-native-wheel-scrollview-picker": "^2.0.4"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

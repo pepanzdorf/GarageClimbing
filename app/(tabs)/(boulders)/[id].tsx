@@ -74,6 +74,7 @@ export default function DetailsScreen() {
 
     useEffect(() => {
         setSavedBoulderAttempts({...savedBoulderAttempts, [loggedUser]: userSavedAttempts});
+        scrollRef.current && scrollRef.current.scrollToTargetIndex(userSavedAttempts[id]);
     }, [userSavedAttempts]);
 
     useEffect(() => {

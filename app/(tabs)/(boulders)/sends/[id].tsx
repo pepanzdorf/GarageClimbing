@@ -13,7 +13,7 @@ import { Colors } from '../../../../constants/Colors';
 
 export default function LogScreen() {
     const { id } = useLocalSearchParams();
-    const { settings, token, currentBoulder, setReload, currentChallenge, wallConfig, userSavedAttempts } = useContext(GlobalStateContext);
+    const { settings, token, currentBoulder, setReload, currentChallenge, wallConfig, userSavedAttempts, setUserSavedAttempts } = useContext(GlobalStateContext);
     const [ selectedAngle, setSelectedAngle ] = useState(settings.angle);
     const [ selectedRating, setSelectedRating ] = useState(settings.rating);
     const [ selectedGrade, setSelectedGrade ] = useState(currentBoulder.average_grade == -1 ? 0 : currentBoulder.average_grade);
@@ -51,6 +51,7 @@ export default function LogScreen() {
             return;
         }
         setReload(true);
+        setUserSavedAttempts({...userSavedAttempts, [id]: 0});
         router.back();
     }
 

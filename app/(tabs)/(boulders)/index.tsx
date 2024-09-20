@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { View, Text, FlatList, ActivityIndicator, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, TouchableOpacity, StyleSheet, Modal } from 'react-native';
 import { SearchBar } from 'react-native-elements';
 import { useRouter } from 'expo-router';
 import { GlobalStateContext } from '../../context';
@@ -9,7 +9,7 @@ import { Colors } from '../../../constants/Colors'
 import { Fonts } from '../../../constants/Fonts'
 import { StarRating } from '../../../components/StarRating';
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
-import DatePicker from 'react-native-date-picker';
+import ScrollPicker from "react-native-wheel-scrollview-picker";
 
 
 export default function Home(){
@@ -34,7 +34,14 @@ export default function Home(){
     const [ numberOfSessionSends, setNumberOfSessionSends ] = useState(0);
     const [ showFeed, setShowFeed ] = useState(false);
     const [ openDatePicker, setOpenDatePicker ] = useState(false);
+    const [ selectedYear, setSelectedYear ] = useState(new Date().getFullYear());
+    const [ selectedMonth, setSelectedMonth ] = useState(new Date().getMonth()+1);
+    const [ selectedDay, setSelectedDay ] = useState(new Date().getDate());
     const router = useRouter();
+
+    const yearData = Array(77).fill().map((_, i) => 2024+i);
+    const monthData = Array(12).fill().map((_, i) => i+1);
+    const dayData = Array(31).fill().map((_, i) => i+1);
 
 
     useEffect(() => {
@@ -63,6 +70,11 @@ export default function Home(){
         }
     }
     , [sessionSends]);
+
+    useEffect(() => {
+        setChosenDate(`${selectedYear}-${selectedMonth}-${selectedDay}`);
+    }
+    , [selectedYear, selectedMonth, selectedDay]);
 
     const handleGoToBoulder = (item, index) => {
         setCurrentBoulder(item);
@@ -191,7 +203,7 @@ export default function Home(){
                     <TouchableOpacity onPress={() => setOpenDatePicker(true)}>
                         <View style={styles.date}>
                             <Text style={Fonts.h3}>
-                                {chosenDate.toLocaleDateString()}
+                                {selectedDay}.{selectedMonth}.{selectedYear}
                             </Text>
                         </View>
                     </TouchableOpacity>
@@ -237,17 +249,54 @@ export default function Home(){
                     ) }
                 </View>
             )}
-            <DatePicker
-                modal
-                open={openDatePicker}
-                date={ chosenDate }
-                mode="date"
-                onConfirm={(date) => {
-                    setOpenDatePicker(false);
-                    setChosenDate(date);
-                }}
-                onCancel={() => setOpenDatePicker(false)}
-            />
+            <Modal
+                visible={openDatePicker}
+                transparent={true}
+            >
+                <View style={styles.modalViewOuter}>
+                    <View style={styles.modalViewInner}>
+                        <View style={styles.datePick}>
+                            <View style={styles.scrollPicker}>
+                                <ScrollPicker
+                                    dataSource={dayData}
+                                    selectedIndex={selectedDay-1}
+                                    highlightBorderWidth={2}
+                                    itemTextStyle={Fonts.h3}
+                                    activeItemTextStyle={[Fonts.h3, {color: Colors.primary}]}
+                                    onValueChange={(value) => setSelectedDay(value)}
+                                />
+                            </View>
+                            <View style={styles.scrollPicker}>
+                                <ScrollPicker
+                                    dataSource={monthData}
+                                    selectedIndex={selectedMonth-1}
+                                    highlightBorderWidth={2}
+                                    itemTextStyle={Fonts.h3}
+                                    activeItemTextStyle={[Fonts.h3, {color: Colors.primary}]}
+                                    onValueChange={(value) => setSelectedMonth(value)}
+                                />
+                            </View>
+                            <View style={styles.scrollPicker}>
+                                <ScrollPicker
+                                    dataSource={yearData}
+                                    selectedIndex={selectedYear-2024}
+                                    highlightBorderWidth={2}
+                                    itemTextStyle={Fonts.h3}
+                                    activeItemTextStyle={[Fonts.h3, {color: Colors.primary}]}
+                                    onValueChange={(value) => setSelectedYear(value)}
+                                />
+                            </View>
+                        </View>
+                        <TouchableOpacity onPress={() => setOpenDatePicker(false)}>
+                            <View style={styles.button}>
+                                <Text style={Fonts.plainBold}>
+                                    OK
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
         </SafeAreaView>
     )
 }
@@ -354,6 +403,42 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         borderWidth: 1,
         borderColor: Colors.borderDark,
+    },
+    modalViewOuter: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+
+    },
+    modalViewInner: {
+        backgroundColor: Colors.modalBackground,
+        margin: 20,
+        borderRadius: 20,
+        padding: 35,
+        shadowColor: '#000',
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+        backgroundColor: Colors.background,
+    },
+    button: {
+        backgroundColor: Colors.primary,
+        padding: 10,
+        alignItems: 'center',
+        borderWidth: 1,
+        borderRadius: 10,
+        marginTop: 15,
+        paddingHorizontal: 30,
+    },
+    datePick: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 5,
+    },
+    scrollPicker: {
+        width: 100,
+        height: 150,
     },
 });
 

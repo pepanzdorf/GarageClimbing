@@ -69,7 +69,7 @@ export const GlobalStateProvider = ({ children }) => {
 
     const [ sessionSends, setSessionSends ] = useState([]);
 
-    const [ chosenDate, setChosenDate ] = useState(new Date())
+    const [ chosenDate, setChosenDate ] = useState(null)
 
 
     const checkSettings = () => {
@@ -317,13 +317,16 @@ export const GlobalStateProvider = ({ children }) => {
             .catch(error => console.log(error));
     }
 
-    const fetchSessionSends = (date) => {
-        let date_string = date.toLocaleDateString('cs-CZ');
-        date_string = date_string.split('. ').reverse().join('-');
-        fetch(`${apiURL}/climbing/sends/${date_string}`)
-            .then(response => response.json())
-            .then(jsonResponse => setSessionSends(jsonResponse))
-            .catch(error => console.log(error));
+    const fetchSessionSends = async () => {
+        if (chosenDate === null) {
+            return;
+        }
+        const response = await fetch(`${apiURL}/climbing/sends/${chosenDate}`)
+        if (!response.ok) {
+            return;
+        }
+        const jsonResponse = await response.json();
+        setSessionSends(jsonResponse);
     }
 
     useEffect(()=>{

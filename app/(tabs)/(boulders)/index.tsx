@@ -219,6 +219,9 @@ export default function Home(){
                     </View>
                 ) }
                 <View style={styles.clickableIcons}>
+                    <TouchableOpacity onPress={() => router.push('timers')}>
+                        <FontAwesome5 name="clock" size={36} color={Colors.primary} />
+                    </TouchableOpacity>
                     <TouchableOpacity onPress={() => setShowFeed(!showFeed)}>
                         <FontAwesome name="stack-exchange" size={36} color={Colors.primary} />
                     </TouchableOpacity>

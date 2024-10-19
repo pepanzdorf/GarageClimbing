@@ -75,6 +75,12 @@ export default function TabLayout() {
                     tabBarIcon: ({ color }) => <FontAwesome5 size={28} name="info" color={color} />,
                 }}
             />
+            <Tabs.Screen
+                name="timers"
+                options={{
+                    href: null
+                }}
+            />
         </Tabs>
     );
 }

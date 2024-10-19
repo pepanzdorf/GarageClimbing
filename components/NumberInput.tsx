@@ -6,14 +6,24 @@ import { Colors } from '../constants/Colors'
 
 const NumberInput = (props) => {
 
+    function checkValue(value) {
+        value = parseInt(value);
+        if (isNaN(value)) {
+            return props.minValue;
+        }
+        return Math.max(props.minValue, value);
+    }
+
+
+
     return (
         <View style={styles.container}>
             <FontAwesome name="minus" size={30} color={Colors.highlight} onPress={() => props.setValue(Math.max(props.minValue, props.value - 1))}/>
             <TextInput
                 style={{fontSize: 40}}
-                onChangeText={text => props.setValue(text)}
+                onChangeText={text => props.setValue(checkValue(text))}
                 value={props.value.toString()}
-                keyboardType='numeric'
+                inputMode='numeric'
             />
             <FontAwesome name="plus" size={30} color={Colors.primary} onPress={() => props.setValue(props.value + 1)}/>
         </View>

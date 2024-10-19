@@ -19,6 +19,8 @@ export const GlobalStateProvider = ({ children }) => {
         lineWidth: 8,
         includeOpen: true,
         tags: [],
+        timerIP: null,
+        timerPort: null
     }
 
     const [boulders,setBoulders] = useState([]);
@@ -71,6 +73,12 @@ export const GlobalStateProvider = ({ children }) => {
 
     const [ chosenDate, setChosenDate ] = useState(null)
 
+    const [ timerStatus, setTimerStatus ] = useState('offline')
+
+    const [ savedTimers, setSavedTimers ] = useState([]);
+
+    const [ currentTimer, setCurrentTimer ] = useState(null);
+
 
     const checkSettings = () => {
         if (settings.angle === undefined) {
@@ -112,6 +120,12 @@ export const GlobalStateProvider = ({ children }) => {
         if (settings.tags === undefined) {
             settings.tags = [];
         }
+        if (settings.timerIP === undefined) {
+            settings.timerIP = null;
+        }
+        if (settings.timerPort === undefined) {
+            settings.timerPort = null;
+        }
         saveSettings();
     }
 
@@ -143,6 +157,8 @@ export const GlobalStateProvider = ({ children }) => {
         loadSavedBoulderAttempts();
         fetchCrackStats();
         fetchSessionSends(chosenDate);
+        fetchTimerStatus();
+        loadTimers();
     }
 
     const whoami = () => {
@@ -213,6 +229,20 @@ export const GlobalStateProvider = ({ children }) => {
         }
     }
 
+    const loadTimers = async () => {
+        try {
+            const persistentTimers = await AsyncStorage.getItem("savedTimers");
+            if (persistentTimers !== null) {
+                setSavedTimers(JSON.parse(persistentTimers));
+            } else {
+                setSavedTimers([]);
+            }
+        } catch (error) {
+            console.log(error);
+            setSavedTimers([]);
+        }
+    }
+
     const loadToken = async () => {
         try {
             const persistentToken = await AsyncStorage.getItem("token");
@@ -232,6 +262,14 @@ export const GlobalStateProvider = ({ children }) => {
     const saveSettings = async () => {
         try {
             await AsyncStorage.setItem("settings", JSON.stringify(settings));
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const saveTimers = async () => {
+        try {
+            await AsyncStorage.setItem("savedTimers", JSON.stringify(savedTimers));
         } catch (error) {
             console.log(error);
         }
@@ -329,6 +367,22 @@ export const GlobalStateProvider = ({ children }) => {
         setSessionSends(jsonResponse);
     }
 
+    const fetchTimerStatus = async () => {
+        try {
+            if (settings.timerIP === null || settings.timerPort === null) {
+                return;
+            }
+            const response = await fetch(`http://${settings.timerIP}:${settings.timerPort}/status`);
+            const status = await response.text();
+
+            setTimerStatus(status.trimEnd());
+
+        } catch (error) {
+            setTimerStatus('offline');
+            console.error('Timer is not responding', error);
+        }
+    };
+
     useEffect(()=>{
         fetchAll();
     },[]);
@@ -355,6 +409,17 @@ export const GlobalStateProvider = ({ children }) => {
         fetchSessionSends(chosenDate);
     }
     , [chosenDate]);
+
+    useEffect(() => {
+        fetchTimerStatus();
+    }
+    , [settings.timerIP, settings.timerPort]);
+
+
+    useEffect(() => {
+        saveTimers();
+    }
+    , [savedTimers]);
 
     return (
         <GlobalStateContext.Provider
@@ -408,6 +473,11 @@ export const GlobalStateProvider = ({ children }) => {
                 chosenDate,
                 setChosenDate,
                 fetchSessionSends,
+                timerStatus,
+                savedTimers,
+                setSavedTimers,
+                currentTimer,
+                setCurrentTimer,
         }}>
             {children}
         </GlobalStateContext.Provider>

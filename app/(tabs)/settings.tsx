@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import {View, Text, FlatList, ActivityIndicator, TouchableOpacity, Button, StyleSheet, Switch, ScrollView } from 'react-native';
+import {View, Text, FlatList, ActivityIndicator, TouchableOpacity, Button, StyleSheet, Switch, ScrollView, TextInput } from 'react-native';
 import { GlobalStateContext } from '../context';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
@@ -14,7 +14,18 @@ import { apiURL } from '../../constants/Other';
 
 
 export default function Settings(){
-    const { settings, setSettings, saveSettings, settingsLoading, tags, wallConfig, setWallConfig, isAdmin, token } = useContext(GlobalStateContext);
+    const {
+        settings,
+        setSettings,
+        saveSettings,
+        settingsLoading,
+        tags,
+        wallConfig,
+        setWallConfig,
+        isAdmin,
+        token,
+        timerStatus,
+    } = useContext(GlobalStateContext);
     const [ angle, setAngle ] = useState(settings.angle);
     const [ selectedWallAngle, setSelectedWallAngle ] = useState(wallConfig.angle);
     const [ selectedSort, setSelectedSort ] = useState(settings.sortby);
@@ -28,6 +39,9 @@ export default function Settings(){
     const [ selectedLineWidth, setSelectedLineWidth ] = useState(settings.lineWidth);
     const [ selectedIncludeOpen, setSelectedIncludeOpen ] = useState(settings.includeOpen);
     const [ selectedTags, setSelectedTags ] = useState(settings.tags);
+    const [ timerStateColor, setTimerStateColor ] = useState('red');
+    const [ timerIP, setTimerIP ] = useState(settings.timerIP);
+    const [ timerPort, setTimerPort ] = useState(settings.timerPort);
 
     const options = [
             {key:'1', value: 'Nejtěžší'},
@@ -80,6 +94,8 @@ export default function Settings(){
                 lineWidth: selectedLineWidth,
                 includeOpen: selectedIncludeOpen,
                 tags: selectedTags,
+                timerIP: timerIP,
+                timerPort: timerPort,
             }
         );
         alert(
@@ -96,6 +112,8 @@ Zobrazit open bouldery: ${selectedIncludeOpen ? 'Ano' : 'Ne'}
 Defaultní hodnocení: ${defaultRating}
 Používat stupnici: ${gradingOptions.find(option => option.key == selectedGrading).value}
 Tloušťka čáry kolem chytů: ${selectedLineWidth}
+IP adresa timeru: ${timerIP}
+Port timeru: ${timerPort}
             `
         )
     }
@@ -133,6 +151,17 @@ Tloušťka čáry kolem chytů: ${selectedLineWidth}
             setSelectedTags([...selectedTags, id]);
         }
     }
+
+    useEffect(() => {
+        switch (timerStatus) {
+            case 'offline':
+                setTimerStateColor('red');
+                break;
+            default:
+                setTimerStateColor('green');
+        }
+    }
+    , [timerStatus])
 
     return (
         <SafeAreaView style={{flex:1}}>
@@ -310,6 +339,32 @@ Tloušťka čáry kolem chytů: ${selectedLineWidth}
                         touchDimensions={styles.touchDimensions}
                     />
                 </View>
+                <View style={styles.address}>
+                    <Text style={Fonts.h3}>
+                        IP adresa timeru:
+                    </Text>
+                    <TextInput
+                        style={styles.textInput}
+                        onChangeText={setTimerIP}
+                        value={timerIP}
+                        keyboardType='numeric'
+                    />
+                    <Text style={Fonts.h3}>
+                        Port timeru:
+                    </Text>
+                    <TextInput
+                        style={styles.textInput}
+                        onChangeText={setTimerPort}
+                        value={timerPort}
+                        keyboardType='numeric'
+                    />
+                    <Text style={Fonts.h3}>
+                        Stav timeru:
+                    </Text>
+                    <Text style={[Fonts.h3, {color: timerStateColor}]}>
+                        {timerStatus == 'offline' ? 'offline' : 'online'}
+                    </Text>
+                </View>
                 <View style={styles.tagsContainer}>
                     <Text style={Fonts.h3}>
                         Zobrazit bouldery s tagy:
@@ -408,7 +463,18 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 10,
         borderRadius: 10,
-    }
+    },
+    address: {
+        padding: 10,
+        gap: 10,
+    },
+    textInput: {
+        height: 45,
+        borderWidth: 1,
+        borderRadius: 10,
+        borderColor: Colors.darkerBorder,
+        paddingLeft: 10,
+    },
 });
 
 

@@ -25,6 +25,7 @@ export default function Settings(){
         isAdmin,
         token,
         timerStatus,
+        fetchTimerStatus,
     } = useContext(GlobalStateContext);
     const [ angle, setAngle ] = useState(settings.angle);
     const [ selectedWallAngle, setSelectedWallAngle ] = useState(wallConfig.angle);
@@ -361,9 +362,16 @@ Port timeru: ${timerPort}
                     <Text style={Fonts.h3}>
                         Stav timeru:
                     </Text>
-                    <Text style={[Fonts.h3, {color: timerStateColor}]}>
-                        {timerStatus == 'offline' ? 'offline' : 'online'}
-                    </Text>
+                    <View style={styles.row}>
+                        <Text style={[Fonts.h3, {color: timerStateColor}]}>
+                            {timerStatus == 'offline' ? 'offline' : 'online'}
+                        </Text>
+                        <TouchableOpacity onPress={fetchTimerStatus} style={styles.timerButton}>
+                            <Text style={Fonts.plainBold}>
+                                Zkontrolovat
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
                 <View style={styles.tagsContainer}>
                     <Text style={Fonts.h3}>
@@ -475,6 +483,17 @@ const styles = StyleSheet.create({
         borderColor: Colors.darkerBorder,
         paddingLeft: 10,
     },
+    row: {
+        flexDirection: 'row',
+        gap: 10,
+    },
+    timerButton: {
+        paddingHorizontal: 10,
+        borderWidth: 1,
+        borderRadius: 10,
+        borderColor: Colors.darkerBorder,
+        backgroundColor: Colors.primary,
+    }
 });
 
 

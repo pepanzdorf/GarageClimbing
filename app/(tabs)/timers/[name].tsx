@@ -12,7 +12,7 @@ import { FontAwesome } from '@expo/vector-icons';
 
 
 export default function Timer(){
-    const { savedTimers, setSavedTimers } = useContext(GlobalStateContext);
+    const { settings, savedTimers, setSavedTimers, loggedUser } = useContext(GlobalStateContext);
     const [ intervals, setIntervals ] = useState();
     const [ loops, setLoops ] = useState();
     const { name } = useLocalSearchParams();
@@ -42,6 +42,44 @@ export default function Timer(){
         router.push('timers');
     }
 
+    function createTimerOnServer() {
+        fetch(`http://${settings.timerIP}:${settings.timerPort}/create`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: timerName,
+                    intervals: intervals,
+                    loops: loops,
+                    owner: loggedUser,
+                }),
+            }
+        )
+        .catch(error => console.log(error));
+    }
+
+
+    function setShownTimer() {
+        fetch(`http://${settings.timerIP}:${settings.timerPort}/show?name=${timerName}`, {method: 'POST'})
+        .catch(error => console.log(error));
+    }
+
+    function startTimer() {
+        fetch(`http://${settings.timerIP}:${settings.timerPort}/start?name=${timerName}`, {method: 'POST'})
+        .catch(error => console.log(error));
+    }
+
+    function stopTimer() {
+        fetch(`http://${settings.timerIP}:${settings.timerPort}/stop?name=${timerName}`, {method: 'POST'})
+        .catch(error => console.log(error));
+    }
+
+    function pauseTimer() {
+        fetch(`http://${settings.timerIP}:${settings.timerPort}/pause?name=${timerName}`, {method: 'POST'})
+        .catch(error => console.log(error));
+    }
+
     useEffect(() => {
         if (name) {
             if (name == 'Nový časovač') {
@@ -52,7 +90,6 @@ export default function Timer(){
                 if (timer) {
                     setIntervals(timer.intervals);
                     setLoops(timer.loops);
-                    console.log(timer);
                 }
             }
         }
@@ -97,6 +134,23 @@ export default function Timer(){
                         </TouchableOpacity>
                         <NumberInput value={loops} setValue={setLoops} minValue={1}/>
                         <FontAwesome name="plus" size={40} color={Colors.primary} onPress={addTimerInterval}/>
+                    </View>
+                    <View style={styles.menuContainer}>
+                        <TouchableOpacity onPress={createTimerOnServer}>
+                            <FontAwesome name="send" size={40} color='green'/>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={setShownTimer}>
+                            <FontAwesome name="eye" size={40} color='green'/>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={pauseTimer}>
+                            <FontAwesome name="pause" size={40} color='yellow'/>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={stopTimer}>
+                            <FontAwesome name="stop" size={40} color='red'/>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={startTimer}>
+                            <FontAwesome name="play" size={40} color='green'/>
+                        </TouchableOpacity>
                     </View>
                 </View>
                 )

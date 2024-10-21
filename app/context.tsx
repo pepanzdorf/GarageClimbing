@@ -478,6 +478,7 @@ export const GlobalStateProvider = ({ children }) => {
                 setSavedTimers,
                 currentTimer,
                 setCurrentTimer,
+                fetchTimerStatus,
         }}>
             {children}
         </GlobalStateContext.Provider>

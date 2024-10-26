@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useCallback } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, FlatList, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { GlobalStateContext } from '../../context';
@@ -6,22 +6,87 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../../../constants/Colors'
 import { Fonts } from '../../../constants/Fonts'
 import { apiURL } from '../../../constants/Other';
+import { useFocusEffect } from '@react-navigation/native';
 
 
 export default function TimerIndex(){
-    const { savedTimers, setSavedTimers, setCurrentTimer } = useContext(GlobalStateContext);
+    const {
+        savedTimers,
+        setSavedTimers,
+        setCurrentTimer,
+        settings,
+        currentTimersStatus,
+        setCurrentTimersStatus,
+        loggedUser,
+    } = useContext(GlobalStateContext);
     const router = useRouter();
 
+    const getTimers = async () => {
+        try {
+            const response = await fetch(`http://${settings.timerIP}:${settings.timerPort}/timers`);
+            const data = await response.json();
+            setCurrentTimersStatus(data);
+        } catch (error) {
+            console.error('Error polling endpoint:', error);
+        }
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+            const intervalId = setInterval(() => {
+                getTimers();
+            }, 1000);
+
+            return () => clearInterval(intervalId);
+        }, [])
+    );
 
     const renderTimer = ({item, index}) => {
+        let thisTimerStatus = null;
+        for (const timer of currentTimersStatus) {
+            if (timer.name === `${item.name}-${loggedUser}`) {
+                thisTimerStatus = timer;
+                break;
+            }
+        }
+
+        let bc = 'lightblue';
+        let bw = 1;
+        let textColor;
+        let text;
+
+        if (thisTimerStatus !== null) {
+            bc = Colors.primary;
+            if (thisTimerStatus.shown) {
+                bw = 3;
+            }
+            if (thisTimerStatus.finished) {
+                textColor = 'red';
+                text = 'Dokončeno';
+            } else if (thisTimerStatus.paused) {
+                textColor = 'orange';
+                text = 'Pozastaven';
+            } else if (thisTimerStatus.running) {
+                textColor = 'green';
+                text = 'Běží';
+            }
+        }
+
         return (
-            <View style={styles.timerContainer}>
+            <View style={[styles.timerContainer, {backgroundColor: bc, borderWidth: bw}]}>
                 <TouchableOpacity onPress={() => showTimer(item)}>
                     <Text style={Fonts.h3}>{item.name}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => deleteTimer(index)}>
-                    <Text style={[Fonts.h3, {color: 'red'}]}>Smazat</Text>
-                </TouchableOpacity>
+                <View style={{flexDirection: 'row', gap: 10}}>
+                    {
+                        thisTimerStatus !== null ? (
+                            <Text style={[Fonts.h3, {color: textColor}]}>{text}</Text>
+                        ) : null
+                    }
+                    <TouchableOpacity onPress={() => deleteTimer(index)}>
+                        <Text style={[Fonts.h3, {color: 'red'}]}>Smazat</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
         )
     }
@@ -92,7 +157,6 @@ const styles = StyleSheet.create({
         borderColor: Colors.darkerBorder,
         borderRadius: 10,
         marginBottom: 10,
-        backgroundColor: Colors.primary,
     },
     header: {
         alignItems: 'center',

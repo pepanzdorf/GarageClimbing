@@ -39,7 +39,6 @@ export default function Timer(){
             newSavedTimers.push(newTimer);
         }
         setSavedTimers(newSavedTimers);
-        router.push('timers');
     }
 
     function createTimerOnServer() {
@@ -61,22 +60,22 @@ export default function Timer(){
 
 
     function setShownTimer() {
-        fetch(`http://${settings.timerIP}:${settings.timerPort}/show?name=${timerName}`, {method: 'POST'})
+        fetch(`http://${settings.timerIP}:${settings.timerPort}/show?name=${timerName}-${loggedUser}`, {method: 'POST'})
         .catch(error => console.log(error));
     }
 
     function startTimer() {
-        fetch(`http://${settings.timerIP}:${settings.timerPort}/start?name=${timerName}`, {method: 'POST'})
+        fetch(`http://${settings.timerIP}:${settings.timerPort}/start?name=${timerName}-${loggedUser}`, {method: 'POST'})
         .catch(error => console.log(error));
     }
 
     function stopTimer() {
-        fetch(`http://${settings.timerIP}:${settings.timerPort}/stop?name=${timerName}`, {method: 'POST'})
+        fetch(`http://${settings.timerIP}:${settings.timerPort}/stop?name=${timerName}-${loggedUser}`, {method: 'POST'})
         .catch(error => console.log(error));
     }
 
     function pauseTimer() {
-        fetch(`http://${settings.timerIP}:${settings.timerPort}/pause?name=${timerName}`, {method: 'POST'})
+        fetch(`http://${settings.timerIP}:${settings.timerPort}/pause?name=${timerName}-${loggedUser}`, {method: 'POST'})
         .catch(error => console.log(error));
     }
 
@@ -104,7 +103,9 @@ export default function Timer(){
                     <View style={styles.menuContainer}>
                         <Text style={Fonts.h3}>Jméno:</Text>
                         <TextInput style={styles.textInput} value={timerName} onChangeText={setTimerName}/>
-                        <FontAwesome name="save" size={40} color={'green'} onPress={saveTimer}/>
+                        <TouchableOpacity onPress={saveTimer}>
+                            <FontAwesome name="save" size={40} color={'green'}/>
+                        </TouchableOpacity>
                     </View>
                     <ScrollView contentContainerStyle={styles.timerContainer}>
                         {
@@ -137,13 +138,13 @@ export default function Timer(){
                     </View>
                     <View style={styles.menuContainer}>
                         <TouchableOpacity onPress={createTimerOnServer}>
-                            <FontAwesome name="send" size={40} color='green'/>
+                            <FontAwesome name="send" size={40} color={Colors.primary}/>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={setShownTimer}>
-                            <FontAwesome name="eye" size={40} color='green'/>
+                            <FontAwesome name="eye" size={40} color={Colors.primary}/>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={pauseTimer}>
-                            <FontAwesome name="pause" size={40} color='yellow'/>
+                            <FontAwesome name="pause" size={40} color='orange'/>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={stopTimer}>
                             <FontAwesome name="stop" size={40} color='red'/>

@@ -79,6 +79,8 @@ export const GlobalStateProvider = ({ children }) => {
 
     const [ currentTimer, setCurrentTimer ] = useState(null);
 
+    const [ currentTimersStatus, setCurrentTimersStatus ] = useState([]);
+
 
     const checkSettings = () => {
         if (settings.angle === undefined) {
@@ -479,6 +481,8 @@ export const GlobalStateProvider = ({ children }) => {
                 currentTimer,
                 setCurrentTimer,
                 fetchTimerStatus,
+                currentTimersStatus,
+                setCurrentTimersStatus,
         }}>
             {children}
         </GlobalStateContext.Provider>

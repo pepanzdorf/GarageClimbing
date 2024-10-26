@@ -45,17 +45,23 @@ export default function Home(){
 
 
     useEffect(() => {
-        setFilteredBoulders(
-            filterBoulders(
-                sortBoulderBy(settings.sortby, filterBySearch(boulders, search)),
-                settings.includeOpen,
-                settings.lowerGrade,
-                settings.upperGrade,
-                settings.showUnsent,
-                settings.showFavourites,
-                settings.tags,
-            )
-        );
+        if (search === '') {
+            setFilteredBoulders(
+                filterBoulders(
+                    sortBoulderBy(settings.sortby, boulders),
+                    settings.includeOpen,
+                    settings.lowerGrade,
+                    settings.upperGrade,
+                    settings.showUnsent,
+                    settings.showFavourites,
+                    settings.tags,
+                )
+            );
+        } else {
+            setFilteredBoulders(
+                    sortBoulderBy(settings.sortby, filterBySearch(boulders, search))
+            );
+        }
     }
     , [search, boulders, settings]);
 

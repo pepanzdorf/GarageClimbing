@@ -24,7 +24,7 @@ export default function UserStats() {
     const [chosenBackground, setChosenBackground] = useState('#DADADA')
     const [borderDimensions, setBorderDimensions] = useState({width: 0, height: 0})
     const [sortedBorders, setSortedBorders] = useState([])
-    const [modalBoulders, setModalBoulders] = useState([])
+    const [modalBoulders, setModalBoulders] = useState({'boulders': [], 'flashed_boulders': []})
 
     const borders = [
         {'image': require('../../../assets/images/borders/blank_frame.png'), 'hint': 'zadarmo'}, // free
@@ -196,18 +196,23 @@ export default function UserStats() {
                 <View style={styles.modalView}>
                     <Text style={Fonts.h1}>Vylezené bouldery</Text>
                     {
-                        bds.map(boulder => renderBoulderInfo(boulder))
+                        bds.boulders.map(boulder => renderBoulderInfo(boulder, bds.flashed_boulders))
                     }
                 </View>
             </ScrollView>
         );
     }
 
-    const renderBoulderInfo = (boulder_id) => {
+    const renderBoulderInfo = (boulder_id, flashed_boulders) => {
         let boulder = findBoulderById(boulder_id, boulders);
+        let tc = 'transparent';
+        if (flashed_boulders.includes(boulder_id)) {
+            tc = 'gold';
+        }
+
         return (
             <TouchableOpacity key={boulder.id} onPress={() => handleReroute(boulder)}>
-                <View>
+                <View style={{backgroundColor: tc}}>
                     <Text style={{fontSize: 18}}>{boulder.name}</Text>
                 </View>
             </TouchableOpacity>
@@ -338,7 +343,10 @@ export default function UserStats() {
                                 {
                                     Object.keys(userStats['unique_sends']).map((key) => {
                                         return (
-                                            <TouchableOpacity key={key} onPress={() => {setModalBoulders(userStats['unique_sends'][key]['boulders']); setBouldersModal(true)}}>
+                                            <TouchableOpacity key={key} onPress={() => {
+                                                    setModalBoulders({'boulders': userStats['unique_sends'][key]['boulders'],
+                                                            'flashed_boulders': userStats['unique_sends'][key]['flashed_boulders']});
+                                                    setBouldersModal(true)}}>
                                                 <View key={key} style={styles.boulderStatsContainer}>
                                                     <Text style={Fonts.h3}>{gradeIdToGradeName(key, settings.grading)}</Text>
                                                     <View style={styles.row}>

@@ -19,6 +19,11 @@ export default function Timer(){
     const [ timerName, setTimerName ] = useState(name);
     const router = useRouter();
 
+
+    function normalizeAndSetTimerName(value) {
+        setTimerName(value.normalize("NFD").replace(/\p{Diacritic}/gu, ""));
+    }
+
     function addTimerInterval() {
         const newIntervals = [...intervals];
         newIntervals.push({time: 0, color: {r: 25, g: 0, b: 0}, onlyFirst: false, onlyLast: false});
@@ -51,7 +56,7 @@ export default function Timer(){
                     name: timerName,
                     intervals: intervals,
                     loops: loops,
-                    owner: loggedUser,
+                    owner: loggedUser.normalize("NFD").replace(/\p{Diacritic}/gu, ""),
                 }),
             }
         )
@@ -60,22 +65,22 @@ export default function Timer(){
 
 
     function setShownTimer() {
-        fetch(`http://${settings.timerIP}:${settings.timerPort}/show?name=${timerName}-${loggedUser}`, {method: 'POST'})
+        fetch(`http://${settings.timerIP}:${settings.timerPort}/show?name=${timerName}-${loggedUser.normalize("NFD").replace(/\p{Diacritic}/gu, "")}`, {method: 'POST'})
         .catch(error => console.log(error));
     }
 
     function startTimer() {
-        fetch(`http://${settings.timerIP}:${settings.timerPort}/start?name=${timerName}-${loggedUser}`, {method: 'POST'})
+        fetch(`http://${settings.timerIP}:${settings.timerPort}/start?name=${timerName}-${loggedUser.normalize("NFD").replace(/\p{Diacritic}/gu, "")}`, {method: 'POST'})
         .catch(error => console.log(error));
     }
 
     function stopTimer() {
-        fetch(`http://${settings.timerIP}:${settings.timerPort}/stop?name=${timerName}-${loggedUser}`, {method: 'POST'})
+        fetch(`http://${settings.timerIP}:${settings.timerPort}/stop?name=${timerName}-${loggedUser.normalize("NFD").replace(/\p{Diacritic}/gu, "")}`, {method: 'POST'})
         .catch(error => console.log(error));
     }
 
     function pauseTimer() {
-        fetch(`http://${settings.timerIP}:${settings.timerPort}/pause?name=${timerName}-${loggedUser}`, {method: 'POST'})
+        fetch(`http://${settings.timerIP}:${settings.timerPort}/pause?name=${timerName}-${loggedUser.normalize("NFD").replace(/\p{Diacritic}/gu, "")}`, {method: 'POST'})
         .catch(error => console.log(error));
     }
 
@@ -102,7 +107,7 @@ export default function Timer(){
                 <View style={{flex:1}}>
                     <View style={styles.menuContainer}>
                         <Text style={Fonts.h3}>Jméno:</Text>
-                        <TextInput style={styles.textInput} value={timerName} onChangeText={setTimerName}/>
+                        <TextInput style={styles.textInput} value={timerName} onChangeText={normalizeAndSetTimerName}/>
                         <TouchableOpacity onPress={saveTimer}>
                             <FontAwesome name="save" size={40} color={'green'}/>
                         </TouchableOpacity>

@@ -7,6 +7,8 @@ import { Colors } from '../../../constants/Colors'
 import { Fonts } from '../../../constants/Fonts'
 import { apiURL } from '../../../constants/Other';
 import { useFocusEffect } from '@react-navigation/native';
+import { FontAwesome } from '@expo/vector-icons';
+import ColorPicker, { colorKit, Swatches, Preview, HueCircular, BrightnessSlider } from 'reanimated-color-picker';
 
 
 export default function TimerIndex(){
@@ -20,12 +22,16 @@ export default function TimerIndex(){
         loggedUser,
     } = useContext(GlobalStateContext);
     const router = useRouter();
+    const [ showStopwatch, setShowStopwatch ] = useState(false);
+    const [ stopwatchStatus, setStopwatchStatus ] = useState(null);
+    const [ stopwatchTime, setStopwatchTime ] = useState(0);
 
     const getTimers = async () => {
         try {
             const response = await fetch(`http://${settings.timerIP}:${settings.timerPort}/timers`);
             const data = await response.json();
-            setCurrentTimersStatus(data);
+            setCurrentTimersStatus(data['timers']);
+            setStopwatchStatus(data['stopwatch']);
         } catch (error) {
             console.error('Error polling endpoint:', error);
         }
@@ -44,7 +50,7 @@ export default function TimerIndex(){
     const renderTimer = ({item, index}) => {
         let thisTimerStatus = null;
         for (const timer of currentTimersStatus) {
-            if (timer.name === `${item.name}-${loggedUser}`) {
+            if (timer.name === `${item.name}-${loggedUser.normalize("NFD").replace(/\p{Diacritic}/gu, "")}`) {
                 thisTimerStatus = timer;
                 break;
             }
@@ -106,28 +112,143 @@ export default function TimerIndex(){
         setSavedTimers(newSavedTimers);
     }
 
+    function sendSetShowStopwatch() {
+        fetch(`http://${settings.timerIP}:${settings.timerPort}/show_stopwatch`, {method: 'POST'})
+        .catch(error => console.log(error));
+    }
+
+    function pauseStopwatch() {
+        fetch(`http://${settings.timerIP}:${settings.timerPort}/pause_stopwatch`, {method: 'POST'})
+        .catch(error => console.log(error));
+    }
+
+    function startStopwatch() {
+        fetch(`http://${settings.timerIP}:${settings.timerPort}/start_stopwatch`, {method: 'POST'})
+        .catch(error => console.log(error));
+    }
+
+    function stopStopwatch() {
+        fetch(`http://${settings.timerIP}:${settings.timerPort}/stop_stopwatch`, {method: 'POST'})
+        .catch(error => console.log(error));
+    }
+
+    function setStopwatchColor(color) {
+        console.log(color);
+        const rgbNumbers = color['rgb']
+          .replace('rgb(', '')
+          .replace(')', '')
+          .split(',')
+          .map(Number);
+
+        console.log(rgbNumbers);
+
+        fetch(`http://${settings.timerIP}:${settings.timerPort}/set_stopwatch_color?color=${rgbNumbers[0]},${rgbNumbers[1]},${rgbNumbers[2]}`, {method: 'POST'})
+        .catch(error => console.log(error));
+    }
+
+    async function calculateStopwatchTime() {
+        if (stopwatchStatus !== null) {
+            if (stopwatchStatus.running) {
+                let now = new Date();
+                if (stopwatchStatus.paused) {
+                    const pausedAtJSFormat = stopwatchStatus.paused_at.map((x, i) => i === 1 ? x - 1 : x);
+                    now = new Date(Date.UTC(...pausedAtJSFormat));
+                }
+                const startTimeJSFormat = stopwatchStatus.started_at.map((x, i) => i === 1 ? x - 1 : x);
+                const startTime = new Date(Date.UTC(...startTimeJSFormat));
+                const diff = now - startTime - stopwatchStatus.paused_for*1000;
+                const hours = Math.floor(diff / 1000 / 60 / 60);
+                const minutes = Math.floor(diff / 1000 / 60) % 60;
+                const seconds = Math.floor(diff / 1000) % 60;
+                setStopwatchTime(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+            } else {
+                setStopwatchTime('Not running');
+            }
+        }
+    }
+
+    function rgbStringFromColor(color) {
+        return `rgb(${color.r}, ${color.g}, ${color.b})`;
+    }
+
+    useEffect(() => {
+        calculateStopwatchTime();
+    }
+    , [stopwatchStatus]);
+
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={styles.header}>
-                <Text style={Fonts.h1}>Časovače</Text>
-            </View>
-            {
-                savedTimers === null ? (
-                    <ActivityIndicator size="large" color={Colors.primary} />
-                ) : (
-                    <FlatList
-                        data={savedTimers}
-                        renderItem={renderTimer}
-                        keyExtractor={item => item.name}
-                    />
-                )
-            }
-            <TouchableOpacity onPress={createNewTimer}>
-                <View style={styles.button}>
-                    <Text style={Fonts.h3}>Nový časovač</Text>
+            { showStopwatch ? (
+                <View style={{flex:1}}>
+                    <View style={styles.header}>
+                        <Text style={Fonts.h1}>Stopky</Text>
+                        <TouchableOpacity onPress={() => setShowStopwatch(false)}>
+                            <Text style={[Fonts.h3, {color: 'gray'}]}>Časovače</Text>
+                        </TouchableOpacity>
+                    </View>
+                    {
+                        stopwatchStatus === null ? (
+                            <ActivityIndicator size="large" color={Colors.primary} />
+                        ) : (
+                            <View style={{flex: 1}}>
+                                <Text style={Fonts.h3}>Čas: {stopwatchTime}</Text>
+                                <Text style={Fonts.h3}>Běží: {stopwatchStatus.running ? 'Ano' : 'Ne'}</Text>
+                                <Text style={Fonts.h3}>Pozastaveno: {stopwatchStatus.paused ? 'Ano' : 'Ne'}</Text>
+                                <Text style={Fonts.h3}>Zobrazeno: {stopwatchStatus.shown ? 'Ano' : 'Ne'}</Text>
+
+                                <View style={styles.menuContainer}>
+                                    <TouchableOpacity onPress={sendSetShowStopwatch}>
+                                        <FontAwesome name="eye" size={40} color={Colors.primary}/>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={pauseStopwatch}>
+                                        <FontAwesome name="pause" size={40} color='orange'/>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={stopStopwatch}>
+                                        <FontAwesome name="stop" size={40} color='red'/>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={startStopwatch}>
+                                        <FontAwesome name="play" size={40} color='green'/>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={{padding: 40}}>
+                                    <ColorPicker value={rgbStringFromColor({r: 255, g: 0, b: 0})} onComplete={setStopwatchColor}>
+                                        <HueCircular />
+                                        <Preview hideInitialColor={true} hideText={true} style={{height: 100}}/>
+                                        <BrightnessSlider />
+                                    </ColorPicker>
+                                </View>
+                            </View>
+                        )
+                    }
                 </View>
-            </TouchableOpacity>
+            ) : (
+                <View style={{flex:1}}>
+                    <View style={styles.header}>
+                        <Text style={Fonts.h1}>Časovače</Text>
+                        <TouchableOpacity onPress={() => setShowStopwatch(true)}>
+                            <Text style={[Fonts.h3, {color: 'gray'}]}>Stopky</Text>
+                        </TouchableOpacity>
+                    </View>
+                    {
+                        savedTimers === null ? (
+                            <ActivityIndicator size="large" color={Colors.primary} />
+                        ) : (
+                            <FlatList
+                                data={savedTimers}
+                                renderItem={renderTimer}
+                                keyExtractor={item => item.name}
+                            />
+                        )
+                    }
+                    <TouchableOpacity onPress={createNewTimer}>
+                        <View style={styles.button}>
+                            <Text style={Fonts.h3}>Nový časovač</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+            )
+            }
         </SafeAreaView>
     );
 };
@@ -162,5 +283,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 10,
         marginBottom: 10,
+    },
+    menuContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginTop: 10,
+        marginRight: 0,
     },
 });

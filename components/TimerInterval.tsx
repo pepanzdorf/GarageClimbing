@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Modal, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, Modal, TouchableOpacity, Switch } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { Fonts } from '../constants/Fonts'
 import { Colors } from '../constants/Colors'
@@ -13,8 +13,13 @@ const TimerInterval = (props) => {
     const [color, setColor] = useState(props.initial.color);
     const [onlyFirst, setOnlyFirst] = useState(props.initial.onlyFirst);
     const [onlyLast, setOnlyLast] = useState(props.initial.onlyLast);
+    const [alarmSeconds, setAlarmSeconds] = useState(props.initial.beepTime % 60);
+    const [alarmMinutes, setAlarmMinutes] = useState(Math.floor(props.initial.beepTime / 60) % 60);
+    const [alarmHours, setAlarmHours] = useState(Math.floor(props.initial.beepTime / 3600));
+    const [alarmSet, setAlarmSet] = useState(props.initial.beep);
 
     const [modalVisible, setModalVisible] = useState(false);
+    const [alarmModalVisible, setAlarmModalVisible] = useState(false);
     const [previewColor, setPreviewColor] = useState('red');
 
     function renderLoopSwitch() {
@@ -36,17 +41,19 @@ const TimerInterval = (props) => {
         return (num < 10 ? `0${num}` : num)
     }
 
-    function calculateTimeInSeconds() {
-        return seconds + minutes*60 + hours*3600;
+    function calculateTimeInSeconds(h, m, s) {
+        return s + m*60 + h*3600;
     }
 
     function setTimer() {
         const setTimers = [...props.value];
         setTimers[props.index] = {
-            time: calculateTimeInSeconds(),
+            time: calculateTimeInSeconds(hours, minutes, seconds),
             color: color,
             onlyFirst: onlyFirst,
             onlyLast: onlyLast,
+            beep: alarmSet,
+            beepTime: calculateTimeInSeconds(alarmHours, alarmMinutes, alarmSeconds),
         };
         props.setValue(setTimers);
     }
@@ -70,7 +77,7 @@ const TimerInterval = (props) => {
     useEffect(() => {
         setTimer();
     }
-    , [seconds, minutes, hours, color, onlyFirst, onlyLast]);
+    , [seconds, minutes, hours, color, onlyFirst, onlyLast, alarmSet, alarmSeconds, alarmMinutes, alarmHours]);
 
     return (
         <View style={styles.container}>
@@ -118,6 +125,7 @@ const TimerInterval = (props) => {
                 </View>
             </View>
             <View style={styles.iconsContainer}>
+                <FontAwesome name="bell-o" size={40} color={alarmSet ? 'lime' : 'black'} onPress={() => setAlarmModalVisible(true)} />
                 {
                     renderLoopSwitch()
                 }
@@ -126,15 +134,82 @@ const TimerInterval = (props) => {
                 </View>
             </View>
             <Modal visible={modalVisible} >
-                <ColorPicker value={`hsv(${props.initial.color}, 100%, 100%)`} onComplete={setColorFromPicker}>
-                    <HueCircular />
-                    <Preview hideInitialColor={true} hideText={true} style={{height: 100}}/>
-                </ColorPicker>
-                <TouchableOpacity onPress={() => setModalVisible(false)}>
-                    <View style={styles.button}>
-                        <Text style={Fonts.h3}>Uložit</Text>
+                <View style={{flex:1, margin: 50}}>
+                    <ColorPicker value={`hsv(${props.initial.color}, 100%, 100%)`} onComplete={setColorFromPicker} style={{flex: 1}}>
+                        <HueCircular />
+                        <Preview hideInitialColor={true} hideText={true} style={{height: 100}}/>
+                    </ColorPicker>
+                    <TouchableOpacity onPress={() => setModalVisible(false)}>
+                        <View style={styles.button}>
+                            <Text style={Fonts.h3}>Uložit</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+            </Modal>
+            <Modal visible={alarmModalVisible} transparent={true}>
+                <View style={styles.centeredView}>
+                    <View style={styles.modalView}>
+                        <Text style={Fonts.h3}>Zapnout pípnutí:</Text>
+                        <Switch
+                            trackColor={styles.track}
+                            thumbColor={alarmSet ? Colors.background : Colors.backgroundDarker}
+                            onValueChange={setAlarmSet}
+                            value={alarmSet}
+                        />
+                        {
+                            alarmSet ? (
+                                <View style={[styles.timeContainer, {maxHeight: 65}]}>
+                                    <View style={{flex: 1}}>
+                                        <ScrollPicker
+                                            dataSource={Array.from({length: 100}, (_, i) => padNumbers(i))}
+                                            selectedIndex={alarmHours}
+                                            wrapperHeight={styles.pickerWrapperHeight}
+                                            wrapperBackground={Colors.primary}
+                                            itemHeight={styles.pickerItemHeight}
+                                            highlightColor={Colors.border}
+                                            itemTextStyle={Fonts.h3}
+                                            activeItemTextStyle={Fonts.h3}
+                                            onValueChange={(_, index) => setAlarmHours(index)}
+                                        />
+                                    </View>
+                                    <Text style={styles.colon}>:</Text>
+                                    <View style={{flex: 1}}>
+                                        <ScrollPicker
+                                            dataSource={Array.from({length: 60}, (_, i) => padNumbers(i))}
+                                            selectedIndex={alarmMinutes}
+                                            wrapperHeight={styles.pickerWrapperHeight}
+                                            wrapperBackground={Colors.primary}
+                                            itemHeight={styles.pickerItemHeight}
+                                            highlightColor={Colors.border}
+                                            itemTextStyle={Fonts.h3}
+                                            activeItemTextStyle={Fonts.h3}
+                                            onValueChange={(_, index) => setAlarmMinutes(index)}
+                                        />
+                                    </View>
+                                    <Text style={styles.colon}>:</Text>
+                                    <View style={{flex: 1}}>
+                                        <ScrollPicker
+                                            dataSource={Array.from({length: 60}, (_, i) => padNumbers(i))}
+                                            selectedIndex={alarmSeconds}
+                                            wrapperHeight={styles.pickerWrapperHeight}
+                                            wrapperBackground={Colors.primary}
+                                            itemHeight={styles.pickerItemHeight}
+                                            highlightColor={Colors.border}
+                                            itemTextStyle={Fonts.h3}
+                                            activeItemTextStyle={Fonts.h3}
+                                            onValueChange={(_, index) => setAlarmSeconds(index)}
+                                        />
+                                    </View>
+                                </View>
+                            ) : null
+                        }
+                        <TouchableOpacity onPress={() => setAlarmModalVisible(false)}>
+                            <View style={styles.button}>
+                                <Text style={Fonts.h3}>OK</Text>
+                            </View>
+                        </TouchableOpacity>
                     </View>
-                </TouchableOpacity>
+                </View>
             </Modal>
         </View>
     );
@@ -178,6 +253,30 @@ const styles = StyleSheet.create({
          marginTop: 15,
          marginRight: 20,
          marginLeft: 20,
+    },
+    centeredView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalView: {
+        margin: 20,
+        backgroundColor: 'white',
+        borderRadius: 20,
+        padding: 35,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    track: {
+        false: Colors.darkerBorder,
+        true: Colors.primary
     },
 });
 

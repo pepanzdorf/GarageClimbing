@@ -4,7 +4,7 @@ import { SearchBar } from 'react-native-elements';
 import { useRouter } from 'expo-router';
 import { GlobalStateContext } from '../../context';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { gradeIdToGradeName, sortBoulderBy, filterBoulders, filterBySearch, attemptIdToAttemptName } from '../../../scripts/utils';
+import { gradeIdToGradeName, sortBoulderBy, filterBoulders, filterBySearch, attemptIdToAttemptName, findBoulderById } from '../../../scripts/utils';
 import { Colors } from '../../../constants/Colors'
 import { Fonts } from '../../../constants/Fonts'
 import { StarRating } from '../../../components/StarRating';
@@ -89,6 +89,13 @@ export default function Home(){
         router.push(`${item.id}`);
     }
 
+    const handleReroute = (boulder_id) => {
+        let boulder = findBoulderById(boulder_id, boulders);
+
+        setCurrentBoulder(boulder);
+        router.push(`${boulder.id}`);
+    }
+
     const renderBoulder = ({item, index}) => {
         return (
             <TouchableOpacity onPress={() => handleGoToBoulder(item, index)}>
@@ -136,53 +143,55 @@ export default function Home(){
     const renderSend = ({item, index}) => {
         const send = item;
         return (
-            <View key={send.id} style={styles.sendContainer}>
-                <View style={styles.row}>
-                    <Text style={Fonts.h3}>
-                        {send.name}
-                    </Text>
-                </View>
-                <View style={styles.row}>
-                    <Text style={Fonts.h3}>
-                        {send.username}
-                    </Text>
-                    <Text style={Fonts.h3}>
-                        {gradeIdToGradeName(send.grade, settings.grading)}
-                    </Text>
-                </View>
-                <View style={styles.row}>
-                    <Text style={Fonts.small}>
-                        {new Date(send.sent_date).toLocaleDateString() + " " + new Date(send.sent_date).toLocaleTimeString()}
-                    </Text>
-                    {(send.challenge_id != 1) ? (
-                        <View style={styles.crownContainer}>
-                            <View>
-                                <FontAwesome5 name="crown" size={20} color='gold' />
-                            </View>
-                            <View style={{position: 'absolute'}}>
-                                <Text style={Fonts.small}>
-                                    {send.challenge_id}
-                                </Text>
-                            </View>
-                        </View>) : null }
-                </View>
-                <View style={styles.row}>
-                    <StarRating rating={send.rating} maxStars={5} size={20}/>
-                    <Text style={Fonts.h3}>
-                        {
-                            send.attempts === 0 ? (
-                                attemptIdToAttemptName(send.attempts)
-                            ) : (
-                                send.attempts <= 3 ? (
-                                    attemptIdToAttemptName(send.attempts) + " pokusy"
+            <TouchableOpacity onPress={() => handleReroute(send.boulder_id)}>
+                <View key={send.id} style={styles.sendContainer}>
+                    <View style={styles.row}>
+                        <Text style={Fonts.h3}>
+                            {send.name}
+                        </Text>
+                    </View>
+                    <View style={styles.row}>
+                        <Text style={Fonts.h3}>
+                            {send.username}
+                        </Text>
+                        <Text style={Fonts.h3}>
+                            {gradeIdToGradeName(send.grade, settings.grading)}
+                        </Text>
+                    </View>
+                    <View style={styles.row}>
+                        <Text style={Fonts.small}>
+                            {new Date(send.sent_date).toLocaleDateString() + " " + new Date(send.sent_date).toLocaleTimeString()}
+                        </Text>
+                        {(send.challenge_id != 1) ? (
+                            <View style={styles.crownContainer}>
+                                <View>
+                                    <FontAwesome5 name="crown" size={20} color='gold' />
+                                </View>
+                                <View style={{position: 'absolute'}}>
+                                    <Text style={Fonts.small}>
+                                        {send.challenge_id}
+                                    </Text>
+                                </View>
+                            </View>) : null }
+                    </View>
+                    <View style={styles.row}>
+                        <StarRating rating={send.rating} maxStars={5} size={20}/>
+                        <Text style={Fonts.h3}>
+                            {
+                                send.attempts === 0 ? (
+                                    attemptIdToAttemptName(send.attempts)
                                 ) : (
-                                    attemptIdToAttemptName(send.attempts) + " pokusů"
+                                    send.attempts <= 3 ? (
+                                        attemptIdToAttemptName(send.attempts) + " pokusy"
+                                    ) : (
+                                        attemptIdToAttemptName(send.attempts) + " pokusů"
+                                    )
                                 )
-                            )
-                        }
-                    </Text>
+                            }
+                        </Text>
+                    </View>
                 </View>
-            </View>
+            </TouchableOpacity>
         )
     }
 

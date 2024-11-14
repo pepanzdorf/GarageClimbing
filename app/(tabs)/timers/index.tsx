@@ -27,6 +27,7 @@ export default function TimerIndex(){
     const [ stopwatchStatus, setStopwatchStatus ] = useState(null);
     const [ stopwatchTime, setStopwatchTime ] = useState(0);
     const [ brightness, setBrightness ] = useState(100);
+    const [ selectedMode, setSelectedMode ] = useState(0);
 
     const getTimers = async () => {
         try {
@@ -152,6 +153,12 @@ export default function TimerIndex(){
         .catch(error => console.log(error));
     }
 
+    function setMode(mode) {
+        setSelectedMode(mode);
+        fetch(`http://${settings.timerIP}:${settings.timerPort}/set_mode?mode=${mode}`, {method: 'POST'})
+        .catch(error => console.log(error));
+    }
+
 
     async function calculateStopwatchTime() {
         if (stopwatchStatus !== null) {
@@ -264,7 +271,7 @@ export default function TimerIndex(){
                             />
                         )
                     }
-                    <View style={{padding: 40}}>
+                    <View style={{paddingHorizontal: 40, paddingVertical: 10}}>
                         <View style={styles.row}>
                             <Text style={Fonts.h3}>Jas:</Text>
                             <Text style={Fonts.h3}>{brightness}%</Text>
@@ -282,6 +289,20 @@ export default function TimerIndex(){
                             unselectedStyle={{backgroundColor: Colors.border}}
                             touchDimensions={styles.touchDimensions}
                         />
+                    </View>
+                    <View style={styles.modeContainer}>
+                        <TouchableOpacity onPress={() => setMode(0)} style={[styles.modeButton, {backgroundColor: selectedMode === 0 ? Colors.primary : 'lightgray'}]}>
+                            <Text style={Fonts.h3}>Auto</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => setMode(3)} style={[styles.modeButton, {backgroundColor: selectedMode === 3 ? Colors.primary : 'lightgray'}]}>
+                            <Text style={Fonts.h3}>HH:MM</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => setMode(2)} style={[styles.modeButton, {backgroundColor: selectedMode === 2 ? Colors.primary : 'lightgray'}]}>
+                            <Text style={Fonts.h3}>MM:SS</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => setMode(1)} style={[styles.modeButton, {backgroundColor: selectedMode === 1 ? Colors.primary : 'lightgray'}]}>
+                            <Text style={Fonts.h3}>SSSS</Text>
+                        </TouchableOpacity>
                     </View>
                     <TouchableOpacity onPress={createNewTimer}>
                         <View style={styles.button}>
@@ -347,5 +368,18 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginTop: 10,
-    }
+    },
+    modeButton: {
+        padding: 10,
+        alignItems: 'center',
+        borderWidth: 1,
+        borderRadius: 10,
+    },
+    modeContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginHorizontal: 20,
+        marginBottom: 10,
+    },
 });

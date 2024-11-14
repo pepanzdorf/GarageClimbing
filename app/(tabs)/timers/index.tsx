@@ -9,6 +9,7 @@ import { apiURL } from '../../../constants/Other';
 import { useFocusEffect } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 import ColorPicker, { colorKit, Swatches, Preview, HueCircular, BrightnessSlider } from 'reanimated-color-picker';
+import MultiSlider from '@ptomasroos/react-native-multi-slider';
 
 
 export default function TimerIndex(){
@@ -25,6 +26,7 @@ export default function TimerIndex(){
     const [ showStopwatch, setShowStopwatch ] = useState(false);
     const [ stopwatchStatus, setStopwatchStatus ] = useState(null);
     const [ stopwatchTime, setStopwatchTime ] = useState(0);
+    const [ brightness, setBrightness ] = useState(100);
 
     const getTimers = async () => {
         try {
@@ -134,17 +136,22 @@ export default function TimerIndex(){
 
     function setStopwatchColor(color) {
         console.log(color);
-        const rgbNumbers = color['rgb']
-          .replace('rgb(', '')
+        const hsvNumbers = color['hsv']
+          .replace('hsv(', '')
           .replace(')', '')
+          .replaceAll('%', '')
           .split(',')
-          .map(Number);
+          .map(Number)
 
-        console.log(rgbNumbers);
-
-        fetch(`http://${settings.timerIP}:${settings.timerPort}/set_stopwatch_color?color=${rgbNumbers[0]},${rgbNumbers[1]},${rgbNumbers[2]}`, {method: 'POST'})
+        fetch(`http://${settings.timerIP}:${settings.timerPort}/set_stopwatch_color?color=${hsvNumbers[0]}`, {method: 'POST'})
         .catch(error => console.log(error));
     }
+
+    function sendSetBrightness() {
+        fetch(`http://${settings.timerIP}:${settings.timerPort}/set_brightness?brightness=${brightness}`, {method: 'POST'})
+        .catch(error => console.log(error));
+    }
+
 
     async function calculateStopwatchTime() {
         if (stopwatchStatus !== null) {
@@ -215,8 +222,24 @@ export default function TimerIndex(){
                                     <ColorPicker value={rgbStringFromColor({r: 255, g: 0, b: 0})} onComplete={setStopwatchColor}>
                                         <HueCircular />
                                         <Preview hideInitialColor={true} hideText={true} style={{height: 100}}/>
-                                        <BrightnessSlider />
                                     </ColorPicker>
+                                    <View style={styles.row}>
+                                        <Text style={Fonts.h3}>Jas:</Text>
+                                        <Text style={Fonts.h3}>{brightness}%</Text>
+                                    </View>
+                                    <MultiSlider
+                                        values={[brightness]}
+                                        sliderLength={280}
+                                        min={0}
+                                        max={100}
+                                        step={1}
+                                        onValuesChange={values => setBrightness(values[0])}
+                                        onValuesChangeFinish={sendSetBrightness}
+                                        markerStyle={styles.markerStyle}
+                                        selectedStyle={{backgroundColor: Colors.primary}}
+                                        unselectedStyle={{backgroundColor: Colors.border}}
+                                        touchDimensions={styles.touchDimensions}
+                                    />
                                 </View>
                             </View>
                         )
@@ -241,6 +264,25 @@ export default function TimerIndex(){
                             />
                         )
                     }
+                    <View style={{padding: 40}}>
+                        <View style={styles.row}>
+                            <Text style={Fonts.h3}>Jas:</Text>
+                            <Text style={Fonts.h3}>{brightness}%</Text>
+                        </View>
+                        <MultiSlider
+                            values={[brightness]}
+                            sliderLength={280}
+                            min={0}
+                            max={100}
+                            step={1}
+                            onValuesChange={values => setBrightness(values[0])}
+                            onValuesChangeFinish={sendSetBrightness}
+                            markerStyle={styles.markerStyle}
+                            selectedStyle={{backgroundColor: Colors.primary}}
+                            unselectedStyle={{backgroundColor: Colors.border}}
+                            touchDimensions={styles.touchDimensions}
+                        />
+                    </View>
                     <TouchableOpacity onPress={createNewTimer}>
                         <View style={styles.button}>
                             <Text style={Fonts.h3}>Nový časovač</Text>
@@ -266,7 +308,6 @@ const styles = StyleSheet.create({
          alignItems: 'center',
          borderWidth: 1,
          borderRadius: 10,
-         marginTop: 15,
          marginRight: 20,
          marginLeft: 20,
     },
@@ -291,4 +332,20 @@ const styles = StyleSheet.create({
         marginTop: 10,
         marginRight: 0,
     },
+    markerStyle: {
+        height: 20,
+        width: 20,
+        backgroundColor: Colors.primary,
+    },
+    touchDimensions: {
+        height: 60,
+        width: 60,
+        borderRadius: 20,
+        slipDisplacement: 200
+    },
+    row: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 10,
+    }
 });

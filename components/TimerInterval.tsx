@@ -32,10 +32,6 @@ const TimerInterval = (props) => {
         );
     }
 
-    function rgbStringFromColor(color) {
-        return `rgb(${color.r}, ${color.g}, ${color.b})`;
-    }
-
     function padNumbers(num) {
         return (num < 10 ? `0${num}` : num)
     }
@@ -56,18 +52,18 @@ const TimerInterval = (props) => {
     }
 
     function setColorFromPicker(color) {
-        const rgbNumbers = color['rgb']
-          .replace('rgb(', '')
+        const hsvNumbers = color['hsv']
+          .replace('hsv(', '')
           .replace(')', '')
+          .replaceAll('%', '')
           .split(',')
-          .map(Number);
+          .map(Number)
 
-        setColor({r: rgbNumbers[0], g: rgbNumbers[1], b: rgbNumbers[2]});
+        setColor(hsvNumbers[0]);
     }
 
     useEffect(() => {
-        const pColor = colorKit.setBrightness(rgbStringFromColor(color), 100).rgb().object();
-        setPreviewColor(`rgb(${pColor.r}, ${pColor.g}, ${pColor.b})`);
+        setPreviewColor(`hsl(${color}, 100%, 50%)`);
     }
     , [color]);
 
@@ -130,11 +126,9 @@ const TimerInterval = (props) => {
                 </View>
             </View>
             <Modal visible={modalVisible} >
-                <ColorPicker value={rgbStringFromColor(props.initial.color)} onComplete={setColorFromPicker}>
+                <ColorPicker value={`hsv(${props.initial.color}, 100%, 100%)`} onComplete={setColorFromPicker}>
                     <HueCircular />
                     <Preview hideInitialColor={true} hideText={true} style={{height: 100}}/>
-                    <BrightnessSlider />
-                    <Swatches />
                 </ColorPicker>
                 <TouchableOpacity onPress={() => setModalVisible(false)}>
                     <View style={styles.button}>

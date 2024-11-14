@@ -26,7 +26,7 @@ export default function Timer(){
 
     function addTimerInterval() {
         const newIntervals = [...intervals];
-        newIntervals.push({time: 0, color: {r: 25, g: 0, b: 0}, onlyFirst: false, onlyLast: false});
+        newIntervals.push({time: 0, color: 0, onlyFirst: false, onlyLast: false});
         setIntervals(newIntervals);
     }
 
@@ -87,7 +87,7 @@ export default function Timer(){
     useEffect(() => {
         if (name) {
             if (name == 'Nový časovač') {
-                setIntervals([{time: 0, color: {r: 25, g: 0, b: 0}, onlyFirst: false, onlyLast: false}]);
+                setIntervals([{time: 0, color: 0, onlyFirst: false, onlyLast: false}]);
                 setLoops(1);
             } else {
                 const timer = savedTimers.find((element) => element.name==name);

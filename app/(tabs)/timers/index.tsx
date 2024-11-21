@@ -28,6 +28,14 @@ export default function TimerIndex(){
     const [ stopwatchTime, setStopwatchTime ] = useState(0);
     const [ brightness, setBrightness ] = useState(100);
     const [ selectedMode, setSelectedMode ] = useState(0);
+    const [ sliderLength, setSliderLength ] = useState(240);
+
+
+    const handleLayout = (event) => {
+        const { width } = event.nativeEvent.layout;
+        setSliderLength(width-80);
+    }
+
 
     const getTimers = async () => {
         try {
@@ -225,10 +233,10 @@ export default function TimerIndex(){
                                         <FontAwesome name="play" size={40} color='green'/>
                                     </TouchableOpacity>
                                 </View>
-                                <View style={{padding: 40}}>
+                                <View style={{paddingHorizontal: 40, paddingVertical: 10}}>
                                     <ColorPicker value={rgbStringFromColor({r: 255, g: 0, b: 0})} onComplete={setStopwatchColor}>
                                         <HueCircular />
-                                        <Preview hideInitialColor={true} hideText={true} style={{height: 100}}/>
+                                        <Preview hideInitialColor={true} hideText={true}/>
                                     </ColorPicker>
                                     <View style={styles.row}>
                                         <Text style={Fonts.h3}>Jas:</Text>
@@ -236,7 +244,7 @@ export default function TimerIndex(){
                                     </View>
                                     <MultiSlider
                                         values={[brightness]}
-                                        sliderLength={280}
+                                        sliderLength={sliderLength}
                                         min={0}
                                         max={100}
                                         step={1}
@@ -271,14 +279,14 @@ export default function TimerIndex(){
                             />
                         )
                     }
-                    <View style={{paddingHorizontal: 40, paddingVertical: 10}}>
+                    <View style={{paddingHorizontal: 40, paddingVertical: 10}} onLayout={handleLayout}>
                         <View style={styles.row}>
                             <Text style={Fonts.h3}>Jas:</Text>
                             <Text style={Fonts.h3}>{brightness}%</Text>
                         </View>
                         <MultiSlider
                             values={[brightness]}
-                            sliderLength={280}
+                            sliderLength={sliderLength}
                             min={0}
                             max={100}
                             step={1}

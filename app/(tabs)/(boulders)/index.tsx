@@ -28,11 +28,15 @@ export default function Home(){
         chosenDate,
         setChosenDate,
         fetchSessionSends,
+        competitions,
+        fetchCompetitions
     } = useContext(GlobalStateContext);
     const [ search, setSearch ] = useState('');
     const [ numberOfBoulders, setNumberOfBoulders ] = useState(0);
     const [ numberOfSessionSends, setNumberOfSessionSends ] = useState(0);
-    const [ showFeed, setShowFeed ] = useState(false);
+    const [ numberOfComps, setNumberOfComps ] = useState(0);
+    const [ showMode, setShowMode ] = useState(0);
+    const [ iconName, setIconName ] = useState('flag-checkered');
     const [ openDatePicker, setOpenDatePicker ] = useState(false);
     const [ selectedYear, setSelectedYear ] = useState(new Date().getFullYear());
     const [ selectedMonth, setSelectedMonth ] = useState(new Date().getMonth()+1);
@@ -78,6 +82,13 @@ export default function Home(){
     , [sessionSends]);
 
     useEffect(() => {
+        if (competitions) {
+            setNumberOfComps(competitions.length);
+        }
+    }
+    , [competitions]);
+
+    useEffect(() => {
         setChosenDate(`${selectedYear}-${selectedMonth}-${selectedDay}`);
     }
     , [selectedYear, selectedMonth, selectedDay]);
@@ -94,6 +105,27 @@ export default function Home(){
 
         setCurrentBoulder(boulder);
         router.push(`${boulder.id}`);
+    }
+
+    const rotateMode = () => {
+        if (showMode === 0) {
+            setShowMode(1);
+            setIconName('stack-exchange');
+        } else if (showMode === 1) {
+            setShowMode(2);
+            setIconName('list');
+        } else {
+            setShowMode(0);
+            setIconName('flag-checkered');
+        }
+    }
+
+    const handleNew = () => {
+        if (showMode === 0) {
+            router.push('new_boulder')
+        } else if (showMode === 1) {
+            router.push('new_comp')
+        }
     }
 
     const renderBoulder = ({item, index}) => {
@@ -195,57 +227,46 @@ export default function Home(){
         )
     }
 
-    return (
-        <SafeAreaView style={{flex:1}}>
-            <View style={styles.menuContainer}>
-                <TouchableOpacity onPress={() => {fetchSessionSends(chosenDate); reloadBoulders()}}>
-                    <View style={styles.refresh}>
-                        <Text style={Fonts.h3}>
-                            Refresh
-                        </Text>
-                        { showFeed ? (
-                            <Text style={Fonts.plain}>
-                                { numberOfSessionSends }/{ sessionSends.length }
-                            </Text>
-                        ) : (
-                            <Text style={Fonts.plain}>
-                                { numberOfBoulders }/{ boulders.length }
-                            </Text>
-                        )}
-                    </View>
-                </TouchableOpacity>
-                { showFeed ? (
-                    <TouchableOpacity onPress={() => setOpenDatePicker(true)}>
-                        <View style={styles.date}>
-                            <Text style={Fonts.h3}>
-                                {selectedDay}.{selectedMonth}.{selectedYear}
-                            </Text>
-                        </View>
-                    </TouchableOpacity>
-                ) : (
-                    <View style={styles.search}>
-                        <SearchBar
-                            placeholder="Vyhledat"
-                            value={search}
-                            onChangeText={setSearch}
-                            containerStyle={styles.searchContainer}
-                            inputContainerStyle={styles.searchInputContainer}
-                        />
-                    </View>
-                ) }
-                <View style={styles.clickableIcons}>
-                    <TouchableOpacity onPress={() => router.push('timers')}>
-                        <FontAwesome5 name="clock" size={36} color={Colors.primary} />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => setShowFeed(!showFeed)}>
-                        <FontAwesome name="stack-exchange" size={36} color={Colors.primary} />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => router.push('new_boulder')}>
-                        <FontAwesome name="plus" size={36} color={Colors.primary} />
-                    </TouchableOpacity>
-                </View>
+
+    const renderCompetition = ({item, index}) => {
+        return (
+            <View>
+                <Text>
+                    {item.name}
+                </Text>
             </View>
-            { showFeed ? (
+        )
+    }
+
+
+    const renderShowMode = () => {
+        if (showMode === 0) {
+            return (
+                <View style={styles.boulders}>
+                    { bouldersLoading ? ( <ActivityIndicator size="large" color="black" /> ) : (
+                         <FlatList
+                            data={ filteredBoulders }
+                            renderItem={renderBoulder}
+                            keyExtractor={item => item.id}
+                        />
+                    ) }
+                </View>
+            )
+        } else if (showMode === 1) {
+            return (
+                <View style={styles.boulders}>
+                    { competitions ? (
+                            <FlatList
+                                data={ competitions }
+                                renderItem={ renderCompetition }
+                                keyExtractor={ item => item.id }
+                            />
+                        ) : ( <ActivityIndicator size="large" color="black" /> )
+                    }
+                </View>
+            )
+        } else {
+            return (
                 <View style={styles.boulders}>
                     { sessionSends ? (
                             <FlatList
@@ -256,17 +277,72 @@ export default function Home(){
                         ) : ( <ActivityIndicator size="large" color="black" /> )
                     }
                 </View>
-            ) : (
-                <View style={styles.boulders}>
-                    { bouldersLoading ? ( <ActivityIndicator size="large" color="black" /> ) : (
-                         <FlatList
-                            data={ filteredBoulders }
-                            renderItem={renderBoulder}
-                            keyExtractor={item => item.id}
-                        />
-                    ) }
+            )
+        }
+    }
+
+    const renderMenu = () => {
+        let count = null;
+        let middle = null;
+        if (showMode === 0) {
+            count = <Text style={Fonts.plain}>
+                        { numberOfBoulders }/{ boulders.length }
+                    </Text>
+            middle = <View style={styles.search}>
+                         <SearchBar
+                              placeholder="Vyhledat"
+                              value={search}
+                              onChangeText={setSearch}
+                              containerStyle={styles.searchContainer}
+                              inputContainerStyle={styles.searchInputContainer}
+                         />
+                     </View>
+        } else if (showMode === 1) {
+            count = <Text style={Fonts.plain}>
+                        { numberOfComps }/{ competitions.length }
+                    </Text>
+        } else {
+            count = <Text style={Fonts.plain}>
+                        { numberOfSessionSends }/{ sessionSends.length }
+                    </Text>
+            middle = <TouchableOpacity onPress={() => setOpenDatePicker(true)}>
+                         <View style={styles.date}>
+                             <Text style={Fonts.h3}>
+                                 {selectedDay}.{selectedMonth}.{selectedYear}
+                             </Text>
+                         </View>
+                     </TouchableOpacity>
+        }
+        return (
+            <View style={styles.menuContainer}>
+                <TouchableOpacity onPress={() => {fetchSessionSends(chosenDate); reloadBoulders()}}>
+                    <View style={styles.refresh}>
+                        <Text style={Fonts.h3}>
+                            Refresh
+                        </Text>
+                        { count }
+                    </View>
+                </TouchableOpacity>
+                { middle }
+                <View style={styles.clickableIcons}>
+                    <TouchableOpacity onPress={() => router.push('timers')}>
+                        <FontAwesome5 name="clock" size={36} color={Colors.primary} />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={rotateMode}>
+                        <FontAwesome5 name={iconName} size={36} color={Colors.primary} />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={handleNew}>
+                        <FontAwesome name="plus" size={36} color={Colors.primary} />
+                    </TouchableOpacity>
                 </View>
-            )}
+            </View>
+        )
+    }
+
+    return (
+        <SafeAreaView style={{flex:1}}>
+            { renderMenu() }
+            { renderShowMode() }
             <Modal
                 visible={openDatePicker}
                 transparent={true}

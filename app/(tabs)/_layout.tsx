@@ -81,6 +81,12 @@ export default function TabLayout() {
                     href: null
                 }}
             />
+            <Tabs.Screen
+                name="new_comp"
+                options={{
+                    href: null
+                }}
+            />
         </Tabs>
     );
 }

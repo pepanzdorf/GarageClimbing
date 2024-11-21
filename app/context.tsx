@@ -81,6 +81,9 @@ export const GlobalStateProvider = ({ children }) => {
 
     const [ currentTimersStatus, setCurrentTimersStatus ] = useState([]);
 
+    const [ competitions, setCompetitions ] = useState([]);
+    const [ currentCompetition, setCurrentCompetition ] = useState(null);
+
 
     const checkSettings = () => {
         if (settings.angle === undefined) {
@@ -161,6 +164,7 @@ export const GlobalStateProvider = ({ children }) => {
         fetchSessionSends(chosenDate);
         fetchTimerStatus();
         loadTimers();
+        fetchCompetitions();
     }
 
     const whoami = () => {
@@ -385,6 +389,15 @@ export const GlobalStateProvider = ({ children }) => {
         }
     };
 
+    const fetchCompetitions = async () => {
+        const response = await fetch(`${apiURL}/climbing/competitions`);
+        if (!response.ok) {
+            return;
+        }
+        const jsonResponse = await response.json();
+        setCompetitions(jsonResponse);
+    }
+
     useEffect(()=>{
         fetchAll();
     },[]);
@@ -483,6 +496,10 @@ export const GlobalStateProvider = ({ children }) => {
                 fetchTimerStatus,
                 currentTimersStatus,
                 setCurrentTimersStatus,
+                competitions,
+                fetchCompetitions,
+                currentCompetition,
+                setCurrentCompetition,
         }}>
             {children}
         </GlobalStateContext.Provider>

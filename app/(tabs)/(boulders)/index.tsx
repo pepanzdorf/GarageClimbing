@@ -29,7 +29,8 @@ export default function Home(){
         setChosenDate,
         fetchSessionSends,
         competitions,
-        fetchCompetitions
+        fetchCompetitions,
+        setCurrentCompetition
     } = useContext(GlobalStateContext);
     const [ search, setSearch ] = useState('');
     const [ numberOfBoulders, setNumberOfBoulders ] = useState(0);
@@ -105,6 +106,11 @@ export default function Home(){
 
         setCurrentBoulder(boulder);
         router.push(`${boulder.id}`);
+    }
+
+    const handleRerouteComp = (comp) => {
+        setCurrentCompetition(comp);
+        router.push(`comps/${comp.id}`);
     }
 
     const rotateMode = () => {
@@ -230,11 +236,37 @@ export default function Home(){
 
     const renderCompetition = ({item, index}) => {
         return (
-            <View>
-                <Text>
-                    {item.name}
-                </Text>
-            </View>
+            <TouchableOpacity onPress={() => handleRerouteComp(item)} key={item.id}>
+                <View style={styles.compContainer}>
+                    <View style={styles.row}>
+                        <Text style={Fonts.h3}>
+                            {item.name}
+                        </Text>
+                        <Text style={Fonts.small}>
+                            {new Date(item.build_time).toLocaleDateString() + " " + new Date(item.build_time).toLocaleTimeString()}
+                        </Text>
+                    </View>
+                    <View style={styles.row}>
+                        <Text style={Fonts.h3}>
+                            {item.built_by}
+                        </Text>
+                        <Text style={Fonts.h3}>
+                            {gradeIdToGradeName(item.grade, settings.grading)}
+                        </Text>
+                    </View>
+                    <View style={styles.row}>
+                        <Text style={Fonts.h3}>
+                            Boulderů:
+                        </Text>
+                        <Text style={Fonts.h3}>
+                            {item.boulders}
+                        </Text>
+                    </View>
+                    <View style={styles.row}>
+
+                    </View>
+                </View>
+            </TouchableOpacity>
         )
     }
 
@@ -315,7 +347,7 @@ export default function Home(){
         }
         return (
             <View style={styles.menuContainer}>
-                <TouchableOpacity onPress={() => {fetchSessionSends(chosenDate); reloadBoulders()}}>
+                <TouchableOpacity onPress={() => {fetchSessionSends(chosenDate); reloadBoulders(), fetchCompetitions()}}>
                     <View style={styles.refresh}>
                         <Text style={Fonts.h3}>
                             Refresh
@@ -533,6 +565,16 @@ const styles = StyleSheet.create({
     scrollPicker: {
         width: 100,
         height: 150,
+    },
+    compContainer: {
+        padding: 10,
+        borderWidth: 1,
+        borderColor: Colors.borderDark,
+        borderRadius: 10,
+        backgroundColor: Colors.darkerBackground,
+        marginTop: 10,
+        marginLeft: 15,
+        marginRight: 15,
     },
 });
 

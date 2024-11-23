@@ -320,7 +320,7 @@ export default function Info(){
                     </View>
                     <View style={styles.field}>
                         <Text style={Fonts.h3}>Verze aplikace: </Text>
-                        <Text style={Fonts.plainBold}>1.2.8</Text>
+                        <Text style={Fonts.plainBold}>1.3.0</Text>
                     </View>
                 </View>
             </ScrollView>

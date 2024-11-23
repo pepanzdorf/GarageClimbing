@@ -138,7 +138,7 @@ export default function Timer(){
                         }>
                             <FontAwesome name="trash" size={40} color={Colors.highlight}/>
                         </TouchableOpacity>
-                        <NumberInput value={loops} setValue={setLoops} minValue={1}/>
+                        <NumberInput value={loops} setValue={setLoops} minValue={1} size={30} border={true}/>
                         <FontAwesome name="plus" size={40} color={Colors.primary} onPress={addTimerInterval}/>
                     </View>
                     <View style={styles.menuContainer}>

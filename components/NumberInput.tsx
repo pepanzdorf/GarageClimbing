@@ -17,15 +17,15 @@ const NumberInput = (props) => {
 
 
     return (
-        <View style={styles.container}>
-            <FontAwesome name="minus" size={30} color={Colors.highlight} onPress={() => props.setValue(Math.max(props.minValue, props.value - 1))}/>
+        <View style={[props.border ? { borderWidth: 1, borderRadius: 10, borderColor: Colors.darkerBorder } : null, styles.container]}>
+            <FontAwesome name="minus" size={props.size} color={Colors.highlight} onPress={() => props.setValue(Math.max(props.minValue, props.value - 1))}/>
             <TextInput
-                style={{fontSize: 40}}
+                style={{fontSize: props.size+10}}
                 onChangeText={text => props.setValue(checkValue(text))}
                 value={props.value.toString()}
                 inputMode='numeric'
             />
-            <FontAwesome name="plus" size={30} color={Colors.primary} onPress={() => props.setValue(props.value + 1)}/>
+            <FontAwesome name="plus" size={props.size} color={Colors.primary} onPress={() => props.setValue(props.value + 1)}/>
         </View>
     );
 };
@@ -33,9 +33,6 @@ const NumberInput = (props) => {
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
-        borderWidth: 1,
-        borderColor: Colors.darkerBorder,
-        borderRadius: 10,
         paddingHorizontal: 5,
         alignItems: 'center',
         gap: 5,

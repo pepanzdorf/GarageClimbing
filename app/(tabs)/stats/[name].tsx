@@ -59,6 +59,9 @@ export default function UserStats() {
         {'sound': require('../../../assets/audio/honk.wav'), 'image': require('../../../assets/images/borders/goose_frame.png'), 'hint': 'Stiskni mě 🔊'}, // climb 50 times with goose challenge
         {'image': require('../../../assets/images/borders/sandbag_frame.png'), 'hint': 'Profesionální podceňovač boulderů'}, // rate 10 boulders two grades lower than average
         {'image': require('../../../assets/images/borders/balloon_frame.png'), 'hint': 'Profesionální přeceňovač boulderů'}, // rate 10 boulders two grades higher than average
+        {'image': require('../../../assets/images/borders/joker_frame.png'), 'hint': 'Sběratel tagů'}, // climb boulders with all tags (in sum)
+        {'image': require('../../../assets/images/borders/sloth_frame.png'), 'hint': 'Moc na to nechvátej'}, // complete 10 cliffhanger challenges
+        {'image': require('../../../assets/images/borders/rocket_frame.png'), 'hint': 'Rychlejší než světlo'}, // climb 10 boulders with challenge speedrun
     ];
 
     const sortBorders = () => {

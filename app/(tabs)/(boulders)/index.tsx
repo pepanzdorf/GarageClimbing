@@ -259,7 +259,7 @@ export default function Home(){
                             Boulderů:
                         </Text>
                         <Text style={Fonts.h3}>
-                            {item.boulders}
+                            {item.boulders.length}
                         </Text>
                     </View>
                     <View style={styles.row}>

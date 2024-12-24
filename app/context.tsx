@@ -21,7 +21,8 @@ export const GlobalStateProvider = ({ children }) => {
         tags: [],
         timerIP: null,
         timerPort: null,
-        showTimerControls: false
+        showTimerControls: false,
+        showUnsentSeasonal: false
     }
 
     const [boulders,setBoulders] = useState([]);
@@ -134,6 +135,9 @@ export const GlobalStateProvider = ({ children }) => {
         }
         if (settings.showTimerControls === undefined) {
             settings.showTimerControls = false;
+        }
+        if (settings.showUnsentSeasonal === undefined) {
+            settings.showUnsentSeasonal = false;
         }
         saveSettings();
     }

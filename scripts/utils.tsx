@@ -78,7 +78,7 @@ const shuffle = (array) => {
     return newArray;
 }
 
-export const filterBoulders = (boulders, withOpen, lowerGrade, upperGrade, sent, favourite, tags) => {
+export const filterBoulders = (boulders, withOpen, lowerGrade, upperGrade, sent, favourite, tags, sentSeasonal) => {
     const chosenBoulders = boulders.filter(boulder => {
             const boulderGrade = boulder.average_grade;
             let hasAllTags = true;
@@ -89,7 +89,7 @@ export const filterBoulders = (boulders, withOpen, lowerGrade, upperGrade, sent,
                     }
                 });
             }
-            return ((boulderGrade >= lowerGrade && boulderGrade <= upperGrade) || (withOpen && boulderGrade === -1)) && (!sent || !boulder.sent) && (!favourite || boulder.favourite) && hasAllTags;
+            return ((boulderGrade >= lowerGrade && boulderGrade <= upperGrade) || (withOpen && boulderGrade === -1)) && (!sent || !boulder.sent) && (!sentSeasonal || !boulder.sent_season) && (!favourite || boulder.favourite) && hasAllTags;
         });
     return chosenBoulders;
 }

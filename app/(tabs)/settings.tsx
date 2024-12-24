@@ -31,7 +31,7 @@ export default function Settings(){
     const [ selectedWallAngle, setSelectedWallAngle ] = useState(wallConfig.angle);
     const [ selectedSort, setSelectedSort ] = useState(settings.sortby);
     const [ selectedGrading, setSelectedGrading ] = useState(settings.grading);
-    const [ gradeRange, setGradeRange ] = useState([0, 53]);
+    const [ gradeRange, setGradeRange ] = useState([settings.lowerGrade, settings.upperGrade]);
     const [ darkening, setDarkening ] = useState(settings.darkening);
     const [ darkenPreview, setDarkenPreview ] = useState(settings.darkenPreview);
     const [ showUnsent, setShowUnsent ] = useState(settings.showUnsent);
@@ -44,6 +44,7 @@ export default function Settings(){
     const [ timerIP, setTimerIP ] = useState(settings.timerIP);
     const [ timerPort, setTimerPort ] = useState(settings.timerPort);
     const [ selectedShowTimerControls, setSelectedShowTimerControls ] = useState(settings.showTimerControls);
+    const [ showUnsentSeasonal, setShowUnsentSeasonal ] = useState(settings.showUnsentSeasonal);
 
     const options = [
             {key:'1', value: 'Nejtěžší'},
@@ -99,6 +100,7 @@ export default function Settings(){
                 timerIP: timerIP,
                 timerPort: timerPort,
                 showTimerControls: selectedShowTimerControls,
+                showUnsentSeasonal: showUnsentSeasonal,
             }
         );
         alert(
@@ -118,6 +120,7 @@ Tloušťka čáry kolem chytů: ${selectedLineWidth}
 IP adresa timeru: ${timerIP}
 Port timeru: ${timerPort}
 Zobrazit ovládání časovače: ${selectedShowTimerControls ? 'Ano' : 'Ne'}
+Zobrazit pouze nevylezené (sezóna): ${showUnsentSeasonal ? 'Ano' : 'Ne'}
             `
         )
     }
@@ -282,6 +285,17 @@ Zobrazit ovládání časovače: ${selectedShowTimerControls ? 'Ano' : 'Ne'}
                         thumbColor={showUnsent ? Colors.background : Colors.backgroundDarker}
                         onValueChange={setShowUnsent}
                         value={showUnsent}
+                    />
+                </View>
+                <View style={styles.switch}>
+                    <Text style={Fonts.h3}>
+                        {`Zobrazit pouze nevylezené (sezóna): `}
+                    </Text>
+                    <Switch
+                        trackColor={styles.track}
+                        thumbColor={showUnsentSeasonal ? Colors.background : Colors.backgroundDarker}
+                        onValueChange={setShowUnsentSeasonal}
+                        value={showUnsentSeasonal}
                     />
                 </View>
                 <View style={styles.switch}>

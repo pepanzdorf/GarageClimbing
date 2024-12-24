@@ -60,6 +60,7 @@ export default function Home(){
                     settings.showUnsent,
                     settings.showFavourites,
                     settings.tags,
+                    settings.showUnsentSeasonal
                 )
             );
         } else {

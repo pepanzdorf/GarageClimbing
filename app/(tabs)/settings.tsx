@@ -43,6 +43,7 @@ export default function Settings(){
     const [ timerStateColor, setTimerStateColor ] = useState('red');
     const [ timerIP, setTimerIP ] = useState(settings.timerIP);
     const [ timerPort, setTimerPort ] = useState(settings.timerPort);
+    const [ selectedShowTimerControls, setSelectedShowTimerControls ] = useState(settings.showTimerControls);
 
     const options = [
             {key:'1', value: 'Nejtěžší'},
@@ -97,6 +98,7 @@ export default function Settings(){
                 tags: selectedTags,
                 timerIP: timerIP,
                 timerPort: timerPort,
+                showTimerControls: selectedShowTimerControls,
             }
         );
         alert(
@@ -115,6 +117,7 @@ Používat stupnici: ${gradingOptions.find(option => option.key == selectedGradi
 Tloušťka čáry kolem chytů: ${selectedLineWidth}
 IP adresa timeru: ${timerIP}
 Port timeru: ${timerPort}
+Zobrazit ovládání časovače: ${selectedShowTimerControls ? 'Ano' : 'Ne'}
             `
         )
     }
@@ -301,6 +304,17 @@ Port timeru: ${timerPort}
                         thumbColor={selectedIncludeOpen ? Colors.background : Colors.backgroundDarker}
                         onValueChange={setSelectedIncludeOpen}
                         value={selectedIncludeOpen}
+                    />
+                </View>
+                <View style={styles.switch}>
+                    <Text style={Fonts.h3}>
+                        {`Zobrazit ovládání časovače: `}
+                    </Text>
+                    <Switch
+                        trackColor={styles.track}
+                        thumbColor={selectedShowTimerControls ? Colors.background : Colors.backgroundDarker}
+                        onValueChange={setSelectedShowTimerControls}
+                        value={selectedShowTimerControls}
                     />
                 </View>
                 <View style={styles.angle}>

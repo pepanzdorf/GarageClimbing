@@ -341,6 +341,21 @@ export default function DetailsScreen() {
         router.replace(`${arrowNavigationBoulders[currentBoulderIndex+1].id}`);
     }
 
+    function startShownTimer() {
+        fetch(`http://${settings.timerIP}:${settings.timerPort}/start_shown`, {method: 'POST'})
+        .catch(error => console.log(error));
+    }
+
+    function stopShownTimer() {
+        fetch(`http://${settings.timerIP}:${settings.timerPort}/stop_shown`, {method: 'POST'})
+        .catch(error => console.log(error));
+    }
+
+    function pauseShownTimer() {
+        fetch(`http://${settings.timerIP}:${settings.timerPort}/pause_shown`, {method: 'POST'})
+        .catch(error => console.log(error));
+    }
+
     const RenderSendsCommentsChallenges = () => {
         if (show === 1) {
             if (comments.length > 0) {
@@ -572,6 +587,20 @@ export default function DetailsScreen() {
                     }
                 </View>
                 <View style={styles.details}>
+                    {
+                        settings.showTimerControls ?
+                        <View style={styles.menuContainer}>
+                            <TouchableOpacity onPress={pauseShownTimer}>
+                                <FontAwesome name="pause" size={40} color='orange'/>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={stopShownTimer}>
+                                <FontAwesome name="stop" size={40} color='red'/>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={startShownTimer}>
+                                <FontAwesome name="play" size={40} color='green'/>
+                            </TouchableOpacity>
+                        </View> : null
+                    }
                     <View style={styles.row}>
                         <Text style={[Fonts.h1, styles.boulderName]}>
                             {currentBoulder.name}
@@ -858,5 +887,14 @@ const styles = StyleSheet.create({
     picker: {
         paddingHorizontal: 15,
         gap: 10,
+    },
+    menuContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginHorizontal: 30,
+        borderWidth: 1,
+        borderRadius: 10,
+        padding: 10,
     },
 });

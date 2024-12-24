@@ -20,7 +20,8 @@ export const GlobalStateProvider = ({ children }) => {
         includeOpen: true,
         tags: [],
         timerIP: null,
-        timerPort: null
+        timerPort: null,
+        showTimerControls: false
     }
 
     const [boulders,setBoulders] = useState([]);
@@ -130,6 +131,9 @@ export const GlobalStateProvider = ({ children }) => {
         }
         if (settings.timerPort === undefined) {
             settings.timerPort = null;
+        }
+        if (settings.showTimerControls === undefined) {
+            settings.showTimerControls = false;
         }
         saveSettings();
     }

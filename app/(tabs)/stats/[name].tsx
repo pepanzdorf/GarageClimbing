@@ -228,6 +228,35 @@ export default function UserStats() {
         router.push(`${boulder.id}`);
     }
 
+
+    const renderSendsByGrade = (sends_by_grade) => {
+        return (
+            <View style={{gap: 5}}>
+                {
+                    Object.keys(sends_by_grade).map((key) => {
+                        return (
+                            <TouchableOpacity key={key} onPress={() => {
+                                    setModalBoulders({'boulders': sends_by_grade[key]['boulders'],
+                                            'flashed_boulders': sends_by_grade[key]['flashed_boulders']});
+                                    setBouldersModal(true)}}>
+                                <View key={key} style={styles.boulderStatsContainer}>
+                                    <Text style={Fonts.h3}>{gradeIdToGradeName(key, settings.grading)}</Text>
+                                    <View style={styles.row}>
+                                        <Text style={Fonts.plainBold}>Výlezů:</Text>
+                                        <Text style={Fonts.plainBold}>{sends_by_grade[key]['sends']}</Text>
+                                        <Text style={Fonts.plainBold}>Z toho flashů:</Text>
+                                        <Text style={Fonts.plainBold}>{sends_by_grade[key]['flashes']}</Text>
+                                    </View>
+                                </View>
+                            </TouchableOpacity>
+                        )
+                    })
+                }
+            </View>
+        )
+    }
+
+
     useEffect(() => {
         thisUserStats();
         chooseBorder();
@@ -342,29 +371,9 @@ export default function UserStats() {
                                     }
                                 </View>
                             </View>
-                            <View style={{gap: 5}}>
-                                {
-                                    Object.keys(userStats['unique_sends']).map((key) => {
-                                        return (
-                                            <TouchableOpacity key={key} onPress={() => {
-                                                    setModalBoulders({'boulders': userStats['unique_sends'][key]['boulders'],
-                                                            'flashed_boulders': userStats['unique_sends'][key]['flashed_boulders']});
-                                                    setBouldersModal(true)}}>
-                                                <View key={key} style={styles.boulderStatsContainer}>
-                                                    <Text style={Fonts.h3}>{gradeIdToGradeName(key, settings.grading)}</Text>
-                                                    <View style={styles.row}>
-                                                        <Text style={Fonts.plainBold}>Výlezů:</Text>
-                                                        <Text style={Fonts.plainBold}>{userStats['unique_sends'][key]['sends']}</Text>
-                                                        <Text style={Fonts.plainBold}>Z toho flashů:</Text>
-                                                        <Text style={Fonts.plainBold}>{userStats['unique_sends'][key]['flashes']}</Text>
-                                                    </View>
-                                                </View>
-                                            </TouchableOpacity>
-                                        )
-                                    }
-                                    )
-                                }
-                            </View>
+                            {
+                                renderSendsByGrade(userStats['unique_sends'])
+                            }
                         </ScrollView>
                     </View>
                     <Modal visible={seasonalModal}>
@@ -376,24 +385,9 @@ export default function UserStats() {
                                         <Text style={Fonts.h1}>Sezóna: {chosenSeason}</Text>
                                         <Text style={Fonts.h3}>Skóre: {userStats['previous_seasons'][chosenSeason]['score']}</Text>
                                     </View>
-                                    <View style={{gap: 5}}>
-                                        {
-                                            Object.keys(userStats['previous_seasons'][chosenSeason]['unique_sends']).map((key) => {
-                                                return (
-                                                    <View key={key} style={styles.boulderStatsContainer}>
-                                                        <Text style={Fonts.h3}>{gradeIdToGradeName(key, settings.grading)}</Text>
-                                                        <View style={styles.row}>
-                                                            <Text style={Fonts.plainBold}>Výlezů:</Text>
-                                                            <Text style={Fonts.plainBold}>{userStats['previous_seasons'][chosenSeason]['unique_sends'][key]['sends']}</Text>
-                                                            <Text style={Fonts.plainBold}>Z toho flashů:</Text>
-                                                            <Text style={Fonts.plainBold}>{userStats['previous_seasons'][chosenSeason]['unique_sends'][key]['flashes']}</Text>
-                                                        </View>
-                                                    </View>
-                                                )
-                                            }
-                                            )
-                                        }
-                                    </View>
+                                    {
+                                        renderSendsByGrade(userStats['previous_seasons'][chosenSeason]['unique_sends'])
+                                    }
                                 </ScrollView>
                                 <TouchableOpacity onPress={() => setSeasonalModal(false)}>
                                     <View style={styles.button}>

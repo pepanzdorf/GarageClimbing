@@ -355,13 +355,13 @@ export default function UserStats() {
                                                             <Entypo name="trophy" size={40} color={scoreColor(userStats['previous_seasons'][key]['score'])} />
                                                         </View>
                                                         <View style={{position: 'absolute', top: 2}}>
-                                                            <Text style={Fonts.small}>
-                                                                {key.split(' ')[0]}
+                                                            <Text style={[Fonts.small, {textShadowColor: 'white', textShadowRadius: 10}]}>
+                                                                {key.split('-')[0]}
                                                             </Text>
                                                         </View>
                                                         <View style={{position: 'absolute', top: 16}}>
-                                                            <Text style={Fonts.small}>
-                                                                {key.split(' ')[1]}
+                                                            <Text style={[Fonts.small, {textShadowColor: 'white', textShadowRadius: 10}]}>
+                                                                {key.split('-')[1]}
                                                             </Text>
                                                         </View>
                                                     </View>
@@ -384,6 +384,7 @@ export default function UserStats() {
                                     <View style={{alignItems: 'center', gap:10, marginBottom: 20}}>
                                         <Text style={Fonts.h1}>Sezóna: {chosenSeason}</Text>
                                         <Text style={Fonts.h3}>Skóre: {userStats['previous_seasons'][chosenSeason]['score']}</Text>
+                                        <Text style={Fonts.h3}>Umístění: {userStats['previous_seasons'][chosenSeason]['placement']}</Text>
                                     </View>
                                     {
                                         renderSendsByGrade(userStats['previous_seasons'][chosenSeason]['unique_sends'])

@@ -25,6 +25,8 @@ export default function UserStats() {
     const [borderDimensions, setBorderDimensions] = useState({width: 0, height: 0})
     const [sortedBorders, setSortedBorders] = useState([])
     const [modalBoulders, setModalBoulders] = useState({'boulders': [], 'flashed_boulders': []})
+    const [boulderDifferences, setBoulderDifferences] = useState(null)
+    const [boulderDifferencesModal, setBoulderDifferencesModal] = useState(false)
 
     const borders = [
         {'image': require('../../../assets/images/borders/blank_frame.png'), 'hint': 'zadarmo'}, // free
@@ -206,6 +208,48 @@ export default function UserStats() {
         );
     }
 
+
+    const createDifferenceInfo = () => {
+        if (!boulderDifferences) return;
+        return (
+            <ScrollView>
+                <View style={styles.modalView}>
+                    <View style={styles.differencesContainerOuter}>
+                        <Text style={Fonts.h1}>Sezóna</Text>
+                        <View style={styles.differencesContainerInner}>
+                            <Text style={Fonts.h3}>{name} vylezl/a {loggedUser} ne</Text>
+                            {
+                                boulderDifferences['season']['guest'].map(boulder => renderBoulderInfoDifferences(boulder))
+                            }
+                        </View>
+                        <View style={styles.differencesContainerInner}>
+                            <Text style={Fonts.h3}>{loggedUser} vylezl/a {name} ne</Text>
+                            {
+                                boulderDifferences['season']['user'].map(boulder => renderBoulderInfoDifferences(boulder))
+                            }
+                        </View>
+                    </View>
+                    <View style={styles.differencesContainerOuter}>
+                        <Text style={Fonts.h1}>Celkově</Text>
+                        <View style={styles.differencesContainerInner}>
+                            <Text style={Fonts.h3}>{name} vylezl/a {loggedUser} ne</Text>
+                            {
+                                boulderDifferences['all_time']['guest'].map(boulder => renderBoulderInfoDifferences(boulder))
+                            }
+                        </View>
+                        <View style={styles.differencesContainerInner}>
+                            <Text style={Fonts.h3}>{loggedUser} vylezl/a {name} ne</Text>
+                            {
+                                boulderDifferences['all_time']['user'].map(boulder => renderBoulderInfoDifferences(boulder))
+                            }
+                        </View>
+                    </View>
+                </View>
+            </ScrollView>
+        )
+    }
+
+
     const renderBoulderInfo = (boulder_id, flashed_boulders) => {
         let boulder = findBoulderById(boulder_id, boulders);
         let tc = 'transparent';
@@ -216,6 +260,18 @@ export default function UserStats() {
         return (
             <TouchableOpacity key={boulder.id} onPress={() => handleReroute(boulder)}>
                 <View style={{backgroundColor: tc}}>
+                    <Text style={{fontSize: 18}}>{boulder.name}</Text>
+                </View>
+            </TouchableOpacity>
+        );
+    }
+
+    const renderBoulderInfoDifferences = (boulder_id) => {
+        let boulder = findBoulderById(boulder_id, boulders);
+
+        return (
+            <TouchableOpacity key={boulder.id} onPress={() => handleReroute(boulder)}>
+                <View>
                     <Text style={{fontSize: 18}}>{boulder.name}</Text>
                 </View>
             </TouchableOpacity>
@@ -254,6 +310,57 @@ export default function UserStats() {
                 }
             </View>
         )
+    }
+
+
+    const findBoulderDifferences = () => {
+        if (!userStats) return;
+        if (!boulders) return;
+        if (loggedUser === 'Nepřihlášen') return;
+        let differences = {};
+        const all_time_boulders_guest = new Set();
+        const season_boulders_guest = new Set();
+        for (const key in userStats['unique_sends']) {
+            userStats['unique_sends'][key]['boulders'].forEach((boulder) => {
+                season_boulders_guest.add(boulder);
+                all_time_boulders_guest.add(boulder);
+            });
+        }
+        for (const season_key in userStats['previous_seasons']) {
+            for (const key in userStats['previous_seasons'][season_key]['unique_sends']) {
+                userStats['previous_seasons'][season_key]['unique_sends'][key]['boulders'].forEach((boulder) => {
+                    all_time_boulders_guest.add(boulder);
+                });
+            }
+        }
+
+        const all_time_boulders_user = new Set();
+        const season_boulders_user = new Set();
+
+        for (const boulder of boulders) {
+            if (boulder.sent_season) {
+                all_time_boulders_user.add(boulder.id);
+                season_boulders_user.add(boulder.id);
+            } else if (boulder.sent) {
+                all_time_boulders_user.add(boulder.id);
+            }
+        }
+
+        const all_time_guest_host_difference = [...all_time_boulders_guest].filter(x => !all_time_boulders_user.has(x));
+        const season_boulders_guest_host_difference = [...season_boulders_guest].filter(x => !season_boulders_user.has(x));
+        const all_time_host_guest_difference = [...all_time_boulders_user].filter(x => !all_time_boulders_guest.has(x));
+        const season_boulders_host_guest_difference = [...season_boulders_user].filter(x => !season_boulders_guest.has(x));
+
+        setBoulderDifferences({
+            'all_time': {
+                'guest': all_time_guest_host_difference,
+                'user': all_time_host_guest_difference
+            },
+            'season': {
+                'guest': season_boulders_guest_host_difference,
+                'user': season_boulders_host_guest_difference
+            }
+        });
     }
 
 
@@ -371,6 +478,14 @@ export default function UserStats() {
                                     }
                                 </View>
                             </View>
+                            <TouchableOpacity onPress={() => {
+                                findBoulderDifferences();
+                                setBoulderDifferencesModal(true)
+                            }}>
+                                <View style={styles.compareButton}>
+                                    <Text style={Fonts.h3}>Porovnat</Text>
+                                </View>
+                            </TouchableOpacity>
                             {
                                 renderSendsByGrade(userStats['unique_sends'])
                             }
@@ -412,6 +527,14 @@ export default function UserStats() {
                     <Modal visible={bouldersModal}>
                         {modalBoulders && createGradeSetInfo(modalBoulders)}
                         <TouchableOpacity onPress={() => setBouldersModal(false)}>
+                            <View style={styles.modalOk}>
+                                <Text style={styles.textStyle}>OK</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </Modal>
+                    <Modal visible={boulderDifferencesModal}>
+                        { boulderDifferences && createDifferenceInfo() }
+                        <TouchableOpacity onPress={() => setBoulderDifferencesModal(false)}>
                             <View style={styles.modalOk}>
                                 <Text style={styles.textStyle}>OK</Text>
                             </View>
@@ -526,8 +649,30 @@ const styles = StyleSheet.create({
     },
     modalView: {
         flex: 1,
-        alignItems: 'center',
         justifyContent: 'center',
         padding: 20,
+    },
+    compareButton: {
+        backgroundColor: Colors.transparentPrimary,
+        padding: 10,
+        alignItems: 'center',
+        borderWidth: 1,
+        borderRadius: 10,
+        marginBottom: 20,
+        marginRight: 20,
+        marginLeft: 20,
+    },
+    differencesContainerOuter: {
+        padding: 10,
+        borderRadius: 25,
+        marginTop: 10,
+        borderWidth: 1,
+        borderColor: Colors.borderDark,
+        flex: 1,
+        alignItems: 'center',
+    },
+    differencesContainerInner: {
+        marginTop: 10,
+        alignItems: 'center',
     },
 });

@@ -53,7 +53,7 @@ export default function Info(){
 
     const calculateMaxCount = () => {
         let mc = 0;
-        holds['false'].forEach((hold) => {
+        holds['holds'].forEach((hold) => {
             if (calcHoldCount(hold) > mc) {
                 mc = calcHoldCount(hold);
             }
@@ -143,9 +143,9 @@ export default function Info(){
     }
 
     useEffect(() => {
-        if (holds && holds['true'] && holds['false']) {
-            setNHolds(holds['false'].length);
-            setNVolumes(holds['true'].length);
+        if (holds && holds['volumes'] && holds['holds']) {
+            setNHolds(holds['holds'].length);
+            setNVolumes(holds['volumes'].length);
             calculateMaxCount();
         }
     }
@@ -241,7 +241,7 @@ export default function Info(){
                                     <Svg style={styles.svgContainer} height="100%" width="100%" viewBox="0 0 820.5611 1198.3861">
                                         <Defs>
                                             <G id="holds">
-                                                {holds["false"].map((hold) => (
+                                                {holds["holds"].map((hold) => (
                                                     <Path
                                                         key={hold.id}
                                                         fill= 'none'

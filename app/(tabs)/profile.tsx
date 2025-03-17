@@ -30,7 +30,7 @@ export default function Profile(){
             alert('Hesla se neshodují.');
         } else {
             try {
-                const response = await fetch(`${apiURL}/climbing/signup`, {
+                const response = await fetch(`${apiURL}/signup`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -54,7 +54,7 @@ export default function Profile(){
 
     const handleLogin = async () => {
         try {
-            const response = await fetch(`${apiURL}/climbing/login`, {
+            const response = await fetch(`${apiURL}/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -86,7 +86,7 @@ export default function Profile(){
 
     const sendDescription = async () => {
         try {
-            const response = await fetch(`${apiURL}/climbing/set_description`, {
+            const response = await fetch(`${apiURL}/set_description`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -38,7 +38,7 @@ export default function CrackLogScreen() {
             alert("Musíte zadat počet vylezení.");
             return;
         }
-        const response = await fetch(`${apiURL}/climbing/crack/log_send`, {
+        const response = await fetch(`${apiURL}/crack/log_send`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

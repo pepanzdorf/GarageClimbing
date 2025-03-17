@@ -41,7 +41,7 @@ export default function NewComp(){
         }
 
         try {
-            const response = await fetch(`${apiURL}/climbing/competition`, {
+            const response = await fetch(`${apiURL}/competition`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -112,6 +112,7 @@ export default function NewComp(){
                             placeholder="Jméno"
                             value={compName}
                             onChangeText={setCompName}
+                            maxLength={100}
                         />
                         <View style={styles.picker}>
                             <Text style={Fonts.h3}>Obtížnost:</Text>

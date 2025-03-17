@@ -179,7 +179,7 @@ export default function UserStats() {
     }
 
     const sendBorderChange = (border_id) => {
-        fetch(`${apiURL}/climbing/set_border/${border_id}`, {
+        fetch(`${apiURL}/set_border/${border_id}`, {
             method: 'GET',
             headers: {
                 'Authorization': 'Bearer ' + token

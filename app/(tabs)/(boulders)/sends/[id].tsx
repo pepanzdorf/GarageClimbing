@@ -30,7 +30,7 @@ export default function LogScreen() {
             alert("Musíte zadat počet pokusů.");
             return;
         }
-        const response = await fetch(`${apiURL}/climbing/log_send`, {
+        const response = await fetch(`${apiURL}/log_send`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -99,7 +99,7 @@ export default function CompScreen() {
     }
 
     const logCompSend = async () => {
-        const response = await fetch(`${apiURL}/climbing/competitions/log_send`, {
+        const response = await fetch(`${apiURL}/competition/log_send`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -124,7 +124,7 @@ export default function CompScreen() {
 
 
     const fetchSends = async () => {
-        const response = await fetch(`${apiURL}/climbing/competition/${id}`);
+        const response = await fetch(`${apiURL}/competition/${id}`);
         if (!response.ok) {
             return;
         }
@@ -150,7 +150,7 @@ export default function CompScreen() {
     }
 
     const deleteCompSend = (sendId) => {
-        fetch(`${apiURL}/climbing/competitions/send/${sendId}`, {
+        fetch(`${apiURL}/competition/send/${sendId}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -180,7 +180,7 @@ export default function CompScreen() {
     }
 
     const deleteComp = () => {
-        fetch(`${apiURL}/climbing/competition/${id}`, {
+        fetch(`${apiURL}/competition/${id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',

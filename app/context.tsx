@@ -172,7 +172,7 @@ export const GlobalStateProvider = ({ children }) => {
     }
 
     const whoami = () => {
-        fetch(`${apiURL}/climbing/whoami`, {
+        fetch(`${apiURL}/whoami`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -187,7 +187,7 @@ export const GlobalStateProvider = ({ children }) => {
 
     const fetchBoulders = (ang) => {
         setBouldersLoading(true);
-        fetch(`${apiURL}/climbing/boulders/${ang}`,
+        fetch(`${apiURL}/boulders/${ang}`,
             {
                 method: 'GET',
                 headers: {
@@ -203,7 +203,7 @@ export const GlobalStateProvider = ({ children }) => {
 
     const fetchHolds = () => {
         setHoldsLoading(true);
-        fetch(`${apiURL}/climbing/holds`)
+        fetch(`${apiURL}/holds`)
         .then(response => response.json())
         .then(jsonResponse => setHolds(jsonResponse))
         .catch(error => console.log(error))
@@ -308,7 +308,7 @@ export const GlobalStateProvider = ({ children }) => {
 
 
     const fetchChallenges = () => {
-        fetch(`${apiURL}/climbing/boulders/challenges`)
+        fetch(`${apiURL}/challenges`)
             .then(response => response.json())
             .then(jsonResponse => setChallenges(jsonResponse))
             .catch(error => console.log(error));
@@ -322,7 +322,7 @@ export const GlobalStateProvider = ({ children }) => {
 
 
     const fetchUserStats = () => {
-        fetch(`${apiURL}/climbing/stats`, {
+        fetch(`${apiURL}/stats`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -335,7 +335,7 @@ export const GlobalStateProvider = ({ children }) => {
     }
 
     const fetchCrackStats = () => {
-        fetch(`${apiURL}/climbing/crack/stats`)
+        fetch(`${apiURL}/crack/stats`)
             .then(response => response.json())
             .then(response => setCrackStats(response))
             .catch(error => console.log(error));
@@ -343,7 +343,7 @@ export const GlobalStateProvider = ({ children }) => {
 
 
     const fetchTags = () => {
-        fetch(`${apiURL}/climbing/get_tags`)
+        fetch(`${apiURL}/tags`)
             .then(response => response.json())
             .then(jsonResponse => setTags(jsonResponse))
             .catch(error => console.log(error));
@@ -351,7 +351,7 @@ export const GlobalStateProvider = ({ children }) => {
 
 
     const fetchWallConfig = () => {
-        fetch(`${apiURL}/climbing/get_config`)
+        fetch(`${apiURL}/get_config`)
             .then(response => response.json())
             .then(jsonResponse => setWallConfig(jsonResponse))
             .catch(error => console.log(error));
@@ -361,7 +361,7 @@ export const GlobalStateProvider = ({ children }) => {
         if (chosenDate === null) {
             return;
         }
-        const response = await fetch(`${apiURL}/climbing/sends/${chosenDate}`)
+        const response = await fetch(`${apiURL}/sends/${chosenDate}`)
         if (!response.ok) {
             return;
         }
@@ -386,7 +386,7 @@ export const GlobalStateProvider = ({ children }) => {
     };
 
     const fetchCompetitions = async () => {
-        const response = await fetch(`${apiURL}/climbing/competitions`);
+        const response = await fetch(`${apiURL}/competitions`);
         if (!response.ok) {
             return;
         }

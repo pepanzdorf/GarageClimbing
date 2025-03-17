@@ -55,12 +55,12 @@ export default function EditBoulder(){
         const holdsList = [];
         for (let i = 0; i < colorsHolds.length; i++) {
             if (colorsHolds[i] !== -1) {
-                holdsList.push({id: holds["false"][i].id, type: colorsHolds[i]});
+                holdsList.push({id: holds["holds"][i].id, type: colorsHolds[i]});
             }
         }
         for (let i = 0; i < colorsVolumes.length; i++) {
             if (colorsVolumes[i] !== -1) {
-                holdsList.push({id: holds["true"][i].id, type: colorsVolumes[i]});
+                holdsList.push({id: holds["volumes"][i].id, type: colorsVolumes[i]});
             }
         }
         return holdsList;
@@ -81,7 +81,7 @@ export default function EditBoulder(){
         }
 
         try {
-            const response = await fetch(`${apiURL}/climbing/boulder`, {
+            const response = await fetch(`${apiURL}/boulder`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -142,20 +142,20 @@ export default function EditBoulder(){
             setBoulderName(currentBoulder.name);
             setBoulderDescription(currentBoulder.description);
             setSelectedTags(currentBoulder.tags);
-            const holdsArray = Array.from({length: holds["false"].length}, () => -1);
-            const volumesArray = Array.from({length: holds["true"].length}, () => -1);
+            const holdsArray = Array.from({length: holds["holds"].length}, () => -1);
+            const volumesArray = Array.from({length: holds["volumes"].length}, () => -1);
 
-            currentHolds['false'].forEach(hold => {
-                for (let i = 0; i < holds["false"].length; i++) {
-                    if (holds["false"][i].id === hold.hold_id) {
+            currentHolds['holds'].forEach(hold => {
+                for (let i = 0; i < holds["holds"].length; i++) {
+                    if (holds["holds"][i].id === hold.hold_id) {
                         holdsArray[i] = hold.hold_type;
                     }
                 }
             });
 
-            currentHolds['true'].forEach(hold => {
-                for (let i = 0; i < holds["true"].length; i++) {
-                    if (holds["true"][i].id === hold.hold_id) {
+            currentHolds['volumes'].forEach(hold => {
+                for (let i = 0; i < holds["volumes"].length; i++) {
+                    if (holds["volumes"][i].id === hold.hold_id) {
                         volumesArray[i] = hold.hold_type;
                     }
                 }
@@ -186,7 +186,7 @@ export default function EditBoulder(){
                             <Svg style={styles.svgContainer} height="100%" width="100%" viewBox="0 0 820.5611 1198.3861">
                                 <Defs>
                                     <G id="holds">
-                                        {holds["false"].map((hold, index) => (
+                                        {holds["holds"].map((hold, index) => (
                                             <Path
                                                 key={hold.id}
                                                 fill={numberToFillColor(colorsHolds[index])}
@@ -198,7 +198,7 @@ export default function EditBoulder(){
                                         ))}
                                     </G>
                                     <G id="volumes">
-                                        {holds['true'].map((hold, index) => (
+                                        {holds['volumes'].map((hold, index) => (
                                             <Path
                                                 key={hold.id}
                                                 fill={numberToFillColor(colorsVolumes[index])}
@@ -304,6 +304,7 @@ export default function EditBoulder(){
                         placeholder="Jméno"
                         value={boulderName}
                         onChangeText={setBoulderName}
+                        maxLength={100}
                     />
                     <TextInput
                         style={styles.commentInput}
@@ -311,6 +312,7 @@ export default function EditBoulder(){
                         multiline={true}
                         value={boulderDescription}
                         onChangeText={setBoulderDescription}
+                        maxLength={500}
                     />
                     <View style={styles.tagsContainer}>
                         <View style={styles.tags}>

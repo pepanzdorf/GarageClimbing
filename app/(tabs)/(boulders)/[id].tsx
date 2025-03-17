@@ -39,7 +39,6 @@ export default function DetailsScreen() {
         userSavedAttempts,
         setUserSavedAttempts,
     } = useContext(GlobalStateContext);
-    const [holds, setHolds] = useState(null);
     const [sends, setSends] = useState([]);
     const [comments, setComments] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -113,7 +112,7 @@ export default function DetailsScreen() {
 
     const chooseRandomHold = () => {
         let randomHoldIDs = [];
-        currentHolds["false"].forEach((hold) => {
+        currentHolds["holds"].forEach((hold) => {
             if (hold.hold_type == 1 || hold.hold_type == 2) {
                 randomHoldIDs.push(hold.hold_id);
             }
@@ -131,7 +130,7 @@ export default function DetailsScreen() {
             return;
         }
         const method = isFavourite ? 'DELETE' : 'POST';
-        fetch(`${apiURL}/climbing/boulders/favourite/${id}`, {
+        fetch(`${apiURL}/boulder/${id}/favourite`, {
             method: method,
             headers: {
                 'Content-Type': 'application/json',
@@ -144,7 +143,7 @@ export default function DetailsScreen() {
 
 
     const fetchCompletedChallenges = async () => {
-        const response = await fetch(`${apiURL}/climbing/challenges/completed/${id}`, {
+        const response = await fetch(`${apiURL}/boulder/${id}/challenges/completed`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -166,7 +165,7 @@ export default function DetailsScreen() {
 
 
     const fetchBoulderHolds = () => {
-        fetch(`${apiURL}/climbing/boulders/holds/${id}`)
+        fetch(`${apiURL}/boulder/${id}/holds`)
             .then(response => response.json())
             .then(jsonResponse => setCurrentHolds(jsonResponse))
             .catch(error => console.log(error))
@@ -174,7 +173,7 @@ export default function DetailsScreen() {
     };
 
     const fetchSends = () => {
-        fetch(`${apiURL}/climbing/boulders/sends/${id}`,
+        fetch(`${apiURL}/boulder/${id}/sends`,
             {
                 headers: {
                     'Content-Type': 'application/json'
@@ -191,7 +190,7 @@ export default function DetailsScreen() {
     }
 
     const fetchComments = () => {
-        fetch(`${apiURL}/climbing/boulders/comments/${id}`)
+        fetch(`${apiURL}/boulder/${id}/comments`)
             .then(response => response.json())
             .then(jsonResponse => setComments(jsonResponse))
             .catch(error => console.log(error))
@@ -199,7 +198,7 @@ export default function DetailsScreen() {
     }
 
     const sendComment = () => {
-        fetch(`${apiURL}/climbing/boulders/comment/${id}`, {
+        fetch(`${apiURL}/boulder/${id}/comment`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -209,8 +208,11 @@ export default function DetailsScreen() {
                 text: comment,
             }),
         })
-            .then(response => response.text())
-            .then(jsonResponse => console.log(jsonResponse))
+            .then(response => {
+                if (!response.ok) {
+                        response.text().then(text => alert(text));
+                    }
+                })
             .catch(error => console.log(error))
             .finally(() => {fetchComments(); setComment(''); setCommentModalVisible(false)});
     }
@@ -233,7 +235,7 @@ export default function DetailsScreen() {
     }
 
     const deleteComment = (commentId) => {
-        fetch(`${apiURL}/climbing/boulders/comment/${commentId}`, {
+        fetch(`${apiURL}/comment/${commentId}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -265,7 +267,7 @@ export default function DetailsScreen() {
 
 
     const deleteSend = (sendId) => {
-        fetch(`${apiURL}/climbing/boulders/send/${sendId}`, {
+        fetch(`${apiURL}/send/${sendId}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -295,7 +297,7 @@ export default function DetailsScreen() {
     }
 
     const deleteBoulder = () => {
-        fetch(`${apiURL}/climbing/boulders/${id}`, {
+        fetch(`${apiURL}/boulder/${id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -457,29 +459,31 @@ export default function DetailsScreen() {
             }
         } else {
             if (completedChallenges) {
-                return (
-                    completedChallenges["rest"].map((challenge) => (
-                        <View key={challenge.challenge_id} style={styles.sendContainer}>
-                            <View style={styles.row}>
-                                <Text style={Fonts.h3}>
-                                    {challenge.name}
-                                </Text>
-                                <Text style={Fonts.h3}>
-                                    ID: {challenge.challenge_id}
+                if (completedChallenges["rest"].length > 0) {
+                    return (
+                        completedChallenges["rest"].map((challenge) => (
+                            <View key={challenge.challenge_id} style={styles.sendContainer}>
+                                <View style={styles.row}>
+                                    <Text style={Fonts.h3}>
+                                        {challenge.name}
+                                    </Text>
+                                    <Text style={Fonts.h3}>
+                                        ID: {challenge.challenge_id}
+                                    </Text>
+                                </View>
+                                <Text style={Fonts.small}>
+                                    Skóre: {challenge.score}
                                 </Text>
                             </View>
-                            <Text style={Fonts.small}>
-                                Skóre: {challenge.score}
-                            </Text>
-                        </View>
-                    ))
-                )
-            } else {
-                return (
-                    <Text style={Fonts.h3}>
-                        Žádné splněné výzvy
-                    </Text>
-                )
+                        ))
+                    )
+                } else {
+                    return (
+                        <Text style={Fonts.h3}>
+                            Žádné splněné výzvy
+                        </Text>
+                    )
+                }
             }
         }
     }
@@ -514,7 +518,7 @@ export default function DetailsScreen() {
                         <Svg style={styles.svgContainer} height="100%" width="100%" viewBox="0 0 820.5611 1198.3861">
                             <Defs>
                                 <G id="holds">
-                                    {currentHolds["false"].map((hold) => (
+                                    {currentHolds["holds"].map((hold) => (
                                         <Path
                                             key={hold.hold_id}
                                             fill={numberToFillColor(hold.hold_type)}
@@ -526,7 +530,7 @@ export default function DetailsScreen() {
                                     ))}
                                 </G>
                                 <G id="volumes">
-                                    {currentHolds['true'].map((hold) => (
+                                    {currentHolds['volumes'].map((hold) => (
                                         <Path
                                             key={hold.hold_id}
                                             fill={numberToFillColor(hold.hold_type)}
@@ -751,6 +755,7 @@ export default function DetailsScreen() {
                         value={comment}
                         onChangeText={setComment}
                         multiline={true}
+                        maxLength={500}
                     />
                     <TouchableOpacity onPress={sendComment}>
                         <View style={styles.button}>

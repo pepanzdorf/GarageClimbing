@@ -67,7 +67,7 @@ export default function Settings(){
     ];
 
     const saveWallAngle = () => {
-        fetch(`${apiURL}/climbing/set_angle/${selectedWallAngle}`, {
+        fetch(`${apiURL}/set_angle/${selectedWallAngle}`, {
             headers: {
                 'Authorization': 'Bearer ' + token,
             },

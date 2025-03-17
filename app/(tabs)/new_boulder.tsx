@@ -40,8 +40,8 @@ export default function NewBoulder(){
     }
 
     const handleCancel = () => {
-        setColorsHolds(Array.from({length: holds["false"].length}, () => -1));
-        setColorsVolumes(Array.from({length: holds["true"].length}, () => -1));
+        setColorsHolds(Array.from({length: holds["holds"].length}, () => -1));
+        setColorsVolumes(Array.from({length: holds["volumes"].length}, () => -1));
         setBoulderName('');
         setBoulderDescription('');
         setSelectedTags([]);
@@ -51,12 +51,12 @@ export default function NewBoulder(){
         const holdsList = [];
         for (let i = 0; i < colorsHolds.length; i++) {
             if (colorsHolds[i] !== -1) {
-                holdsList.push({id: holds["false"][i].id, type: colorsHolds[i]});
+                holdsList.push({id: holds["holds"][i].id, type: colorsHolds[i]});
             }
         }
         for (let i = 0; i < colorsVolumes.length; i++) {
             if (colorsVolumes[i] !== -1) {
-                holdsList.push({id: holds["true"][i].id, type: colorsVolumes[i]});
+                holdsList.push({id: holds["volumes"][i].id, type: colorsVolumes[i]});
             }
         }
         return holdsList;
@@ -76,7 +76,7 @@ export default function NewBoulder(){
             tags: selectedTags,
         }
         try {
-            const response = await fetch(`${apiURL}/climbing/boulder`, {
+            const response = await fetch(`${apiURL}/boulder`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -131,8 +131,8 @@ export default function NewBoulder(){
 
     useEffect(() => {
         if (holds) {
-            setColorsHolds(Array.from({length: holds["false"].length}, () => -1));
-            setColorsVolumes(Array.from({length: holds["true"].length}, () => -1));
+            setColorsHolds(Array.from({length: holds["holds"].length}, () => -1));
+            setColorsVolumes(Array.from({length: holds["volumes"].length}, () => -1));
         }
     }
     , [holds]);
@@ -158,7 +158,7 @@ export default function NewBoulder(){
                             <Svg style={styles.svgContainer} height="100%" width="100%" viewBox="0 0 820.5611 1198.3861">
                                 <Defs>
                                     <G id="holds">
-                                        {holds["false"].map((hold, index) => (
+                                        {holds["holds"].map((hold, index) => (
                                             <Path
                                                 key={hold.id}
                                                 fill={numberToFillColor(colorsHolds[index])}
@@ -170,7 +170,7 @@ export default function NewBoulder(){
                                         ))}
                                     </G>
                                     <G id="volumes">
-                                        {holds['true'].map((hold, index) => (
+                                        {holds['volumes'].map((hold, index) => (
                                             <Path
                                                 key={hold.id}
                                                 fill={numberToFillColor(colorsVolumes[index])}
@@ -276,6 +276,7 @@ export default function NewBoulder(){
                         placeholder="Jméno"
                         value={boulderName}
                         onChangeText={setBoulderName}
+                        maxLength={100}
                     />
                     <TextInput
                         style={styles.commentInput}
@@ -283,6 +284,7 @@ export default function NewBoulder(){
                         multiline={true}
                         value={boulderDescription}
                         onChangeText={setBoulderDescription}
+                        maxLength={500}
                     />
                     <View style={styles.tagsContainer}>
                         <View style={styles.tags}>

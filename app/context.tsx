@@ -180,8 +180,22 @@ export const GlobalStateProvider = ({ children }) => {
             },
             }
         )
-            .then(response => response.json())
-            .then(response => {setLoggedUser(response.username), setIsAdmin(response.admin)})
+            .then(response => {
+                if (!response.ok) {
+                    response.json()
+                        .then(text => alert(text["message"]))
+                        .catch(error => console.log(error));
+                    setLoggedUser('Nepřihlášen');
+                    setIsAdmin(false);
+                    setToken('token');
+                    saveToken('token');
+                } else {
+                    response.json().then(response => {
+                        setLoggedUser(response.username),
+                        setIsAdmin(response.admin)
+                    }).catch(error => console.log(error));
+                }
+            })
             .catch(error => console.log(error));
     }
 
@@ -195,7 +209,13 @@ export const GlobalStateProvider = ({ children }) => {
                 }
             }
         )
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    whoami();
+                    return [];
+                }
+                return response.json()
+                })
             .then(jsonResponse => setBoulders(jsonResponse))
             .catch(error => console.log(error))
             .finally(() => setBouldersLoading(false));

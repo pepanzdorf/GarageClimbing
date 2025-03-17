@@ -7,7 +7,7 @@ import { GlobalStateContext } from '../../context';
 import { Svg, Path, Rect, ClipPath, Defs, G, Use, Mask, Pattern, Line } from 'react-native-svg'
 import { apiURL } from '../../../constants/Other';
 import { StarRating } from '../../../components/StarRating';
-import { gradeIdToGradeName, attemptIdToAttemptName, numberToStrokeColor, numberToFillColor, tagIdToIconName } from '../../../scripts/utils';
+import { gradeIdToGradeName, attemptIdToAttemptName, numberToStrokeColor, numberToFillColor, tagIdToIconName, mulberry32 } from '../../../scripts/utils';
 import { Colors } from '../../../constants/Colors'
 import { Fonts } from '../../../constants/Fonts'
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
@@ -118,7 +118,9 @@ export default function DetailsScreen() {
             }
         });
 
-        const randomIndex = Math.floor(Math.random() * randomHoldIDs.length);
+        rng = mulberry32(new Date().toISOString().split('T')[0].replace(/-/g, '') + currentBoulder.id);
+
+        const randomIndex = Math.floor(rng() * randomHoldIDs.length);
 
         setRandomHold(randomHoldIDs[randomIndex]);
     }

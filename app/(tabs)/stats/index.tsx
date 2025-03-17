@@ -71,6 +71,7 @@ export default function Stats(){
                                             top: viewWidth * imageAspectRatio - viewWidth * iconSizeRatio - 2,
                                             left: 20 + (1.1 * index * viewWidth * iconSizeRatio),
                                         }}
+                                        key={key}
                                     />
                                 )
                             })

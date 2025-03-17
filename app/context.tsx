@@ -31,9 +31,6 @@ export const GlobalStateProvider = ({ children }) => {
     const [settings, setSettings] = useState(defaultSettings);
     const [settingsLoading, setSettingsLoading] = useState(true);
 
-    const [wallImage, setWallImage] = useState(null);
-    const [wallImageLoading, setWallImageLoading] = useState(true);
-
     const [holds, setHolds] = useState({});
     const [holdsLoading, setHoldsLoading] = useState(true);
 
@@ -160,7 +157,6 @@ export const GlobalStateProvider = ({ children }) => {
         loadToken();
         fetchBoulders(settings.angle);
         fetchHolds();
-        fetchBoulderingWallImage();
         fetchChallenges();
         whoami();
         fetchUserStats();
@@ -310,14 +306,6 @@ export const GlobalStateProvider = ({ children }) => {
         saveSettings();
     }
 
-    const fetchBoulderingWallImage = () => {
-        fetch(`${apiURL}/climbing/wall`)
-            .then(response => response.text())
-            .then(textResponse => setWallImage(textResponse))
-            .catch(error => console.log(error))
-            .finally(() => setWallImageLoading(false));
-    };
-
 
     const fetchChallenges = () => {
         fetch(`${apiURL}/climbing/boulders/challenges`)
@@ -453,8 +441,6 @@ export const GlobalStateProvider = ({ children }) => {
                 setSettings,
                 saveSettings,
                 settingsLoading,
-                wallImage,
-                wallImageLoading,
                 holds,
                 holdsLoading,
                 reloadBoulders,

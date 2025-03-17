@@ -10,10 +10,10 @@ import { Svg, Path, Rect, ClipPath, Defs, G, Use, Mask, Pattern, Line } from 're
 import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
 import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
 import { useRouter } from 'expo-router';
-
+import { apiURL } from '../../constants/Other'
 
 export default function Info(){
-    const { holds, boulders, stats, wallImage, settings, wallConfig, setCurrentBoulder } = useContext(GlobalStateContext);
+    const { holds, boulders, stats, settings, wallConfig, setCurrentBoulder } = useContext(GlobalStateContext);
     const [ nHolds, setNHolds ] = useState(0);
     const [ nVolumes, setNVolumes ] = useState(0);
     const [ bouldersByGrade, setBouldersByGrade ] = useState({});
@@ -237,7 +237,7 @@ export default function Info(){
                             key={maxCount}
                         >
                             <View style={{maxHeight: maxHeight}}>
-                                <ImageBackground style={isImageWider ? styles.backgroundImageWider : styles.backgroundImageHigher } source={{uri: `data:image/png;base64,${wallImage}`}}>
+                                <ImageBackground style={isImageWider ? styles.backgroundImageWider : styles.backgroundImageHigher } source={{uri: `${apiURL}/static/stena.jpg`}}>
                                     <Svg style={styles.svgContainer} height="100%" width="100%" viewBox="0 0 820.5611 1198.3861">
                                         <Defs>
                                             <G id="holds">

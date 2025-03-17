@@ -17,7 +17,7 @@ import { EmojiIcon } from '../../components/EmojiIcon';
 
 
 export default function NewBoulder(){
-    const { token, settings, holds, wallImage, tags } = useContext(GlobalStateContext);
+    const { token, settings, holds, tags } = useContext(GlobalStateContext);
     const windowAspectRatio = Dimensions.get('window').width / Dimensions.get('window').height;
     const tabBarHeight = useBottomTabBarHeight();
     const maxHeight = Dimensions.get('window').height - tabBarHeight*3;
@@ -154,7 +154,7 @@ export default function NewBoulder(){
                     style={{flex: 1}}
                 >
                     <View style={{maxHeight: maxHeight}}>
-                        <ImageBackground style={isImageWider ? styles.backgroundImageWider : styles.backgroundImageHigher } source={{uri: `data:image/png;base64,${wallImage}`}}>
+                        <ImageBackground style={isImageWider ? styles.backgroundImageWider : styles.backgroundImageHigher } source={{uri: `${apiURL}/static/stena.jpg`}}>
                             <Svg style={styles.svgContainer} height="100%" width="100%" viewBox="0 0 820.5611 1198.3861">
                                 <Defs>
                                     <G id="holds">

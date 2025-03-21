@@ -1,1 +1,1 @@
-export const apiURL = "https://pocasi.melki.cz";
+export const apiURL = "https://climbing.melki.cz";

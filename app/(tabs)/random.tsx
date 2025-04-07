@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { View, Text, ActivityIndicator, Button, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, ActivityIndicator, Button, ScrollView, StyleSheet, TouchableOpacity, Switch } from 'react-native';
 import { GlobalStateContext } from '../context';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
@@ -19,6 +19,10 @@ export default function Random(){
     const [ randomChallenge, setRandomChallenge ] = useState(null);
     const [ nChallenges, setNChallenges ] = useState(Object.keys(challenges).length);
     const [ challengeActive, setChallengeActive ] = useState(false);
+    const [ showUnsentSeasonal, setShowUnsentSeasonal ] = useState(false);
+    const [ showUnsent, setShowUnsent ] = useState(false);
+    const [ includeOpen, setIncludeOpen ] = useState(false);
+
     const router = useRouter();
 
 
@@ -60,7 +64,7 @@ export default function Random(){
 
     function handleFilter() {
         const [minGrade, maxGrade] = gradeRange;
-        const chosenBoulders = filterBoulders(boulders, settings.includeOpen, minGrade, maxGrade, false, false, [], false);
+        const chosenBoulders = filterBoulders(boulders, includeOpen, minGrade, maxGrade, showUnsent, false, [], showUnsentSeasonal);
 
         setBouldersInRange(chosenBoulders);
         setNBouldersInRange(chosenBoulders.length);
@@ -90,7 +94,7 @@ export default function Random(){
 
     useEffect(() => {
         handleFilter();
-    }, [boulders, settings]);
+    }, [boulders, settings, showUnsent, showUnsentSeasonal, includeOpen]);
 
     useEffect(() => {
         setNChallenges(Object.keys(challenges).length);
@@ -115,9 +119,42 @@ export default function Random(){
                         selectedStyle={{backgroundColor: Colors.primary}}
                         unselectedStyle={{backgroundColor: Colors.border}}
                     ></MultiSlider>
-                    <Text style={Fonts.h2}>Rozsah obtížností</Text>
+                    <Text style={Fonts.h3}>Rozsah obtížností</Text>
                     <Text style={Fonts.plainBold}>Od: {gradeIdToGradeName(gradeRange[0], settings.grading)}</Text>
                     <Text style={Fonts.plainBold}>Do: {gradeIdToGradeName(gradeRange[1], settings.grading)}</Text>
+                    <View style={styles.switch}>
+                        <Text style={Fonts.plainBold}>
+                            Pouze nevylezené:
+                        </Text>
+                        <Switch
+                            trackColor={styles.track}
+                            thumbColor={showUnsent ? Colors.background : Colors.backgroundDarker}
+                            onValueChange={setShowUnsent}
+                            value={showUnsent}
+                        />
+                    </View>
+                    <View style={styles.switch}>
+                        <Text style={Fonts.plainBold}>
+                            Pouze nevylezené (sezóna):
+                        </Text>
+                        <Switch
+                            trackColor={styles.track}
+                            thumbColor={showUnsentSeasonal ? Colors.background : Colors.backgroundDarker}
+                            onValueChange={setShowUnsentSeasonal}
+                            value={showUnsentSeasonal}
+                        />
+                    </View>
+                    <View style={styles.switch}>
+                        <Text style={Fonts.plainBold}>
+                            Open bouldery:
+                        </Text>
+                        <Switch
+                            trackColor={styles.track}
+                            thumbColor={includeOpen ? Colors.background : Colors.backgroundDarker}
+                            onValueChange={setIncludeOpen}
+                            value={includeOpen}
+                        />
+                    </View>
                     <Text style={Fonts.plainBold}>Počet boulderů v rozsahu: {nBouldersInRange}</Text>
                     <TouchableOpacity onPress={handleRandomBoulder}>
                         <View style={styles.button}>
@@ -250,5 +287,15 @@ const styles = StyleSheet.create({
     row: {
         flexDirection:"row",
         justifyContent:"space-between",
+    },
+    switch: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 2,
+        gap: 10,
+    },
+    track: {
+        false: Colors.darkerBorder,
+        true: Colors.primary
     },
 });

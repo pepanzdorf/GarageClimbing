@@ -83,6 +83,8 @@ export const GlobalStateProvider = ({ children }) => {
     const [ competitions, setCompetitions ] = useState([]);
     const [ currentCompetition, setCurrentCompetition ] = useState(null);
 
+    const [builderStats, setBuilderStats] = useState(null);
+
 
     const checkSettings = () => {
         if (settings.angle === undefined) {
@@ -414,6 +416,36 @@ export const GlobalStateProvider = ({ children }) => {
         setCompetitions(jsonResponse);
     }
 
+
+    const createBuilderStats = () => {
+        if (!boulders) return;
+        const result = {};
+        for (const boulder of boulders) {
+            const name = boulder.built_by;
+
+            if (!result[name]) {
+                result[name] = { count: 0, total_rating: 0, rated_boulders: 0 };
+            }
+
+            result[name].count += 1;
+            if (boulder.average_rating !== -1) {
+                result[name].total_rating += boulder.average_rating;
+                result[name].rated_boulders += 1;
+            }
+        }
+
+        for (const name in result) {
+            if (result[name].rated_boulders == 0) {
+                result[name].average_rating = null;
+            } else {
+                result[name].average_rating = parseFloat((result[name].total_rating/result[name].rated_boulders).toFixed(2));
+            }
+        }
+
+        setBuilderStats(result);
+    }
+
+
     useEffect(()=>{
         fetchAll();
     },[]);
@@ -451,6 +483,13 @@ export const GlobalStateProvider = ({ children }) => {
         saveTimers();
     }
     , [savedTimers]);
+
+
+    useEffect(() => {
+        createBuilderStats();
+    }
+    , [boulders]);
+
 
     return (
         <GlobalStateContext.Provider
@@ -514,6 +553,7 @@ export const GlobalStateProvider = ({ children }) => {
                 fetchCompetitions,
                 currentCompetition,
                 setCurrentCompetition,
+                builderStats,
         }}>
             {children}
         </GlobalStateContext.Provider>

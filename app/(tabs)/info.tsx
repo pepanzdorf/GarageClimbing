@@ -13,7 +13,7 @@ import { useRouter } from 'expo-router';
 import { apiURL } from '../../constants/Other'
 
 export default function Info(){
-    const { holds, boulders, stats, settings, wallConfig, setCurrentBoulder } = useContext(GlobalStateContext);
+    const { holds, boulders, stats, settings, wallConfig, setCurrentBoulder, builderStats } = useContext(GlobalStateContext);
     const [ nHolds, setNHolds ] = useState(0);
     const [ nVolumes, setNVolumes ] = useState(0);
     const [ bouldersByGrade, setBouldersByGrade ] = useState({});
@@ -296,6 +296,25 @@ export default function Info(){
                                                 <View style={styles.row} key={grade}>
                                                     <Text style={Fonts.plainBold}>{gradeIdToGradeName(grade, settings.grading)}</Text>
                                                     <Text style={Fonts.plainBold}>{bouldersByGrade[grade]}</Text>
+                                                </View>
+                                            )
+                                        }
+                                    )
+                                }
+                            </View>
+                        )
+                    }
+                    {
+                        builderStats && (
+                            <View>
+                                <Text style={Fonts.h3}>Počet postavených boulderů (průměrné hodnocení):</Text>
+                                {
+                                    Object.entries(builderStats).sort((a, b) => b[1].count - a[1].count).map((builder) =>
+                                        {
+                                            return (
+                                                <View style={styles.row} key={builder[0]}>
+                                                    <Text style={Fonts.plainBold}>{builder[0]}</Text>
+                                                    <Text style={Fonts.plainBold}>{builder[1].count} ({builder[1].average_rating})</Text>
                                                 </View>
                                             )
                                         }

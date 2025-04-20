@@ -30,14 +30,14 @@ export default function UserStats() {
 
     const borders = [
         {'image': require('../../../assets/images/borders/blank_frame.png'), 'hint': 'zadarmo'}, // free
-        {'image': require('../../../assets/images/borders/wood_frame.png'), 'hint': '1000+ bodů'}, // 1000 points
-        {'image': require('../../../assets/images/borders/bronze_frame.png'), 'hint': '5000+ bodů'}, // 5000 points
-        {'image': require('../../../assets/images/borders/silver_frame.png'), 'hint': '10000+ bodů'}, // 10000 points
-        {'image': require('../../../assets/images/borders/gold_frame.png'), 'hint': '20000+ bodů'}, // 20000 points
-        {'image': require('../../../assets/images/borders/plat_frame.png'), 'hint': '35000+ bodů'}, // 35000 points
-        {'image': require('../../../assets/images/borders/diamond_frame.png'), 'hint': '50000+ bodů'}, // 50000 points
-        {'sound': require('../../../assets/audio/dragon_roar.mp3'), 'image': require('../../../assets/images/borders/dragon_frame.png'), 'hint': '75000+ bodů'}, // 75000 points
-        {'image': require('../../../assets/images/borders/god_frame.png'), 'hint': '100000+ bodů'}, // 100000 points
+        {'image': require('../../../assets/images/borders/wood_frame.png'), 'hint': ''}, // 1000 points
+        {'image': require('../../../assets/images/borders/bronze_frame.png'), 'hint': ''}, // 5000 points
+        {'image': require('../../../assets/images/borders/silver_frame.png'), 'hint': ''}, // 10000 points
+        {'image': require('../../../assets/images/borders/gold_frame.png'), 'hint': ''}, // 20000 points
+        {'image': require('../../../assets/images/borders/plat_frame.png'), 'hint': ''}, // 35000 points
+        {'image': require('../../../assets/images/borders/diamond_frame.png'), 'hint': ''}, // 50000 points
+        {'sound': require('../../../assets/audio/dragon_roar.mp3'), 'image': require('../../../assets/images/borders/dragon_frame.png'), 'hint': ''}, // 75000 points
+        {'image': require('../../../assets/images/borders/god_frame.png'), 'hint': ''}, // 100000 points
         {'image': require('../../../assets/images/borders/dirt_frame.png'), 'hint': ''}, // brokolice V4-, dlouhá housenka V4+, Zimní květináč V4-, zeleninová V4-, Hedvábná stezka V3+
         {'image': require('../../../assets/images/borders/animal_frame.png'), 'hint': ''}, // kozel V3+, Mrtvá ryba V2-, Nabodnuté jablíčko V3-, protáhlá opice V3, Tupé bodliny V3, zvířecí trio V3-, Pro začátek dobrá V3+
         {'image': require('../../../assets/images/borders/mud_frame.png'), 'hint': 'Někdy ten výlez pár pokusů zabere'}, // Mít boulder na 25+ pokusů

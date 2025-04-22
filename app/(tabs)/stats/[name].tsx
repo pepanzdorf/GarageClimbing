@@ -64,6 +64,8 @@ export default function UserStats() {
         {'image': require('../../../assets/images/borders/joker_frame.png'), 'hint': 'Sběratel tagů'}, // climb boulders with all tags (in sum)
         {'image': require('../../../assets/images/borders/sloth_frame.png'), 'hint': 'Moc na to nechvátej'}, // complete 10 cliffhanger challenges
         {'image': require('../../../assets/images/borders/rocket_frame.png'), 'hint': 'Rychlejší než světlo'}, // climb 10 boulders with challenge speedrun
+        {'sound': require('../../../assets/audio/lightning.mp3'), 'image': require('../../../assets/images/borders/zeus_frame.png'), 'hint': 'Proč lézt dvakrát, když stačí jednou'}, // 100 flashes (unique boulders)
+        {'image': require('../../../assets/images/borders/quest_frame.png'), 'hint': 'Splň své domácí úkoly'}, // 10 completed quest boulders
     ];
 
     const sortBorders = () => {

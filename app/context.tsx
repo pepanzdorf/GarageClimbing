@@ -486,8 +486,8 @@ export const GlobalStateProvider = ({ children }) => {
             boulderQuest[loggedUser].date !== stringDate
         ) {
             const rng = mulberry32(stringDate + stringToSeed(loggedUser));
-            const newDay = boulderQuest[loggedUser].date !== stringDate ? true : false;
-            const possibleBoulders = findPossibleBouldersForQuest(expectedGrade, boulderQuest[loggedUser].id, newDay);
+            const newDay = boulderQuest?.[loggedUser]?.date !== stringDate ? true : false;
+            const possibleBoulders = findPossibleBouldersForQuest(expectedGrade, boulderQuest?.[loggedUser]?.id, newDay);
             const randomIndex = Math.floor(rng() * possibleBoulders.length);
             setBoulderQuest({
                 ...boulderQuest,

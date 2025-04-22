@@ -433,6 +433,8 @@ export default function UserStats() {
                                 <Text style={Fonts.plainBold}>{userStats['all_sends']}</Text>
                                 <Text style={Fonts.h3}>Splněných výzev (unikátní):</Text>
                                 <Text style={Fonts.plainBold}>{userStats['challenges']}</Text>
+                                <Text style={Fonts.h3}>Splněných úkolů:</Text>
+                                <Text style={Fonts.plainBold}>{userStats['completed_quests']}</Text>
                                 <View style={{flexDirection:"row", flexWrap: 'wrap'}}>
                                     {
                                         userStats['completed_grades'].map((value) => {

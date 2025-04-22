@@ -78,6 +78,11 @@ const shuffle = (array) => {
     return newArray;
 }
 
+
+export const stringToSeed = str =>
+  Math.abs([...str].reduce((acc, char) => (acc << 5) - acc + char.charCodeAt(0), 0));
+
+
 export const filterBoulders = (boulders, withOpen, lowerGrade, upperGrade, sent, favourite, tags, sentSeasonal) => {
     const chosenBoulders = boulders.filter(boulder => {
             const boulderGrade = boulder.average_grade;

@@ -30,7 +30,9 @@ export default function Home(){
         fetchSessionSends,
         competitions,
         fetchCompetitions,
-        setCurrentCompetition
+        setCurrentCompetition,
+        boulderQuest,
+        loggedUser
     } = useContext(GlobalStateContext);
     const [ search, setSearch ] = useState('');
     const [ numberOfBoulders, setNumberOfBoulders ] = useState(0);
@@ -136,9 +138,19 @@ export default function Home(){
     }
 
     const renderBoulder = ({item, index}) => {
+        let isQuest = false;
+        if (boulderQuest?.[loggedUser]?.boulder === item.id) {
+            isQuest = true;
+        }
         return (
             <TouchableOpacity onPress={() => handleGoToBoulder(item, index)}>
-                <View style={[styles.boulder, {borderColor: item.sent ? Colors.primary : Colors.borderDark}]}>
+                <View style={[
+                        styles.boulder,
+                        {
+                            borderColor: isQuest ? Colors.first : item.sent ? Colors.primary : Colors.borderDark,
+                            borderWidth: isQuest ? 3 : 1,
+                        },
+                    ]}>
                     <View style={styles.firstRow}>
                         <Text style={[Fonts.h3, styles.name]}>
                             {item.name}

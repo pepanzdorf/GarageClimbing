@@ -13,7 +13,19 @@ import { Colors } from '../../../../constants/Colors';
 
 export default function LogScreen() {
     const { id } = useLocalSearchParams();
-    const { settings, token, currentBoulder, setReload, currentChallenge, wallConfig, userSavedAttempts, setUserSavedAttempts } = useContext(GlobalStateContext);
+    const {
+        settings,
+        token,
+        currentBoulder,
+        setReload,
+        currentChallenge,
+        wallConfig,
+        userSavedAttempts,
+        setUserSavedAttempts,
+        loggedUser,
+        boulderQuest,
+        setBoulderQuest
+    } = useContext(GlobalStateContext);
     const [ selectedAngle, setSelectedAngle ] = useState(settings.angle);
     const [ selectedRating, setSelectedRating ] = useState(settings.rating);
     const [ selectedGrade, setSelectedGrade ] = useState(currentBoulder.average_grade == -1 ? 0 : currentBoulder.average_grade);
@@ -30,6 +42,10 @@ export default function LogScreen() {
             alert("Musíte zadat počet pokusů.");
             return;
         }
+        let isQuest = false;
+        if (boulderQuest?.[loggedUser]?.boulder == id) {
+            isQuest = true;
+        }
         const response = await fetch(`${apiURL}/log_send`, {
             method: 'POST',
             headers: {
@@ -43,6 +59,7 @@ export default function LogScreen() {
                 attempts: selectedAttempts-1,
                 rating: selectedRating,
                 challenge: currentChallenge.id,
+                quest: isQuest,
             }),
         })
         const jsonResponse = await response.text();
@@ -52,6 +69,9 @@ export default function LogScreen() {
         }
         setReload(true);
         setUserSavedAttempts({...userSavedAttempts, [id]: 0});
+        if (isQuest) {
+            setBoulderQuest({...boulderQuest, [loggedUser]: {...boulderQuest[loggedUser], completed: true}})
+        }
         router.back();
     }
 

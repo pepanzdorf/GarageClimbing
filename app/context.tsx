@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { apiURL } from '../constants/Other';
+import { filterBoulders, mulberry32, stringToSeed } from '../scripts/utils';
 
 export const GlobalStateContext = createContext();
 
@@ -84,6 +85,8 @@ export const GlobalStateProvider = ({ children }) => {
     const [ currentCompetition, setCurrentCompetition ] = useState(null);
 
     const [builderStats, setBuilderStats] = useState(null);
+
+    const [boulderQuest, setBoulderQuest] = useState({});
 
 
     const checkSettings = () => {
@@ -446,6 +449,115 @@ export const GlobalStateProvider = ({ children }) => {
     }
 
 
+    const saveBoulderQuest = async () => {
+        try {
+            await AsyncStorage.setItem("boulderQuest", JSON.stringify(boulderQuest));
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+
+    const loadBoulderQuest = async () => {
+        try {
+            const persistentBoulderQuest = await AsyncStorage.getItem("boulderQuest");
+            if (persistentBoulderQuest !== null) {
+                setBoulderQuest(JSON.parse(persistentBoulderQuest));
+            } else {
+                setBoulderQuest({});
+            }
+        } catch (error) {
+            console.log(error);
+            setBoulderQuest({});
+        }
+    }
+
+
+    const rollBoulderQuest = async () => {
+        await loadBoulderQuest();
+        if (!stats) return;
+        const loggedUserStats = stats['users'].find(([name, _]) => name === loggedUser);
+        if (!loggedUserStats) return;
+        const stringDate = new Date().toISOString().split('T')[0].replace(/-/g, '');
+        const expectedGrade = loggedUserStats[1].expected_grade;
+        if (
+            boulderQuest[loggedUser] === undefined ||
+            boulderQuest[loggedUser].completed === true ||
+            boulderQuest[loggedUser].date !== stringDate
+        ) {
+            const rng = mulberry32(stringDate + stringToSeed(loggedUser));
+            const newDay = boulderQuest[loggedUser].date !== stringDate ? true : false;
+            const possibleBoulders = findPossibleBouldersForQuest(expectedGrade, boulderQuest[loggedUser].id, newDay);
+            const randomIndex = Math.floor(rng() * possibleBoulders.length);
+            setBoulderQuest({
+                ...boulderQuest,
+                [loggedUser]: {
+                    boulder: possibleBoulders[randomIndex].id,
+                    date: stringDate,
+                    completed: false,
+                }
+            });
+        }
+    }
+
+
+    const findPossibleBouldersForQuest = (expectedGrade, previousBoulderID, newDay) => {
+        let possibleBoulders = []
+        let oldFiltered = false;
+        let margin = 2;
+        while (possibleBoulders.length < 1) {
+            possibleBoulders = filterBoulders(
+                boulders,
+                false,
+                Math.max(expectedGrade - margin, 0),
+                expectedGrade + margin,
+                false,
+                false,
+                [],
+                true,
+            );
+            if (newDay) {
+                const oldLength = possibleBoulders.length;
+                possibleBoulders = possibleBoulders.filter(boulder => boulder.id !== previousBoulderID);
+                if (possibleBoulders.length !== oldLength) {
+                    oldFiltered = true;
+                }
+            }
+            margin++;
+            if (margin > 60) {
+                break;
+            }
+        }
+
+        if (possibleBoulders.length == 0) {
+            if (oldFiltered) {
+                possibleBoulders = boulders.find(boulder => boulder.id === previousBoulderID);
+                if (possibleBoulders) {
+                    return [possibleBoulders];
+                }
+            }
+            margin = 2;
+            while (possibleBoulders.length < 1) {
+                possibleBoulders = filterBoulders(
+                    boulders,
+                    false,
+                    Math.max(expectedGrade - margin, 0),
+                    expectedGrade + margin,
+                    false,
+                    false,
+                    [],
+                    false,
+                );
+                margin++;
+                if (margin > 60) {
+                    break;
+                }
+            }
+        }
+        return possibleBoulders;
+    }
+
+
     useEffect(()=>{
         fetchAll();
     },[]);
@@ -489,6 +601,16 @@ export const GlobalStateProvider = ({ children }) => {
         createBuilderStats();
     }
     , [boulders]);
+
+    useEffect(() => {
+        rollBoulderQuest();
+    }
+    , [stats, boulders, loggedUser]);
+
+    useEffect(() => {
+        boulderQuest && saveBoulderQuest();
+    }
+    , [boulderQuest]);
 
 
     return (
@@ -554,6 +676,8 @@ export const GlobalStateProvider = ({ children }) => {
                 currentCompetition,
                 setCurrentCompetition,
                 builderStats,
+                boulderQuest,
+                setBoulderQuest
         }}>
             {children}
         </GlobalStateContext.Provider>

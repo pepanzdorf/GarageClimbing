@@ -483,7 +483,8 @@ export const GlobalStateProvider = ({ children }) => {
         if (
             boulderQuest[loggedUser] === undefined ||
             boulderQuest[loggedUser].completed === true ||
-            boulderQuest[loggedUser].date !== stringDate
+            boulderQuest[loggedUser].date !== stringDate ||
+            boulderQuest[loggedUser].possibleBoulders === undefined
         ) {
             const rng = mulberry32(stringDate + stringToSeed(loggedUser));
             const newDay = boulderQuest?.[loggedUser]?.date !== stringDate ? true : false;
@@ -495,6 +496,9 @@ export const GlobalStateProvider = ({ children }) => {
                     boulder: possibleBoulders[randomIndex].id,
                     date: stringDate,
                     completed: false,
+                    possibleBoulders: possibleBoulders
+                        .filter(boulder => boulder.id !== possibleBoulders[randomIndex].id)
+                        .map(boulder => boulder.id),
                 }
             });
         }

@@ -8,7 +8,8 @@ import { gradeIdToGradeName, sortBoulderBy, filterBoulders, filterBySearch, atte
 import { Colors } from '../../../constants/Colors'
 import { Fonts } from '../../../constants/Fonts'
 import { StarRating } from '../../../components/StarRating';
-import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
+import IconDropdown from '../../../components/IconDropdown';
+import { FontAwesome, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import ScrollPicker from "react-native-wheel-scrollview-picker";
 
 
@@ -44,6 +45,7 @@ export default function Home(){
     const [ selectedYear, setSelectedYear ] = useState(new Date().getFullYear());
     const [ selectedMonth, setSelectedMonth ] = useState(new Date().getMonth()+1);
     const [ selectedDay, setSelectedDay ] = useState(new Date().getDate());
+    const [ possibleQuestBoulders, setPossibleQuestBoulders ] = useState([]);
     const router = useRouter();
 
     const yearData = Array(77).fill().map((_, i) => 2024+i);
@@ -74,6 +76,13 @@ export default function Home(){
     , [search, boulders, settings]);
 
     useEffect(() => {
+        setPossibleQuestBoulders(
+                sortBoulderBy(settings.sortby, possibleQuestBoulders)
+        );
+    }
+    , [settings]);
+
+    useEffect(() => {
         setNumberOfBoulders(filteredBoulders.length);
     }
     , [filteredBoulders]);
@@ -97,6 +106,18 @@ export default function Home(){
     }
     , [selectedYear, selectedMonth, selectedDay]);
 
+    useEffect(() => {
+        if (boulderQuest?.[loggedUser]?.possibleBoulders) {
+            setPossibleQuestBoulders(
+                sortBoulderBy(
+                    settings.sortby,
+                    boulderQuest[loggedUser].possibleBoulders.map((boulder_id) =>
+                        findBoulderById(boulder_id, boulders)))
+                )
+        }
+    }
+    , [boulderQuest]);
+
     const handleGoToBoulder = (item, index) => {
         setCurrentBoulder(item);
         setCurrentBoulderIndex(index);
@@ -114,19 +135,6 @@ export default function Home(){
     const handleRerouteComp = (comp) => {
         setCurrentCompetition(comp);
         router.push(`comps/${comp.id}`);
-    }
-
-    const rotateMode = () => {
-        if (showMode === 0) {
-            setShowMode(1);
-            setIconName('stack-exchange');
-        } else if (showMode === 1) {
-            setShowMode(2);
-            setIconName('list');
-        } else {
-            setShowMode(0);
-            setIconName('flag-checkered');
-        }
     }
 
     const handleNew = () => {
@@ -181,7 +189,7 @@ export default function Home(){
                         </Text>
                         <View>
                             <StarRating rating={item.average_rating} maxStars={5} size={20}/>
-                            <Text style={[Fonts.plain, styles.description]}>
+                            <Text style={[Fonts.plain, styles.builder]}>
                                 {item.built_by}
                             </Text>
                         </View>
@@ -310,7 +318,7 @@ export default function Home(){
                     }
                 </View>
             )
-        } else {
+        } else if (showMode === 2) {
             return (
                 <View style={styles.boulders}>
                     { sessionSends ? (
@@ -321,6 +329,24 @@ export default function Home(){
                             />
                         ) : ( <ActivityIndicator size="large" color="black" /> )
                     }
+                </View>
+            )
+        } else {
+            let questBoulder = findBoulderById(boulderQuest?.[loggedUser]?.boulder, boulders);
+            return (
+                <View style={styles.boulders}>
+                    { questBoulder ? (
+                        renderBoulder({item: questBoulder, index: 0})
+                    ) : (
+                        <Text style={Fonts.h3}>
+                            Žádný quest boulder
+                        </Text>
+                    )}
+                    <FlatList
+                        data={ possibleQuestBoulders }
+                        renderItem={renderBoulder}
+                        keyExtractor={item => item.id}
+                    />
                 </View>
             )
         }
@@ -346,7 +372,7 @@ export default function Home(){
             count = <Text style={Fonts.plain}>
                         { numberOfComps }/{ competitions.length }
                     </Text>
-        } else {
+        } else if (showMode === 2) {
             count = <Text style={Fonts.plain}>
                         { numberOfSessionSends }/{ sessionSends.length }
                     </Text>
@@ -357,6 +383,10 @@ export default function Home(){
                              </Text>
                          </View>
                      </TouchableOpacity>
+        } else {
+            count = <Text style={Fonts.plain}>
+                        { boulderQuest?.[loggedUser]?.possibleBoulders.length }
+                    </Text>
         }
         return (
             <View style={styles.menuContainer}>
@@ -370,12 +400,27 @@ export default function Home(){
                 </TouchableOpacity>
                 { middle }
                 <View style={styles.clickableIcons}>
-                    <TouchableOpacity onPress={() => router.push('timers')}>
-                        <FontAwesome5 name="clock" size={36} color={Colors.primary} />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={rotateMode}>
-                        <FontAwesome5 name={iconName} size={36} color={Colors.primary} />
-                    </TouchableOpacity>
+                    <IconDropdown
+                        menuIcon={<FontAwesome name="chevron-down" color={Colors.primary}/>}
+                        menuItems={[
+                            <TouchableOpacity onPress={() => router.push('timers')}>
+                                <FontAwesome5 name="clock" size={36} color={Colors.primary} />
+                            </TouchableOpacity>,
+                            <TouchableOpacity onPress={() => setShowMode(0)}>
+                                <FontAwesome5 name="list" size={36} color={Colors.primary} />
+                            </TouchableOpacity>,
+                            <TouchableOpacity onPress={() => setShowMode(1)}>
+                                <FontAwesome5 name="flag-checkered" size={36} color={Colors.primary} />
+                            </TouchableOpacity>,
+                            <TouchableOpacity onPress={() => setShowMode(2)}>
+                                <FontAwesome5 name="stack-exchange" size={36} color={Colors.primary} />
+                            </TouchableOpacity>,
+                            <TouchableOpacity onPress={() => setShowMode(3)}>
+                                <MaterialCommunityIcons name="map-marker-question-outline" size={36} color={Colors.primary} />
+                            </TouchableOpacity>
+                        ]}
+                        size={36}
+                    />
                     <TouchableOpacity onPress={handleNew}>
                         <FontAwesome name="plus" size={36} color={Colors.primary} />
                     </TouchableOpacity>
@@ -453,6 +498,7 @@ const styles = StyleSheet.create({
         borderTopColor: Colors.background,
         borderBottomColor: Colors.borderDark,
         borderWidth: 1,
+        zIndex: 1,
     },
     refresh: {
         padding: 10,
@@ -503,6 +549,11 @@ const styles = StyleSheet.create({
     },
     description: {
         flex:1,
+        flexWrap: 'wrap',
+        marginRight: 10,
+    },
+    builder: {
+        maxWidth: 110,
         flexWrap: 'wrap',
         marginRight: 10,
     },

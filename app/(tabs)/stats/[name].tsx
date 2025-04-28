@@ -283,6 +283,8 @@ export default function UserStats() {
     const handleReroute = (boulder) => {
         setCurrentBoulder(boulder);
         setBouldersModal(false);
+        setSeasonalModal(false);
+        setBoulderDifferencesModal(false);
         router.push(`${boulder.id}`);
     }
 

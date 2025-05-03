@@ -36,6 +36,13 @@ export default function CrackTabLayout() {
                 }}
             />
             <Tabs.Screen
+                name="crack_sends"
+                options={{
+                    title: 'Výlezy',
+                    tabBarIcon: ({ color }) => <FontAwesome5 size={28} name="list" color={color} />,
+                }}
+            />
+            <Tabs.Screen
                 name="info"
                 options={{
                     title: 'Info',

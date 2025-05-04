@@ -45,8 +45,8 @@ export default function Info(){
     }
 
     const getColorForValue = (value, min, max) => {
-        let normalizedValue = Math.log(value - min + 1) / Math.log(max - min + 1);
-        let hue = 240 - Math.round(240 * normalizedValue);
+        const normalizedValue = (value - min) / (max - min);
+        const hue = 260 - Math.round(320 * normalizedValue);
 
         return ["hsl(", hue, ",100%,50%)"].join("");
     }
@@ -54,19 +54,11 @@ export default function Info(){
     const calculateMaxCount = () => {
         let mc = 0;
         holds['holds'].forEach((hold) => {
-            if (calcHoldCount(hold) > mc) {
-                mc = calcHoldCount(hold);
+            if (hold.rank > mc) {
+                mc = hold.rank;
             }
         });
         setMaxCount(mc);
-    }
-
-    const calcHoldCount = (hold) => {
-        let count = 0;
-        Object.keys(hold.types_counts).forEach((key) => {
-            count += hold.types_counts[key];
-        });
-        return count;
     }
 
     const calculateBouldersByGrade = () => {
@@ -125,7 +117,7 @@ export default function Info(){
         const feet = hold.types_counts['1'] ? hold.types_counts['1'] : 0;
         const middle = hold.types_counts['2'] ? hold.types_counts['2'] : 0;
         const starts = hold.types_counts['3'] ? hold.types_counts['3'] : 0;
-        const count = tops + feet + middle + starts;
+        const count = hold.total_count ? hold.total_count : 0;
         let message = `Vyskytuje se v ${count} boulderech\nTop: ${tops}\nNoha: ${feet}\nRuka: ${middle}\nStart: ${starts}\n\nBouldery:\n`;
 
         return (
@@ -174,6 +166,11 @@ export default function Info(){
                     <TouchableOpacity onPress={() => router.navigate('/(crack)/log')}>
                         <View style={styles.crackLink}>
                             <Text style={Fonts.h3}>Jít na spáru</Text>
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => router.navigate('/(ferrata)')}>
+                        <View style={styles.ferrataLink}>
+                            <Text style={Fonts.h3}>Jít na ferraty</Text>
                         </View>
                     </TouchableOpacity>
                     <View style={styles.field}>
@@ -245,7 +242,7 @@ export default function Info(){
                                                     <Path
                                                         key={hold.id}
                                                         fill= 'none'
-                                                        stroke={getColorForValue(calcHoldCount(hold), 0, maxCount)}
+                                                        stroke={getColorForValue(hold.rank, 0, maxCount)}
                                                         strokeWidth={settings.lineWidth}
                                                         d={hold.path}
                                                         onPress={() => {setModalVisible(true); setPressedHold(hold);}}
@@ -414,8 +411,18 @@ const styles = StyleSheet.create({
     },
     crackLink: {
         flex: 1,
+        backgroundColor: Colors.crackPrimary,
+        borderWidth: 1,
+        borderColor: Colors.borderDark,
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+    },
+    ferrataLink: {
+        flex: 1,
         marginBottom: 20,
-        backgroundColor: Colors.primary,
+        backgroundColor: Colors.ferrataPrimary,
         borderWidth: 1,
         borderColor: Colors.borderDark,
         paddingHorizontal: 20,

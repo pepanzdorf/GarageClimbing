@@ -67,6 +67,8 @@ export const GlobalStateProvider = ({ children }) => {
 
     const [ crackStats, setCrackStats ] = useState(null);
 
+    const [ ferrataStats, setFerrataStats ] = useState(null);
+
     const [userSavedAttempts, setUserSavedAttempts] = useState(null);
 
     const [ sessionSends, setSessionSends ] = useState([]);
@@ -170,6 +172,7 @@ export const GlobalStateProvider = ({ children }) => {
         fetchWallConfig();
         loadSavedBoulderAttempts();
         fetchCrackStats();
+        fetchFerrataStats();
         fetchSessionSends(chosenDate);
         fetchTimerStatus();
         loadTimers();
@@ -366,6 +369,12 @@ export const GlobalStateProvider = ({ children }) => {
             .catch(error => console.log(error));
     }
 
+    const fetchFerrataStats = () => {
+        fetch(`${apiURL}/ferrata/stats`)
+            .then(response => response.json())
+            .then(response => setFerrataStats(response))
+            .catch(error => console.log(error));
+    }
 
     const fetchTags = () => {
         fetch(`${apiURL}/tags`)
@@ -661,6 +670,8 @@ export const GlobalStateProvider = ({ children }) => {
                 setSavedBoulderAttempts,
                 crackStats,
                 fetchCrackStats,
+                ferrataStats,
+                fetchFerrataStats,
                 userSavedAttempts,
                 setUserSavedAttempts,
                 sessionSends,

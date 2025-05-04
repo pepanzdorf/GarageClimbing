@@ -168,7 +168,7 @@ export default function Info(){
                             <Text style={Fonts.h3}>Jít na spáru</Text>
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => router.navigate('/(ferrata)')}>
+                    <TouchableOpacity onPress={() => router.navigate('/(ferrata)/log')}>
                         <View style={styles.ferrataLink}>
                             <Text style={Fonts.h3}>Jít na ferraty</Text>
                         </View>

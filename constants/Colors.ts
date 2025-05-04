@@ -14,4 +14,6 @@ export const Colors = {
     transparentPrimary: 'rgba(52,193,246,0.7)',
     crackPrimary: '#cf4e4e',
     crackSecondary: '#7b3232',
+    ferrataPrimary: '#29D677',
+    ferrataSecondary: '#1B9D4D',
 };

@@ -14,7 +14,7 @@ export default function Info(){
         <SafeAreaView style={styles.container}>
             <ScrollView>
                 <View style={styles.header}>
-                    <Text style={Fonts.h1}>Garážové lezení - spára</Text>
+                    <Text style={Fonts.h1}>Garážové lezení - ferraty</Text>
                 </View>
                 <View style={styles.info}>
                     <TouchableOpacity onPress={() => router.navigate('/')}>
@@ -22,21 +22,15 @@ export default function Info(){
                             <Text style={Fonts.h3}>Jít na bouldery</Text>
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => router.navigate('/(ferrata)/log')}>
-                        <View style={styles.ferrataLink}>
-                            <Text style={Fonts.h3}>Jít na ferraty</Text>
+                    <TouchableOpacity onPress={() => router.navigate('/(crack)/log')}>
+                        <View style={styles.crackLink}>
+                            <Text style={Fonts.h3}>Jít na spáru</Text>
                         </View>
                     </TouchableOpacity>
                     <View style={styles.field}>
-                        <Text style={Fonts.h3}>Horizontální spára: </Text>
+                        <Text style={Fonts.h3}>Via ferrata</Text>
                         <Text style={Fonts.plainBold}>
-                            Horizontální spára je samostojná délky 4 metry. Lze na ní lézt dlaň nebo pěst.
-                        </Text>
-                    </View>
-                    <View style={styles.field}>
-                        <Text style={Fonts.h3}>Vertikální spára: </Text>
-                        <Text style={Fonts.plainBold}>
-                            Vertikální spára má 5 metrů. Je nastavitelná, takže na ní lze lézt od prstů až po komín.
+                            Možnost zápisu výlezů ferrat.
                         </Text>
                     </View>
                 </View>
@@ -60,7 +54,7 @@ const styles = StyleSheet.create({
     },
     header: {
         alignItems: 'center',
-        backgroundColor: Colors.crackPrimary,
+        backgroundColor: Colors.ferrataPrimary,
         marginBottom: 20,
         padding: 10,
     },
@@ -81,10 +75,9 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         alignItems: 'center',
     },
-    ferrataLink: {
+    crackLink: {
         flex: 1,
-        marginBottom: 20,
-        backgroundColor: Colors.ferrataPrimary,
+        backgroundColor: Colors.crackPrimary,
         borderWidth: 1,
         borderColor: Colors.borderDark,
         paddingHorizontal: 20,

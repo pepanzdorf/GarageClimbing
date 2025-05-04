@@ -21,6 +21,11 @@ export const gradeIdToGradeName = (gradeId, grading) => {
     }
 }
 
+export const ferrataGradeIdToGradeName = (gradeId) => {
+    return (gradeId >= 0 && gradeId <= 5 ? String.fromCharCode(65 + gradeId) : '-');
+}
+
+
 export const crackIdToCrackName = (crackId) => {
     switch(crackId){
         case 0:

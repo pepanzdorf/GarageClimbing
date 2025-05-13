@@ -1,4 +1,4 @@
-import { Dimensions, ImageBackground, StyleSheet, View, GestureResponderEvent } from 'react-native';
+import { Dimensions, ImageBackground, StyleSheet, GestureResponderEvent } from 'react-native';
 import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
 import { Svg, Path, Rect, ClipPath, Defs, G, Use, Mask, Pattern, Line } from 'react-native-svg'
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
@@ -45,7 +45,7 @@ const BoulderWall = ({
 
     const windowAspectRatio = Dimensions.get('window').width / Dimensions.get('window').height;
     const tabBarHeight = useBottomTabBarHeight();
-    const maxHeight = Dimensions.get('window').height - tabBarHeight * 3;
+    const maxHeight = Dimensions.get('window').height - tabBarHeight * 2.5;
     const isImageWider = windowAspectRatio < imageAspectRatio;
     const zoomableViewRef = createRef<ReactNativeZoomableView>();
 
@@ -148,12 +148,11 @@ const BoulderWall = ({
             bindToBorders={true}
             disablePanOnInitialZoom={true}
             onDoubleTapAfter={restartZoomableView}
-            style={{flex: 1}}
+            style={{maxHeight: maxHeight}}
             animatePin={false}
         >
-            <View style={{maxHeight: maxHeight}}>
                 <ImageBackground
-                    style={isImageWider ? styles.backgroundImageWider : styles.backgroundImageHigher }
+                    style={[isImageWider ? styles.backgroundImageWider : styles.backgroundImageHigher, {maxHeight: maxHeight}]}
                     source={{uri: `${apiURL}/static/stena.jpg`}}
                 >
                     <Svg height="100%" width="100%" viewBox="0 0 820.5611 1198.3861">
@@ -252,7 +251,6 @@ const BoulderWall = ({
                         }
                     </Svg>
                 </ImageBackground>
-            </View>
         </ReactNativeZoomableView>
     );
 }

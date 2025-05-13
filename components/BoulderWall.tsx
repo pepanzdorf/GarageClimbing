@@ -1,4 +1,4 @@
-import { Dimensions, ImageBackground, StyleSheet, View } from 'react-native';
+import { Dimensions, ImageBackground, StyleSheet, View, GestureResponderEvent } from 'react-native';
 import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
 import { Svg, Path, Rect, ClipPath, Defs, G, Use, Mask, Pattern, Line } from 'react-native-svg'
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
@@ -88,11 +88,43 @@ const BoulderWall = ({
 
 
     const restartZoomableView = () => {
-        zoomableViewRef.current!.zoomTo(1);
+        zoomableViewRef.current?.zoomTo(1);
         setTimeout(() => {
-            zoomableViewRef.current!.moveTo(0, 0);
+            zoomableViewRef.current?.moveTo(0, 0);
         }, 500);
     }
+
+
+    const getPressHandlers = (
+        hold: HoldType | BoulderHoldType,
+        index: number,
+        onPress: (hold: HoldType | BoulderHoldType, index: number) => void
+    ) => {
+        let pressStartTime: number;
+        let pressStartX: number;
+        let pressStartY: number;
+
+        return {
+            onStartShouldSetResponder: () => true,
+            onResponderGrant: (evt: GestureResponderEvent) => {
+                pressStartTime = Date.now();
+                pressStartX = evt.nativeEvent.locationX;
+                pressStartY = evt.nativeEvent.locationY;
+            },
+            onResponderRelease: (evt: GestureResponderEvent) => {
+                const duration = Date.now() - pressStartTime;
+
+                const dx = evt.nativeEvent.locationX - pressStartX;
+                const dy = evt.nativeEvent.locationY - pressStartY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+
+                if (duration < 250 && distance < 5) {
+                    onPress(hold, index);
+                }
+            }
+        };
+    };
 
 
     useEffect(() => {
@@ -142,7 +174,7 @@ const BoulderWall = ({
                                         }
                                         strokeWidth={isBuild ? (colorsHolds[index] === -1 ? 2 : lineWidth) : lineWidth}
                                         d={hold.path}
-                                        onPress={() => onHoldPress(hold, index)}
+                                        {...getPressHandlers(hold, index, onHoldPress)}
                                         strokeDasharray={hold.id === randomHold ? "3,5" : ""}
                                     />
                                 ))}
@@ -162,7 +194,7 @@ const BoulderWall = ({
                                                             numberToStrokeColor(typedHold.hold_type)}
                                                         strokeWidth={isBuild ? (colorsVolumes[index] === -1 ? 2 : lineWidth) : lineWidth}
                                                         d={typedHold.path}
-                                                        onPress={() => onVolumePress(hold, index)}
+                                                        {...getPressHandlers(hold, index, onVolumePress)}
                                                     />
                                                 )})
                                             }
@@ -208,6 +240,7 @@ const BoulderWall = ({
                             <Use href="#holds"/>
                         </G>
                         {
+                            isInfo &&
                             Array(maxRank).fill(0).map((_, i) => (
                                 <Rect
                                     key={i}

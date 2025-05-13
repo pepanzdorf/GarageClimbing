@@ -1,47 +1,65 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Modal, TouchableOpacity, Switch } from 'react-native';
+import { useState, useEffect } from 'react';
+import { View, StyleSheet, Text, Modal, TouchableOpacity } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import { Fonts } from '../constants/Fonts'
-import { Colors } from '../constants/Colors'
+import { ColorFormatsObject } from 'reanimated-color-picker';
+import { TimerIntervalType } from "@/types/timerIntervalType";
+import { StyledColorPicker } from "@/components/StyledColorPicker";
+import Fonts from '@/constants/Fonts'
+import Colors from '@/constants/Colors'
 import ScrollPicker from "react-native-wheel-scrollview-picker";
-import ColorPicker, { colorKit, Swatches, Preview, HueCircular, BrightnessSlider } from 'reanimated-color-picker';
+import RowSwitch from "@/components/RowSwitch";
+import Button from "@/components/HorizontalButton";
 
-const TimerInterval = (props) => {
-    const [seconds, setSeconds] = useState(props.initial.time % 60);
-    const [minutes, setMinutes] = useState(Math.floor(props.initial.time / 60) % 60);
-    const [hours, setHours] = useState(Math.floor(props.initial.time / 3600));
-    const [color, setColor] = useState(props.initial.color);
-    const [onlyFirst, setOnlyFirst] = useState(props.initial.onlyFirst);
-    const [onlyLast, setOnlyLast] = useState(props.initial.onlyLast);
-    const [alarmSeconds, setAlarmSeconds] = useState(props.initial.beepTime % 60);
-    const [alarmMinutes, setAlarmMinutes] = useState(Math.floor(props.initial.beepTime / 60) % 60);
-    const [alarmHours, setAlarmHours] = useState(Math.floor(props.initial.beepTime / 3600));
-    const [alarmSet, setAlarmSet] = useState(props.initial.beep);
 
-    const [modalVisible, setModalVisible] = useState(false);
-    const [alarmModalVisible, setAlarmModalVisible] = useState(false);
-    const [previewColor, setPreviewColor] = useState('red');
+type Props = {
+    initial: TimerIntervalType
+    index: number,
+    value: TimerIntervalType[],
+    setValue: (intervalArray: TimerIntervalType[]) => void
+}
+
+
+const TimerInterval = (props: Props) => {
+    const [ seconds, setSeconds ] = useState(props.initial.time % 60);
+    const [ minutes, setMinutes ] = useState(Math.floor(props.initial.time / 60) % 60);
+    const [ hours, setHours ] = useState(Math.floor(props.initial.time / 3600));
+    const [ color, setColor ] = useState(props.initial.color);
+    const [ onlyFirst, setOnlyFirst ] = useState(props.initial.onlyFirst);
+    const [ onlyLast, setOnlyLast ] = useState(props.initial.onlyLast);
+    const [ alarmSeconds, setAlarmSeconds ] = useState(props.initial.beepTime % 60);
+    const [ alarmMinutes, setAlarmMinutes ] = useState(Math.floor(props.initial.beepTime / 60) % 60);
+    const [ alarmHours, setAlarmHours ] = useState(Math.floor(props.initial.beepTime / 3600));
+    const [ alarmSet, setAlarmSet ] = useState(props.initial.beep);
+    const [ modalVisible, setModalVisible ] = useState(false);
+    const [ alarmModalVisible, setAlarmModalVisible ] = useState(false);
+    const [ previewColor, setPreviewColor ] = useState('red');
 
     function renderLoopSwitch() {
         if (!onlyFirst && !onlyLast) {
             return (
-                <FontAwesome name="repeat" size={40} color='black' onPress={() => setOnlyFirst(true)} />
+                <TouchableOpacity onPress={() => setOnlyFirst(true)} >
+                    <FontAwesome name="repeat" size={40} color='black'/>
+                </TouchableOpacity>
             );
         } else if (onlyFirst) {
             return (
-                <FontAwesome name="forward" size={40} color='black' onPress={() => {setOnlyFirst(false); setOnlyLast(true)}} />
+                <TouchableOpacity onPress={() => {setOnlyFirst(false); setOnlyLast(true)}} >
+                    <FontAwesome name="forward" size={40} color='black' />
+                </TouchableOpacity>
             );
         }
         return (
-            <FontAwesome name="backward" size={40} color='black' onPress={() => setOnlyLast(false)} />
+            <TouchableOpacity onPress={() => setOnlyLast(false)} >
+                <FontAwesome name="backward" size={40} color='black' />
+            </TouchableOpacity>
         );
     }
 
-    function padNumbers(num) {
+    function padNumbers(num: number) {
         return (num < 10 ? `0${num}` : num)
     }
 
-    function calculateTimeInSeconds(h, m, s) {
+    function calculateTimeInSeconds(h: number, m: number, s: number) {
         return s + m*60 + h*3600;
     }
 
@@ -58,7 +76,7 @@ const TimerInterval = (props) => {
         props.setValue(setTimers);
     }
 
-    function setColorFromPicker(color) {
+    function setColorFromPicker(color: ColorFormatsObject) {
         const hsvNumbers = color['hsv']
           .replace('hsv(', '')
           .replace(')', '')
@@ -82,133 +100,112 @@ const TimerInterval = (props) => {
     return (
         <View style={styles.container}>
             <View style={styles.timeContainer}>
-                <View style={{flex: 1}}>
-                    <ScrollPicker
-                        dataSource={Array.from({length: 100}, (_, i) => padNumbers(i))}
-                        selectedIndex={hours}
-                        wrapperHeight={styles.pickerWrapperHeight}
-                        wrapperBackground={Colors.primary}
-                        itemHeight={styles.pickerItemHeight}
-                        highlightColor={Colors.border}
-                        itemTextStyle={Fonts.h3}
-                        activeItemTextStyle={Fonts.h3}
-                        onValueChange={(_, index) => setHours(index)}
-                    />
-                </View>
+                <ScrollPicker
+                    dataSource={Array.from({length: 100}, (_, i) => padNumbers(i))}
+                    selectedIndex={hours}
+                    wrapperHeight={65}
+                    wrapperBackground={Colors.primary}
+                    itemHeight={30}
+                    highlightColor={Colors.border}
+                    itemTextStyle={Fonts.h3}
+                    activeItemTextStyle={Fonts.h3}
+                    onValueChange={(_, index) => setHours(index)}
+                />
                 <Text style={styles.colon}>:</Text>
-                <View style={{flex: 1}}>
-                    <ScrollPicker
-                        dataSource={Array.from({length: 60}, (_, i) => padNumbers(i))}
-                        selectedIndex={minutes}
-                        wrapperHeight={styles.pickerWrapperHeight}
-                        wrapperBackground={Colors.primary}
-                        itemHeight={styles.pickerItemHeight}
-                        highlightColor={Colors.border}
-                        itemTextStyle={Fonts.h3}
-                        activeItemTextStyle={Fonts.h3}
-                        onValueChange={(_, index) => setMinutes(index)}
-                    />
-                </View>
+                <ScrollPicker
+                    dataSource={Array.from({length: 60}, (_, i) => padNumbers(i))}
+                    selectedIndex={minutes}
+                    wrapperHeight={65}
+                    wrapperBackground={Colors.primary}
+                    itemHeight={30}
+                    highlightColor={Colors.border}
+                    itemTextStyle={Fonts.h3}
+                    activeItemTextStyle={Fonts.h3}
+                    onValueChange={(_, index) => setMinutes(index)}
+                />
                 <Text style={styles.colon}>:</Text>
-                <View style={{flex: 1}}>
-                    <ScrollPicker
-                        dataSource={Array.from({length: 60}, (_, i) => padNumbers(i))}
-                        selectedIndex={seconds}
-                        wrapperHeight={styles.pickerWrapperHeight}
-                        wrapperBackground={Colors.primary}
-                        itemHeight={styles.pickerItemHeight}
-                        highlightColor={Colors.border}
-                        itemTextStyle={Fonts.h3}
-                        activeItemTextStyle={Fonts.h3}
-                        onValueChange={(_, index) => setSeconds(index)}
-                    />
-                </View>
+                <ScrollPicker
+                    dataSource={Array.from({length: 60}, (_, i) => padNumbers(i))}
+                    selectedIndex={seconds}
+                    wrapperHeight={65}
+                    wrapperBackground={Colors.primary}
+                    itemHeight={30}
+                    highlightColor={Colors.border}
+                    itemTextStyle={Fonts.h3}
+                    activeItemTextStyle={Fonts.h3}
+                    onValueChange={(_, index) => setSeconds(index)}
+                />
             </View>
             <View style={styles.iconsContainer}>
-                <FontAwesome name="bell-o" size={40} color={alarmSet ? 'lime' : 'black'} onPress={() => setAlarmModalVisible(true)} />
+                <TouchableOpacity onPress={() => setAlarmModalVisible(true)} >
+                    <FontAwesome name="bell-o" size={40} color={alarmSet ? 'lime' : 'black'} />
+                </TouchableOpacity>
                 {
                     renderLoopSwitch()
                 }
-                <View style={{backgroundColor: 'white', paddingHorizontal: 3, borderWidth: 1, borderRadius: 20}}>
-                    <FontAwesome name="circle" size={40} color={previewColor} onPress={() => setModalVisible(true)} />
-                </View>
+                <TouchableOpacity onPress={() => setModalVisible(true)} >
+                    <View style={{backgroundColor: 'white', paddingHorizontal: 3, borderWidth: 1, borderRadius: 20}}>
+                        <FontAwesome name="circle" size={40} color={previewColor} />
+                    </View>
+                </TouchableOpacity>
             </View>
+
             <Modal visible={modalVisible} >
-                <View style={{flex:1, margin: 50}}>
-                    <ColorPicker value={`hsv(${props.initial.color}, 100%, 100%)`} onComplete={setColorFromPicker} style={{flex: 1}}>
-                        <HueCircular />
-                        <Preview hideInitialColor={true} hideText={true} style={{height: 100}}/>
-                    </ColorPicker>
-                    <TouchableOpacity onPress={() => setModalVisible(false)}>
-                        <View style={styles.button}>
-                            <Text style={Fonts.h3}>Uložit</Text>
-                        </View>
-                    </TouchableOpacity>
+                <View style={styles.modalView}>
+                    <View style={{flex: 1, alignItems: 'center'}}>
+                        <StyledColorPicker onComplete={setColorFromPicker} />
+                    </View>
+                    <Button label={"Uložit"} onPress={() => setModalVisible(false)} />
                 </View>
             </Modal>
+
             <Modal visible={alarmModalVisible} transparent={true}>
-                <View style={styles.centeredView}>
-                    <View style={styles.modalView}>
-                        <Text style={Fonts.h3}>Zapnout pípnutí:</Text>
-                        <Switch
-                            trackColor={styles.track}
-                            thumbColor={alarmSet ? Colors.background : Colors.backgroundDarker}
-                            onValueChange={setAlarmSet}
-                            value={alarmSet}
-                        />
+                <View style={styles.modalView}>
+                    <View style={{flex: 1, alignItems: 'center'}}>
+                        <RowSwitch label={"Zapnout pípnutí:"} value={alarmSet} onValueChange={setAlarmSet} />
                         {
                             alarmSet ? (
-                                <View style={[styles.timeContainer, {maxHeight: 65}]}>
-                                    <View style={{flex: 1}}>
+                                    <View style={[styles.timeContainer, {maxHeight: 65}]}>
                                         <ScrollPicker
                                             dataSource={Array.from({length: 100}, (_, i) => padNumbers(i))}
                                             selectedIndex={alarmHours}
-                                            wrapperHeight={styles.pickerWrapperHeight}
+                                            wrapperHeight={65}
                                             wrapperBackground={Colors.primary}
-                                            itemHeight={styles.pickerItemHeight}
+                                            itemHeight={30}
                                             highlightColor={Colors.border}
                                             itemTextStyle={Fonts.h3}
                                             activeItemTextStyle={Fonts.h3}
                                             onValueChange={(_, index) => setAlarmHours(index)}
                                         />
-                                    </View>
-                                    <Text style={styles.colon}>:</Text>
-                                    <View style={{flex: 1}}>
+                                        <Text style={styles.colon}>:</Text>
                                         <ScrollPicker
                                             dataSource={Array.from({length: 60}, (_, i) => padNumbers(i))}
                                             selectedIndex={alarmMinutes}
-                                            wrapperHeight={styles.pickerWrapperHeight}
+                                            wrapperHeight={65}
                                             wrapperBackground={Colors.primary}
-                                            itemHeight={styles.pickerItemHeight}
+                                            itemHeight={30}
                                             highlightColor={Colors.border}
                                             itemTextStyle={Fonts.h3}
                                             activeItemTextStyle={Fonts.h3}
                                             onValueChange={(_, index) => setAlarmMinutes(index)}
                                         />
-                                    </View>
-                                    <Text style={styles.colon}>:</Text>
-                                    <View style={{flex: 1}}>
+                                        <Text style={styles.colon}>:</Text>
                                         <ScrollPicker
                                             dataSource={Array.from({length: 60}, (_, i) => padNumbers(i))}
                                             selectedIndex={alarmSeconds}
-                                            wrapperHeight={styles.pickerWrapperHeight}
+                                            wrapperHeight={65}
                                             wrapperBackground={Colors.primary}
-                                            itemHeight={styles.pickerItemHeight}
+                                            itemHeight={30}
                                             highlightColor={Colors.border}
                                             itemTextStyle={Fonts.h3}
                                             activeItemTextStyle={Fonts.h3}
                                             onValueChange={(_, index) => setAlarmSeconds(index)}
                                         />
                                     </View>
-                                </View>
                             ) : null
                         }
-                        <TouchableOpacity onPress={() => setAlarmModalVisible(false)}>
-                            <View style={styles.button}>
-                                <Text style={Fonts.h3}>OK</Text>
-                            </View>
-                        </TouchableOpacity>
                     </View>
+                    <Button label={"OK"} onPress={() => setAlarmModalVisible(false)} />
                 </View>
             </Modal>
         </View>
@@ -220,7 +217,6 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         borderWidth: 1,
-        borderColor: Colors.darkerBorder,
         borderRadius: 5,
         backgroundColor: Colors.primary,
         paddingHorizontal: 5,
@@ -239,32 +235,14 @@ const styles = StyleSheet.create({
     },
     colon: {
         fontSize: 24,
-        color: Colors.darkerBorder,
         paddingTop: 14,
     },
-    pickerWrapperHeight: 65,
-    pickerItemHeight: 30,
-    button: {
-         backgroundColor: Colors.primary,
-         padding: 10,
-         alignItems: 'center',
-         borderWidth: 1,
-         borderRadius: 10,
-         marginTop: 15,
-         marginRight: 20,
-         marginLeft: 20,
-    },
-    centeredView: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
     modalView: {
+        flex: 1,
         margin: 20,
         backgroundColor: 'white',
         borderRadius: 20,
         padding: 35,
-        alignItems: 'center',
         shadowColor: '#000',
         shadowOffset: {
             width: 0,
@@ -273,10 +251,6 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 4,
         elevation: 5,
-    },
-    track: {
-        false: Colors.darkerBorder,
-        true: Colors.primary
     },
 });
 

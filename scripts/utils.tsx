@@ -1,6 +1,7 @@
-import { Audio } from 'expo-av';
+import { BoulderType } from "@/types/boulderType";
+import { Alert } from "react-native";
 
-export const gradeIdToGradeName = (gradeId, grading) => {
+export const gradeIdToGradeName = (gradeId: number, grading: number) : string => {
     if (gradeId == -1) {
         return "Open"
     }
@@ -18,15 +19,17 @@ export const gradeIdToGradeName = (gradeId, grading) => {
     } else if (grading == 4) {
         if (gradeId == 52) return "Těžší";
         return "Easy"
+    } else {
+        return "Unknown"
     }
 }
 
-export const ferrataGradeIdToGradeName = (gradeId) => {
+export const ferrataGradeIdToGradeName = (gradeId: number) => {
     return (gradeId >= 0 && gradeId <= 5 ? String.fromCharCode(65 + gradeId) : '-');
 }
 
 
-export const crackIdToCrackName = (crackId) => {
+export const crackIdToCrackName = (crackId: number) => {
     switch(crackId){
         case 0:
             return "-";
@@ -43,9 +46,9 @@ export const crackIdToCrackName = (crackId) => {
     }
 }
 
-export const sortBoulderBy = (sorter, boulders) => {
+export const sortBoulderBy = (sorter: number, boulders: BoulderType[]) => {
     if(sorter == 1){
-        return boulders.sort((a,b) => b.average_grade - a.average_grade);
+        return boulders.sort((a, b) => b.average_grade - a.average_grade);
     } else if(sorter == 2){
         return boulders.sort((a,b) => a.name.localeCompare(b.name));
     } else if(sorter == 3){
@@ -68,7 +71,7 @@ export const sortBoulderBy = (sorter, boulders) => {
 }
 
 
-const shuffle = (array) => {
+const shuffle = (array: BoulderType[]) => {
     let currentIndex = array.length;
     let newArray = [...array];
 
@@ -84,39 +87,51 @@ const shuffle = (array) => {
 }
 
 
-export const stringToSeed = str =>
+export const stringToSeed = (str: string) =>
   Math.abs([...str].reduce((acc, char) => (acc << 5) - acc + char.charCodeAt(0), 0));
 
 
-export const filterBoulders = (boulders, withOpen, lowerGrade, upperGrade, sent, favourite, tags, sentSeasonal) => {
-    const chosenBoulders = boulders.filter(boulder => {
-            const boulderGrade = boulder.average_grade;
-            let hasAllTags = true;
-            if (boulder.tags && tags.length > 0) {
-                tags.forEach(tag => {
-                    if (!boulder.tags.includes(tag)) {
-                        hasAllTags = false;
-                    }
-                });
-            }
-            return ((boulderGrade >= lowerGrade && boulderGrade <= upperGrade) || (withOpen && boulderGrade === -1)) && (!sent || !boulder.sent) && (!sentSeasonal || !boulder.sent_season) && (!favourite || boulder.favourite) && hasAllTags;
-        });
-    return chosenBoulders;
+export const filterBoulders = (
+    boulders: BoulderType[],
+    withOpen: boolean,
+    lowerGrade: number,
+    upperGrade: number,
+    sent: boolean,
+    favourite: boolean,
+    tags: number[],
+    sentSeasonal: boolean
+) => {
+    return boulders.filter(boulder => {
+        const boulderGrade = boulder.average_grade;
+        let hasAllTags = true;
+        if (boulder.tags && tags.length > 0) {
+            tags.forEach(tag => {
+                if (!boulder.tags.includes(tag)) {
+                    hasAllTags = false;
+                }
+            });
+        }
+        return ((boulderGrade >= lowerGrade && boulderGrade <= upperGrade) || (withOpen && boulderGrade === -1))
+            && (!sent || !boulder.sent)
+            && (!sentSeasonal || !boulder.sent_season)
+            && (!favourite || boulder.favourite)
+            && hasAllTags;
+    });
 }
 
-export const filterBySearch = (boulders, search) => {
+export const filterBySearch = (boulders: BoulderType[], search: string) => {
     return boulders.filter(boulder => boulder.name.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "").replace(" ", "").includes(search.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "").replace(" ", "")));
 }
 
-export const findBoulderById = (id, bdrs) => {
-    for (let i = 0; i < bdrs.length; i++) {
-        if (bdrs[i].id === id) {
-            return bdrs[i];
+export const findBoulderById = (id: number, boulders: BoulderType[]) => {
+    for (let i = 0; i < boulders.length; i++) {
+        if (boulders[i].id === id) {
+            return boulders[i];
         }
     }
 }
 
-export const attemptIdToAttemptName = (attemptId) => {
+export const attemptIdToAttemptName = (attemptId: number) => {
     if (attemptId === -1) return "-";
     if (attemptId === 0) return "Flash";
     if (attemptId === 9) return "10-24";
@@ -124,20 +139,7 @@ export const attemptIdToAttemptName = (attemptId) => {
     return attemptId+1;
 }
 
-export const playSound = (name, sound) => {
-    console.log('Playing '+name);
-    Audio.Sound.createAsync(
-        sound,
-        { shouldPlay: true }
-    ).then((res)=>{
-        res.sound.setOnPlaybackStatusUpdate((status)=>{
-            if(!status.didJustFinish) return;
-            res.sound.unloadAsync().catch(()=>{});
-        });
-    }).catch((error)=>{});
-}
-
-export const mulberry32 = (seed) => {
+export const mulberry32 = (seed: number) => {
     return function () {
         seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
         let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
@@ -146,7 +148,53 @@ export const mulberry32 = (seed) => {
     };
 }
 
-export const numberToStrokeColor = (num) => {
+
+export const calculateBoulderScore = (grade: number, attempts: number, score: number) => {
+    let penalty = 0;
+    if (2 > attempts && attempts > 0) {
+        penalty = 2;
+    } else if (6 > attempts && attempts >= 2) {
+        penalty = 3;
+    } else if (9 > attempts && attempts >= 6) {
+        penalty = 4;
+    } else if (attempts >= 9) {
+        penalty = 5;
+    }
+
+    let multiplier = Math.floor(grade / 3) + 1
+
+    return Math.max(Math.floor(((grade + 1) * multiplier * 3) * score - penalty), 0);
+}
+
+
+export const confirmAction = (
+    title: string,
+    message: string,
+    onConfirm: () => void
+) => {
+    Alert.alert(
+        title,
+        message,
+        [
+            {
+                text: "Ano",
+                onPress: onConfirm,
+            },
+            {
+                text: "Ne",
+                style: "cancel",
+            },
+        ]
+    );
+};
+
+
+export const normalizeName = (value: string) => {
+    return value.normalize("NFD").replace(/\p{Diacritic}/gu, "");
+}
+
+
+export const numberToStrokeColor = (num: number) => {
     switch(num){
         case -1:
             return "#FFFFFF";
@@ -163,7 +211,8 @@ export const numberToStrokeColor = (num) => {
     }
 }
 
-export const numberToFillColor = (num) => {
+
+export const numberToFillColor = (num: number) => {
     switch(num){
         case -1:
             return "none";
@@ -180,7 +229,8 @@ export const numberToFillColor = (num) => {
     }
 }
 
-export const gradeToColor = (grade) => {
+
+export const gradeToColor = (grade: number) => {
     switch(grade){
         case 0:
             return "#FF5733";
@@ -221,81 +271,8 @@ export const gradeToColor = (grade) => {
     }
 }
 
-export const tagIdToIconName = (tagId) => {
-    switch(tagId){
-        case 1:
-            return "🔛";
-        case 2:
-            return "🙅‍♂️";
-        case 3:
-            return "⬇️";
-        case 4:
-            return "🦒";
-        case 5:
-            return "🙌";
-        case 6:
-            return "🧠";
-        case 7:
-            return "🤏";
-        case 8:
-            return "🍤";
-        case 9:
-            return "🐳";
-        case 10:
-            return "💪";
-        case 11:
-            return "🔄";
-        case 12:
-            return "↔️";
-        case 13:
-            return "🔞";
-        case 14:
-            return "🍼";
-        case 15:
-            return "🦶🚫";
-        case 16:
-            return "🆒";
-        case 17:
-            return "🔋";
-        case 18:
-            return "🚮";
-        case 19:
-            return "🎉";
-        case 20:
-            return "🏅";
-        case 21:
-            return "🏋️‍♂️";
-        case 22:
-            return "📊";
-        case 23:
-            return "❌️";
-        case 24:
-            return "💎";
-        case 25:
-            return "⚰️";
-        case 26:
-            return "Ⓜ️";
-        case 27:
-            return "🦵";
-        case 28:
-            return "🪝";
-        case 29:
-            return "🪵";
-        case 30:
-            return "🥤";
-        case 31:
-            return "🦿";
-        case 32:
-            return "👠";
-        case 33:
-            return "🦖";
-        default:
-            return "❓";
-    }
-}
 
-
-const fontDict = {
+const fontDict: { [key: number]: string } = {
     0: '4-',
     1: '4',
     2: '4+',
@@ -351,7 +328,7 @@ const fontDict = {
     52: '9A'
 }
 
-YDSDict = {
+const YDSDict: { [key: number]: string } = {
     0: '5.8',
     1: '5.9',
     2: '5.10a',
@@ -407,7 +384,7 @@ YDSDict = {
     52: '5.15c'
 }
 
-frenchSportDict = {
+const frenchSportDict: { [key: number]: string } = {
     0: '5c',
     1: '6a',
     2: '6a+',

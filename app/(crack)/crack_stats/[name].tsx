@@ -1,26 +1,26 @@
-import React, { useContext, useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { useContext, useState, useEffect } from "react";
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
-import { GlobalStateContext } from '../../context';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors } from '../../../constants/Colors'
-import { Fonts } from '../../../constants/Fonts'
-import { apiURL } from '../../../constants/Other';
-import { crackIdToCrackName } from '../../../scripts/utils';
+import { CrackContext } from "@/context/CrackContext";
+import { crackIdToCrackName } from '@/scripts/utils';
+import { UserCrackStatsType } from "@/types/userCrackStatsType";
+import Colors from '@/constants/Colors'
+import Fonts from '@/constants/Fonts'
+import CommonStyles from "@/constants/CommonStyles";
 
-export default function UserStats() {
+
+export default function CrackUserStats() {
     const { name } = useLocalSearchParams();
-    const { crackStats } = useContext(GlobalStateContext);
-    const [userCrackStats, setUserCrackStats] = useState(null)
+    const { crackStats } = useContext(CrackContext);
+    const [ userCrackStats, setUserCrackStats ] = useState<UserCrackStatsType>()
 
     const thisUserStats = () => {
-        if (crackStats) {
-            crackStats['users'].forEach((user) => {
-                if (user[0] == name) {
-                    setUserCrackStats(user[1]);
-                }
-            });
-        }
+        crackStats['users'].forEach((user) => {
+            if (user[0] === name) {
+                setUserCrackStats(user[1]);
+            }
+        });
     }
 
     useEffect(() => {
@@ -29,73 +29,70 @@ export default function UserStats() {
     , [crackStats, name]);
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={[CommonStyles.paddedContainer, {paddingBottom: 20}]}>
             {
                 userCrackStats &&
-                <View style={{flex:1}}>
-                    <View style={styles.userStats}>
-                        <ScrollView>
-                            <View style={styles.header}>
-                                <Text style={Fonts.h1}>{name}</Text>
-                            </View>
-                            <View style={styles.genericStats}>
-                                <Text style={Fonts.h1}>Horizontální spára</Text>
-                                {
-                                    userCrackStats['horizontal'] &&
-                                    Object.keys(userCrackStats['horizontal']).map((crack) => {
-                                        return (
-                                            <View key={crack}>
-                                                <Text style={Fonts.h2}>{crackIdToCrackName(parseInt(crack)+1)}</Text>
-                                                <View style={styles.row}>
-                                                    <Text style={Fonts.plain}>Celkově:</Text>
-                                                    <Text style={Fonts.plain}>{userCrackStats['horizontal'][crack]['climbed_distance']} m</Text>
-                                                </View>
-                                                <View style={styles.row}>
-                                                    <Text style={Fonts.plain}>Nejlepší po sobě:</Text>
-                                                    <Text style={Fonts.plain}>{userCrackStats['horizontal'][crack]['best_consecutive']} m</Text>
-                                                </View>
-                                            </View>
-                                        )
-                                    })
-                                }
-                            </View>
-                            <View style={styles.genericStats}>
-                                <Text style={Fonts.h1}>Vertikální spára</Text>
-                                {
-                                    userCrackStats['vertical'] &&
-                                    Object.keys(userCrackStats['vertical']).map((crack) => {
-                                        return (
-                                            <View key={crack}>
-                                                <Text style={Fonts.h2}>{crackIdToCrackName(parseInt(crack)+1)}</Text>
-                                                <View style={styles.row}>
-                                                    <Text style={Fonts.plain}>Celkově:</Text>
-                                                    <Text style={Fonts.plain}>{userCrackStats['vertical'][crack]['climbed_distance']} m</Text>
-                                                </View>
-                                                <View style={styles.row}>
-                                                    <Text style={Fonts.plain}>Nejlepší po sobě:</Text>
-                                                    <Text style={Fonts.plain}>{userCrackStats['vertical'][crack]['best_consecutive']} m</Text>
-                                                </View>
-                                            </View>
-                                        )
-                                    })
-                                }
-                            </View>
-                        </ScrollView>
+                <ScrollView contentContainerStyle={styles.userStatsContainer}>
+                    <View style={styles.header}>
+                        <Text style={Fonts.h1}>{name}</Text>
                     </View>
-
-                </View>
+                    <View style={styles.genericStats}>
+                        <Text style={Fonts.h1}>Horizontální spára</Text>
+                        {
+                            userCrackStats['horizontal'] &&
+                            Object.keys(userCrackStats['horizontal']).map((crack) => {
+                                return (
+                                    <View key={crack}>
+                                        <Text style={Fonts.h2}>{crackIdToCrackName(parseInt(crack)+1)}</Text>
+                                        <View style={CommonStyles.justifiedRow}>
+                                            <Text style={Fonts.plain}>Celkově:</Text>
+                                            <Text style={Fonts.plain}>{userCrackStats['horizontal'][crack]['climbed_distance']} m</Text>
+                                        </View>
+                                        <View style={CommonStyles.justifiedRow}>
+                                            <Text style={Fonts.plain}>Nejlepší po sobě:</Text>
+                                            <Text style={Fonts.plain}>{userCrackStats['horizontal'][crack]['best_consecutive']} m</Text>
+                                        </View>
+                                    </View>
+                                )
+                            })
+                        }
+                    </View>
+                    <View style={styles.genericStats}>
+                        <Text style={Fonts.h1}>Vertikální spára</Text>
+                        {
+                            userCrackStats['vertical'] &&
+                            Object.keys(userCrackStats['vertical']).map((crack) => {
+                                return (
+                                    <View key={crack}>
+                                        <Text style={Fonts.h2}>{crackIdToCrackName(parseInt(crack)+1)}</Text>
+                                        <View style={CommonStyles.justifiedRow}>
+                                            <Text style={Fonts.plain}>Celkově:</Text>
+                                            <Text style={Fonts.plain}>{userCrackStats['vertical'][crack]['climbed_distance']} m</Text>
+                                        </View>
+                                        <View style={CommonStyles.justifiedRow}>
+                                            <Text style={Fonts.plain}>Nejlepší po sobě:</Text>
+                                            <Text style={Fonts.plain}>{userCrackStats['vertical'][crack]['best_consecutive']} m</Text>
+                                        </View>
+                                    </View>
+                                )
+                            })
+                        }
+                    </View>
+                </ScrollView>
             }
         </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
-    userStats: {
+    userStatsContainer: {
+        padding: 10,
+        gap: 10,
+        backgroundColor: Colors.darkerBackground,
         borderRadius: 25,
         borderWidth: 1,
         borderColor: Colors.border,
-        flex: 1,
-        padding: 10,
+        flex: 1
     },
     header: {
         alignItems: 'center',
@@ -104,17 +101,6 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.transparentWhite,
         borderWidth: 1,
         borderColor: Colors.borderDark,
-    },
-    row: {
-        flexDirection:"row",
-        justifyContent:"space-between",
-    },
-    container: {
-        flex: 1,
-        padding: 20,
-        paddingTop: 30,
-        paddingBottom: 10,
-        marginBottom: 20,
     },
     genericStats: {
         gap: 10,

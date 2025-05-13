@@ -1,4 +1,4 @@
-export const Colors = {
+const Colors = {
     primary: '#34C1F6',
     secondary: '#539BB5',
     background: '#F2F2F2',
@@ -6,6 +6,7 @@ export const Colors = {
     fill: '#F59733',
     border: '#D9D9D9',
     borderDark: '#A6A6A6',
+    borderBlack: '#222222',
     highlight: '#ea1531',
     first: '#FFC400',
     second: '#d0d0d0',
@@ -17,3 +18,5 @@ export const Colors = {
     ferrataPrimary: '#29D677',
     ferrataSecondary: '#1B9D4D',
 };
+
+export default Colors;

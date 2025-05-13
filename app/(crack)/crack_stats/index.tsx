@@ -1,31 +1,33 @@
-import React, { useContext, useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, FlatList } from 'react-native';
+import { useContext } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import { useRouter } from 'expo-router';
-import { GlobalStateContext } from '../../context';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors } from '../../../constants/Colors'
-import { Fonts } from '../../../constants/Fonts'
-import { apiURL } from '../../../constants/Other';
+import { CrackContext } from "@/context/CrackContext";
+import { UserCrackStatsType } from "@/types/userCrackStatsType";
+import Colors from '@/constants/Colors'
+import Fonts from '@/constants/Fonts'
+import CommonStyles from "@/constants/CommonStyles";
+import Button from "@/components/HorizontalButton";
 
 
 export default function CrackStats(){
-    const { crackStats, fetchCrackStats } = useContext(GlobalStateContext);
+    const { fetchCrackStats, crackStats } = useContext(CrackContext);
     const router = useRouter();
 
-    const renderUser = ({item, index}) => {
+    const renderUser = ({item, index}: {item: [string, UserCrackStatsType], index: number}) => {
         let bc = Colors.crackPrimary;
-        if (index == 0) {
+        if (index === 0) {
             bc = Colors.first;
-        } else if (index == 1) {
+        } else if (index === 1) {
             bc = Colors.second;
-        } else if (index == 2) {
+        } else if (index === 2) {
             bc = Colors.third;
         }
 
         return (
-            <TouchableOpacity onPress={() => router.push(`crack_stats/${item[0]}`)}>
+            <TouchableOpacity onPress={() => router.push(`/crack_stats/${item[0]}`)}>
                 <View style={[styles.userContainer, {backgroundColor: bc}]}>
-                    <View style={styles.row}>
+                    <View style={CommonStyles.justifiedRow}>
                         <Text style={Fonts.h2}>{index+1}. {item[0]}</Text>
                         <Text style={Fonts.h2}>{item[1]['overall_distance']} m</Text>
                     </View>
@@ -35,53 +37,23 @@ export default function CrackStats(){
     }
 
     return (
-        <SafeAreaView style={styles.container}>
-        {
-            crackStats && (
-            <View style={{flex:1}}>
-                <View style={styles.allUserStats}>
-                    <View style={styles.header}>
-                        <Text style={Fonts.h1}>Žebříček</Text>
-                    </View>
-                    <FlatList
-                        data={crackStats['users']}
-                        renderItem={renderUser}
-                        keyExtractor={item => item[0]}
-                    />
+        <SafeAreaView style={CommonStyles.paddedContainer}>
+            <View style={styles.allUserStats}>
+                <View style={CommonStyles.centered}>
+                    <Text style={Fonts.h1}>Žebříček</Text>
                 </View>
+                <FlatList
+                    data={crackStats['users']}
+                    renderItem={renderUser}
+                    keyExtractor={item => item[0]}
+                />
             </View>
-            )
-        }
-        <TouchableOpacity style={styles.button} onPress={fetchCrackStats}>
-            <Text style={Fonts.h3}>Obnovit</Text>
-        </TouchableOpacity>
+            <Button label={"Obnovit"} onPress={fetchCrackStats} color={Colors.crackPrimary}/>
         </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 20,
-        paddingTop: 30,
-        paddingBottom: 10,
-    },
-    button: {
-        backgroundColor: Colors.crackPrimary,
-        padding: 10,
-        alignItems: 'center',
-        borderWidth: 1,
-        borderRadius: 10,
-        marginTop: 15,
-    },
-    header: {
-        alignItems: 'center',
-        marginBottom: 20,
-    },
-    row: {
-        flexDirection:"row",
-        justifyContent:"space-between",
-    },
     allUserStats: {
         padding: 10,
         gap: 10,
@@ -89,7 +61,7 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         borderWidth: 1,
         borderColor: Colors.border,
-        flex: 2
+        flex: 1
     },
     userContainer: {
         padding: 10,

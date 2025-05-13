@@ -1,4 +1,6 @@
-export const Fonts = {
+import { StyleSheet } from "react-native";
+
+const Fonts = StyleSheet.create({
     h1: {
         fontSize: 22,
         fontWeight: 'bold',
@@ -21,4 +23,6 @@ export const Fonts = {
     small: {
         fontSize: 14,
     },
-}
+})
+
+export default Fonts;

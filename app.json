@@ -2,16 +2,11 @@
   "expo": {
     "name": "GarageBouldering",
     "slug": "GarageBouldering",
-    "version": "1.4.3",
+    "version": "2.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
-    "splash": {
-      "image": "./assets/images/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.GarageBouldering"
@@ -21,7 +16,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.anonymous.GarageBouldering"
+      "package": "com.anonymous.GarageBouldering",
+      "versionCode": 37
     },
     "web": {
       "bundler": "metro",
@@ -31,22 +27,29 @@
     "plugins": [
       "expo-router",
       [
-        "expo-font",
+        "expo-splash-screen",
         {
-          "fonts": ["./assets/fonts/NotoColorEmoji.ttf"]
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
         }
       ],
+      "expo-audio",
       [
-        "expo-build-properties", { "android": { "usesCleartextTraffic": true } }
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true
     },
     "extra": {
-      "router": {
-        "origin": false
-      },
+      "router": {},
       "eas": {
         "projectId": "aeec3f78-0f97-4661-853e-fdc214fe0b08"
       }

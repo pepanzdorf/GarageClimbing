@@ -1,35 +1,23 @@
-import React, { useContext } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert } from 'react-native';
+import { useContext } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { GlobalStateContext } from '../context';
-import { apiURL } from '../../constants/Other';
-import { Fonts } from '../../constants/Fonts';
-import { Colors } from '../../constants/Colors';
-import { ferrataGradeIdToGradeName } from '../../scripts/utils';
-
+import { apiURL } from '@/constants/Other';
+import { confirmAction, ferrataGradeIdToGradeName } from '@/scripts/utils';
+import { UserContext } from "@/context/UserContext";
+import { FerrataContext } from "@/context/FerrataContext";
+import { FerrataSendType } from "@/types/ferrataSendType";
+import Fonts from '@/constants/Fonts';
+import Colors from '@/constants/Colors';
+import CommonStyles from "@/constants/CommonStyles";
+import Button from "@/components/HorizontalButton";
 
 export default function FerrataSendsScreen() {
-    const { fetchFerrataStats, ferrataStats, token } = useContext(GlobalStateContext);
-
-    const confirmSendDelete = (sendId) => {
-        Alert.alert("Vymazat výlez", "Opravdu chcete smazat tento výlez?",
-            [
-                {
-                    text: "Ano",
-                    onPress: () => deleteSend(sendId),
-                },
-                {
-                    text: "Ne",
-                    onPress: () => console.log("Cancel Pressed"),
-                    style: "cancel",
-                },
-            ]
-        );
-    }
+    const { token } = useContext(UserContext);
+    const { fetchFerrataStats, ferrataStats } = useContext(FerrataContext);
 
 
-    const deleteSend = (sendId) => {
-        fetch(`${apiURL}/ferrata/send/${sendId}`, {
+    const deleteSend = (send: FerrataSendType) => {
+        fetch(`${apiURL}/ferrata/send/${send.id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -38,13 +26,13 @@ export default function FerrataSendsScreen() {
         })
             .then(response => response.text())
             .then(jsonResponse => alert(jsonResponse))
-            .catch(error => console.log(error))
+            .catch(console.error)
             .finally(() => fetchFerrataStats());
     }
 
 
 
-    const renderFerrataSend = ({item, index}) => {
+    const renderFerrataSend = ({item}: {item: FerrataSendType}) => {
         const sent_date = new Date(item.sent_date);
         const hours = Math.floor(item.time_seconds / 3600);
         const minutes = Math.floor((item.time_seconds % 3600) / 60);
@@ -52,14 +40,20 @@ export default function FerrataSendsScreen() {
 
 
         return (
-            <TouchableOpacity onPress={() => confirmSendDelete(item.id)}>
+            <TouchableOpacity onPress={ () =>
+                confirmAction(
+                    "Vymazat výlez",
+                    "Opravdu chcete smazat tento výlez?",
+                    () => deleteSend(item)
+                )
+            }>
                 <View style={styles.sendContainer}>
-                    <View style={styles.row}>
+                    <View style={CommonStyles.justifiedRow}>
                         <Text style={Fonts.h2}>
                             {item.ferrata_name}
                         </Text>
                     </View>
-                    <View style={styles.row}>
+                    <View style={CommonStyles.justifiedRow}>
                         <Text style={Fonts.h3}>
                             {item.username}
                         </Text>
@@ -67,19 +61,19 @@ export default function FerrataSendsScreen() {
                             {`${sent_date.toLocaleDateString()} ${sent_date.toLocaleTimeString()}`}
                         </Text>
                     </View>
-                    <View style={styles.row}>
+                    <View style={CommonStyles.justifiedRow}>
                         <Text style={Fonts.h3}>
                             Vylezeno: { item.climbed_times } krát
                         </Text>
                     </View>
-                    <View style={styles.row}>
+                    <View style={CommonStyles.justifiedRow}>
                         <Text style={Fonts.h3}>
                             Obtížnost: {ferrataGradeIdToGradeName(item.grade)}
                         </Text>
                     </View>
-                    <View style={styles.row}>
+                    <View style={CommonStyles.justifiedRow}>
                         <Text style={Fonts.h3}>
-                            Doba: {hours == 0 ? '' : hours + ' hodin '}{minutes == 0 ? '' : minutes + ' minut '}{seconds} sekund
+                            Doba: {hours === 0 ? '' : hours + ' hodin '}{minutes === 0 ? '' : minutes + ' minut '}{seconds} sekund
                         </Text>
                     </View>
                 </View>
@@ -89,31 +83,23 @@ export default function FerrataSendsScreen() {
 
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={CommonStyles.paddedContainer}>
             <FlatList
                 data={ferrataStats.sends}
                 renderItem={renderFerrataSend}
-                keyExtractor={item => item.id}
+                keyExtractor={item => String(item.id)}
                 ListEmptyComponent={
                     <View style={{ padding: 20, alignItems: 'center' }}>
                         <Text style={Fonts.h3}>Žádné výlezy</Text>
                     </View>
                 }
             />
-            <TouchableOpacity style={styles.button} onPress={fetchFerrataStats}>
-                <Text style={Fonts.h3}>Obnovit</Text>
-            </TouchableOpacity>
+            <Button label={"Obnovit"} onPress={fetchFerrataStats} color={Colors.ferrataPrimary} />
         </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 20,
-        paddingTop: 30,
-        paddingBottom: 10,
-    },
     sendContainer: {
         padding: 10,
         borderWidth: 1,
@@ -121,18 +107,5 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginBottom: 8,
         backgroundColor: Colors.darkerBackground,
-    },
-    row: {
-        flexDirection:"row",
-        justifyContent:"space-between",
-        width: "100%",
-    },
-    button: {
-        backgroundColor: Colors.ferrataPrimary,
-        padding: 10,
-        alignItems: 'center',
-        borderWidth: 1,
-        borderRadius: 10,
-        marginTop: 15,
     },
 });

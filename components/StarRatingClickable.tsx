@@ -1,42 +1,44 @@
-import React, { useContext, useState, useEffect } from "react";
-import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from "react";
+import { View, Pressable } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
-const StarRatingClickable = props => {
-    const [ rating, setRating ] = useState(props.initialRating);
+
+type Props = {
+    initialRating: number;
+    maxStars: number;
+    size: number;
+    onRatingChange: (rating: number) => void;
+}
+
+
+const StarRatingClickable = (props: Props) => {
     const [ filledStars, setFilledStars ] = useState(Math.floor(props.initialRating));
 
 
-    updateRating = (newRating) => {
-        setRating(newRating);
+    const updateRating = (newRating: number) => {
         props.onRatingChange(newRating);
         setFilledStars(Math.floor(newRating));
     }
 
     useEffect(() => {
-        updateRating(props.initialRating);
+        setFilledStars(Math.floor(props.initialRating));
     }, [props.initialRating]);
 
     return (
         <View style={{flexDirection: 'row', height: props.size, width: props.maxStars*props.size, justifyContent: 'center'}}>
             {
-                Array(props.maxStars)
-                    .fill()
+                Array.from({ length: props.maxStars })
                     .map((_, index) => {
-                        if (index < filledStars)
-                        { return(
-                            <TouchableOpacity key={`${index}`} onPress={() => updateRating(index+1)}>
-                                <FontAwesome key={`${index}`} name="star" size={props.size} color="gold" />
-                            </TouchableOpacity>
-                            )
-                        } else {
-                            return (
-                            <TouchableOpacity key={`${index}`} onPress={() => updateRating(index+1)}>
-                                <FontAwesome key={`${index}`} name="star-o" size={props.size} color="grey" />
-                            </TouchableOpacity>
-                            )
-                        }
-                    })
+                        return(
+                            <Pressable key={index} onPress={() => updateRating(index+1)}>
+                                <FontAwesome
+                                    name={index < filledStars ? "star" : "star-o"}
+                                    size={props.size}
+                                    color={index < filledStars ? "gold" : "grey"}
+                                />
+                            </Pressable>
+                        )
+                })
             }
         </View>
     );

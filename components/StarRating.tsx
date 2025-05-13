@@ -1,10 +1,16 @@
-import React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, Text } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import { Fonts } from '../constants/Fonts'
+import Fonts from '@/constants/Fonts'
 
 
-const StarRating = props => {
+type Props = {
+    rating: number;
+    maxStars: number;
+    size: number;
+}
+
+
+const StarRating = (props: Props) => {
     const filledStars = Math.floor(props.rating);
     const halfStar = props.rating - filledStars >= 0.5;
     const emptyStars = props.maxStars - filledStars - (halfStar ? 1 : 0);
@@ -20,8 +26,7 @@ const StarRating = props => {
     return (
         <View style={{flexDirection: 'row', height: props.size, width: props.maxStars*props.size}}>
             {
-                Array(filledStars)
-                    .fill()
+                Array.from({ length: filledStars })
                     .map((_, index) => (
                         <FontAwesome key={`filled-${index}`} name="star" size={props.size} color="gold" />
                     ))
@@ -30,8 +35,7 @@ const StarRating = props => {
                 halfStar && <FontAwesome name="star-half-full" size={props.size} color="gold" />
             }
             {
-                Array(emptyStars)
-                    .fill()
+                Array.from({ length: emptyStars })
                     .map((_, index) => (
                         <FontAwesome key={`empty-${index}`} name="star-o" size={props.size} color="gold" />
                     ))

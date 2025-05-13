@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import { useState, ReactElement, cloneElement } from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
-import { Colors } from '../constants/Colors'
+import Colors from '@/constants/Colors'
 
-const IconDropdown = (props) => {
-    const [open, setOpen] = useState(false);
+type Props = {
+    menuIcon: ReactElement<{ size: number; }>;
+    menuItems: ReactElement<{ size: number; }>[];
+    size: number;
+}
+
+const IconDropdown = (props: Props) => {
+    const [ open, setOpen ] = useState(false);
 
     return (
         <View style={styles.container}>
@@ -12,12 +17,12 @@ const IconDropdown = (props) => {
                 onPress={() => setOpen(!open)}
                 style={[styles.menuIconContainer, { width: props.size, height: props.size }]}
             >
-                {React.cloneElement(props.menuIcon, { size: props.size })}
+                {cloneElement(props.menuIcon, { size: props.size })}
             </TouchableOpacity>
             {open && (
                 <View style={[styles.dropdown, { width: props.size + 25 }]}>
                     {props.menuItems.map((item, index) => (
-                        React.cloneElement(item, { key: index })
+                        cloneElement(item, { key: index })
                     ))}
                 </View>
             )}

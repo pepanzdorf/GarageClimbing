@@ -1,35 +1,24 @@
-import React, { useContext } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SectionList, Alert } from 'react-native';
+import { useContext } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, SectionList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { GlobalStateContext } from '../context';
-import { apiURL } from '../../constants/Other';
-import { Fonts } from '../../constants/Fonts';
-import { Colors } from '../../constants/Colors';
-import { crackIdToCrackName } from '../../scripts/utils';
+import { apiURL } from '@/constants/Other';
+import { confirmAction, crackIdToCrackName } from '@/scripts/utils';
+import { UserContext } from "@/context/UserContext";
+import { CrackContext } from "@/context/CrackContext";
+import { CrackSendType } from "@/types/crackSendType";
+import Fonts from '@/constants/Fonts';
+import Colors from '@/constants/Colors';
+import CommonStyles from "@/constants/CommonStyles";
+import Button from "@/components/HorizontalButton";
 
 
 export default function CrackSendsScreen() {
-    const { fetchCrackStats, crackStats, token } = useContext(GlobalStateContext);
-
-    const confirmSendDelete = (sendId) => {
-        Alert.alert("Vymazat výlez", "Opravdu chcete smazat tento výlez?",
-            [
-                {
-                    text: "Ano",
-                    onPress: () => deleteSend(sendId),
-                },
-                {
-                    text: "Ne",
-                    onPress: () => console.log("Cancel Pressed"),
-                    style: "cancel",
-                },
-            ]
-        );
-    }
+    const { token } = useContext(UserContext);
+    const { fetchCrackStats, crackStats } = useContext(CrackContext);
 
 
-    const deleteSend = (sendId) => {
-        fetch(`${apiURL}/crack/send/${sendId}`, {
+    const deleteSend = (send: CrackSendType) => {
+        fetch(`${apiURL}/crack/send/${send.id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -38,19 +27,24 @@ export default function CrackSendsScreen() {
         })
             .then(response => response.text())
             .then(jsonResponse => alert(jsonResponse))
-            .catch(error => console.log(error))
+            .catch(console.error)
             .finally(() => fetchCrackStats());
     }
 
 
-
-    const renderCrackSend = ({item, index}) => {
+    const renderCrackSend = ({item}: {item: CrackSendType}) => {
         const sent_date = new Date(item.sent_date);
 
         return (
-            <TouchableOpacity onPress={() => confirmSendDelete(item.id)}>
+            <TouchableOpacity onPress={ () =>
+                confirmAction(
+                    "Vymazat výlez",
+                    "Opravdu chcete smazat tento výlez?",
+                    () => deleteSend(item)
+                )
+            }>
                 <View style={styles.sendContainer}>
-                    <View style={styles.row}>
+                    <View style={CommonStyles.justifiedRow}>
                         <Text style={Fonts.h3}>
                             {item.username}
                         </Text>
@@ -58,12 +52,12 @@ export default function CrackSendsScreen() {
                             { item.is_vertical ? "Vertikální" : "Horizontální" }
                         </Text>
                     </View>
-                    <View style={styles.row}>
+                    <View style={CommonStyles.justifiedRow}>
                         <Text style={Fonts.small}>
                             {`${sent_date.toLocaleDateString()} ${sent_date.toLocaleTimeString()}`}
                         </Text>
                     </View>
-                    <View style={styles.row}>
+                    <View style={CommonStyles.justifiedRow}>
                         <Text style={Fonts.h3}>
                             { item.climbed_times + " krát" }
                         </Text>
@@ -78,7 +72,7 @@ export default function CrackSendsScreen() {
 
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={CommonStyles.paddedContainer}>
             <SectionList
                 sections={crackStats.sends}
                 renderItem={renderCrackSend}
@@ -87,27 +81,19 @@ export default function CrackSendsScreen() {
                         <Text style={Fonts.h1}>{date}</Text>
                     </View>
                 )}
-                keyExtractor={item => item.id}
+                keyExtractor={item => String(item.id)}
                 ListEmptyComponent={
                     <View style={{ padding: 20, alignItems: 'center' }}>
                         <Text style={Fonts.h3}>Žádné výlezy</Text>
                     </View>
                 }
             />
-            <TouchableOpacity style={styles.button} onPress={fetchCrackStats}>
-                <Text style={Fonts.h3}>Obnovit</Text>
-            </TouchableOpacity>
+            <Button label={"Obnovit"} onPress={fetchCrackStats} color={Colors.crackPrimary} />
         </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 20,
-        paddingTop: 30,
-        paddingBottom: 10,
-    },
     sendContainer: {
         padding: 10,
         borderWidth: 1,
@@ -115,18 +101,5 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginBottom: 8,
         backgroundColor: Colors.darkerBackground,
-    },
-    row: {
-        flexDirection:"row",
-        justifyContent:"space-between",
-        width: "100%",
-    },
-    button: {
-        backgroundColor: Colors.crackPrimary,
-        padding: 10,
-        alignItems: 'center',
-        borderWidth: 1,
-        borderRadius: 10,
-        marginTop: 15,
     },
 });

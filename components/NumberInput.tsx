@@ -1,31 +1,51 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Modal, TouchableOpacity, TextInput } from 'react-native';
+import { View, StyleSheet, TextInput } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import { Fonts } from '../constants/Fonts'
-import { Colors } from '../constants/Colors'
+import Colors from '@/constants/Colors'
 
-const NumberInput = (props) => {
 
-    function checkValue(value) {
-        value = parseInt(value);
-        if (isNaN(value)) {
-            return props.minValue;
-        }
-        return Math.max(props.minValue, value);
+type Props = {
+    minValue?: number;
+    maxValue?: number;
+    value: number;
+    setValue: (n: number) => void;
+    border?: boolean;
+    size: number;
+}
+
+const NumberInput = ({
+    minValue=undefined,
+    maxValue=undefined,
+    value,
+    setValue,
+    border=false,
+    size
+}: Props) => {
+    const clamp = (value: number) => {
+        if (minValue !== undefined) value = Math.max(minValue, value);
+        if (maxValue !== undefined) value = Math.min(maxValue, value);
+        return value;
     }
 
 
+    function checkValue(value: any) {
+        const intValue = parseInt(value);
+        if (isNaN(intValue)) {
+            return minValue ? minValue : 0;
+        }
+        return clamp(intValue);
+    }
+
 
     return (
-        <View style={[props.border ? { borderWidth: 1, borderRadius: 10, borderColor: Colors.darkerBorder } : null, styles.container]}>
-            <FontAwesome name="minus" size={props.size} color={Colors.highlight} onPress={() => props.setValue(Math.max(props.minValue, props.value - 1))}/>
+        <View style={[border ? { borderWidth: 1, borderRadius: 10, borderColor: Colors.borderBlack } : null, styles.container]}>
+            <FontAwesome name="minus" size={size} color={Colors.highlight} onPress={() => setValue(clamp(value - 1))}/>
             <TextInput
-                style={{fontSize: props.size+10}}
-                onChangeText={text => props.setValue(checkValue(text))}
-                value={props.value.toString()}
+                style={{fontSize: size+10}}
+                onChangeText={(text) => setValue(checkValue(text))}
+                value={value.toString()}
                 inputMode='numeric'
             />
-            <FontAwesome name="plus" size={props.size} color={Colors.primary} onPress={() => props.setValue(props.value + 1)}/>
+            <FontAwesome name="plus" size={size} color={Colors.primary} onPress={() => setValue(clamp(value + 1))}/>
         </View>
     );
 };

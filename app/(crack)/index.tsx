@@ -1,11 +1,10 @@
-import { useEffect, useState, useContext, useRef } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { View, Text, ScrollView, } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { apiURL } from '@/constants/Other';
 import { crackIdToCrackName } from '@/scripts/utils';
 import { UserContext } from "@/context/UserContext";
 import { CrackContext } from "@/context/CrackContext";
-import { ScrollPickerHandle } from "react-native-wheel-scrollview-picker";
 import Colors from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';
 import StyledScrollPicker from "@/components/StyledScrollPicker";
@@ -22,13 +21,19 @@ export default function CrackLogScreen() {
     const [ selectedWholeTimes, setSelectedWholeTimes ] = useState(0);
     const [ selectedDecimalTimes, setSelectedDecimalTimes ] = useState(0);
 
-    const crackTypeData = Array.from({length: 6}).map((_, i) => crackIdToCrackName(i));
+    const wholeTimesData = Array.from({length: 52}).map((_, i) => ({
+        value: i,
+        label: i === 0 ? "-" : `${i - 1}.`
+    }));
+    const decimalTimesData = Array.from({length: 11}).map((_, i) => ({
+        value: i,
+        label: i === 0 ? "-" : i - 1
+    }));
+    const crackTypeData = Array.from({length: 6}).map((_, i) => ({
+        value: i,
+        label: crackIdToCrackName(i)
+    }));
     const horizontalCrackTypeData = crackTypeData.slice(0, 3);
-    const wholeTimesData = Array.from({length: 52}).map((_, i) => i === 0 ? "-" : `${i-1}.`);
-    const decimalTimesData = Array.from({length: 11}).map((_, i) => i === 0 ? "-" : i-1);
-    const typeRef = useRef<ScrollPickerHandle>(null);
-    const wholeRef = useRef<ScrollPickerHandle>(null);
-    const decimalRef = useRef<ScrollPickerHandle>(null);
 
 
     const logSend = async () => {
@@ -72,11 +77,6 @@ export default function CrackLogScreen() {
         setSelectedCrackType(0);
         setSelectedWholeTimes(0);
         setSelectedDecimalTimes(0);
-        setTimeout(() => {
-            typeRef.current && typeRef.current.scrollToTargetIndex(0);
-            wholeRef.current && wholeRef.current.scrollToTargetIndex(0);
-            decimalRef.current && decimalRef.current.scrollToTargetIndex(0);
-        }, 0);
     }
 
 
@@ -96,39 +96,37 @@ export default function CrackLogScreen() {
                     Orientace spáry:
                 </Text>
                 <RowSwitch
-                    label={"Horizontální"}
-                    endLabel={"Vertikální"}
+                    label={"⎯  Horizontální"}
+                    endLabel={"Vertikální ｜"}
                     value={isVertical}
                     onValueChange={setIsVertical}
                     color={Colors.crackPrimary}
                 />
                 <StyledScrollPicker
-                    ref={typeRef}
                     name={"Typ spáry:"}
                     data={isVertical ? crackTypeData : horizontalCrackTypeData}
-                    selectedIndex={selectedCrackType}
-                    onValueChange={(_, index) => setSelectedCrackType(index)}
+                    value={selectedCrackType}
+                    onValueChange={setSelectedCrackType}
                     color={Colors.crackPrimary}
                     centered={true}
+                    width={200}
                 />
                 <Text style={Fonts.h3}>Spára vylezena:</Text>
                 <Text style={Fonts.plain}>(kolikrát, druhý výběr je desetinná část)</Text>
                 <View style={CommonStyles.row}>
                     <StyledScrollPicker
-                        ref={wholeRef}
                         data={wholeTimesData}
-                        selectedIndex={selectedWholeTimes}
-                        onValueChange={(_, index) => setSelectedWholeTimes(index)}
+                        value={selectedWholeTimes}
+                        onValueChange={setSelectedWholeTimes}
                         color={Colors.crackPrimary}
-                        width={'25%'}
+                        width={100}
                     />
                     <StyledScrollPicker
-                        ref={decimalRef}
                         data={decimalTimesData}
-                        selectedIndex={selectedDecimalTimes}
-                        onValueChange={(_, index) => setSelectedDecimalTimes(index)}
+                        value={selectedDecimalTimes}
+                        onValueChange={setSelectedDecimalTimes}
                         color={Colors.crackPrimary}
-                        width={'25%'}
+                        width={100}
                     />
                 </View>
             </ScrollView>

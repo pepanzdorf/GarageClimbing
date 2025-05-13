@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext, useRef } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { View, Text, ScrollView, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BoulderContext } from "@/context/BoulderContext";
@@ -9,11 +9,11 @@ import { gradeIdToGradeName } from '@/scripts/utils';
 import { FontAwesome } from '@expo/vector-icons';
 import { SelectList } from 'react-native-dropdown-select-list'
 import { useRouter } from "expo-router";
-import ScrollPicker, {ScrollPickerHandle} from "react-native-wheel-scrollview-picker";
 import Colors from '@/constants/Colors'
 import Fonts from '@/constants/Fonts'
 import CommonStyles from "@/constants/CommonStyles";
 import Button from "@/components/HorizontalButton";
+import StyledScrollPicker from "@/components/StyledScrollPicker";
 
 
 export default function CompEditor(){
@@ -26,9 +26,11 @@ export default function CompEditor(){
     const [ selectedBoulders, setSelectedBoulders ] = useState<number[]>([-1]);
     const [ selectedGrade, setSelectedGrade ] = useState(0);
 
-    const gradeData = Array.from({length: 53}).map((_, i) => gradeIdToGradeName(i, settings.grading));
+    const gradeData = Array.from({length: 53}).map((_, i) => ({
+        value: i,
+        label: gradeIdToGradeName(i, settings.grading)
+    }));
     const router = useRouter();
-    const scrollRef = useRef<ScrollPickerHandle>(null);
 
     const handleSave = async () => {
         if (compName === '') {
@@ -100,7 +102,6 @@ export default function CompEditor(){
         setSelectedBoulders([-1]);
         setSelected(undefined);
         setSelectedGrade(0);
-        scrollRef.current && scrollRef.current.scrollToTargetIndex(0);
         router.back();
     }
 
@@ -125,22 +126,13 @@ export default function CompEditor(){
                         onChangeText={setCompName}
                         maxLength={100}
                     />
-                    <View>
-                        <Text style={Fonts.h3}>Obtížnost:</Text>
-                        <ScrollPicker
-                            ref={scrollRef}
-                            dataSource={gradeData}
-                            selectedIndex={0}
-                            wrapperHeight={50}
-                            wrapperBackground={Colors.background}
-                            itemHeight={25}
-                            highlightColor={Colors.border}
-                            highlightBorderWidth={2}
-                            itemTextStyle={Fonts.h3}
-                            activeItemTextStyle={[Fonts.h3, {color: Colors.primary}]}
-                            onValueChange={(_, index) => setSelectedGrade(index)}
-                        />
-                    </View>
+                    <StyledScrollPicker
+                        name={"Obtížnost:"}
+                        data={gradeData}
+                        value={selectedGrade}
+                        onValueChange={setSelectedGrade}
+                        width={90}
+                    />
                 </View>
                 <View style={CommonStyles.smallGapped}>
                     <Text style={Fonts.h3}>Bouldery:</Text>

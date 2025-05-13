@@ -13,12 +13,12 @@ import { CompetitionType } from "@/types/competitionType";
 import { SendType } from "@/types/sendType";
 import Colors from '@/constants/Colors'
 import Fonts from '@/constants/Fonts'
-import ScrollPicker from "react-native-wheel-scrollview-picker";
 import IconDropdown from '@/components/IconDropdown';
 import CommonStyles from "@/constants/CommonStyles";
 import Button from "@/components/HorizontalButton";
 import BoulderSend from "@/components/BoulderSend";
 import SearchInput from "@/components/SearchInput";
+import StyledScrollPicker from "@/components/StyledScrollPicker";
 
 
 export default function Home(){
@@ -53,9 +53,9 @@ export default function Home(){
     const [ possibleQuestBoulders, setPossibleQuestBoulders ] = useState<BoulderType[]>([]);
     const router = useRouter();
 
-    const yearData = Array.from({length: 77}).map((_, i) => 2024+i);
-    const monthData = Array.from({length: 12}).map((_, i) => i+1);
-    const dayData = Array.from({length: 31}).map((_, i) => i+1);
+    const yearData = Array.from({length: 77}).map((_, i) => ({value: 2024+i, label: 2024+i}));
+    const monthData = Array.from({length: 12}).map((_, i) => ({value: i+1, label: i+1}));
+    const dayData = Array.from({length: 31}).map((_, i) => ({value: i+1, label: i+1}));
 
 
     useEffect(() => {
@@ -381,36 +381,27 @@ export default function Home(){
                 <View style={styles.modalViewOuter}>
                     <View style={styles.modalViewInner}>
                         <View style={styles.datePick}>
-                            <View style={styles.scrollPicker}>
-                                <ScrollPicker
-                                    dataSource={dayData}
-                                    selectedIndex={selectedDay-1}
-                                    highlightBorderWidth={2}
-                                    itemTextStyle={Fonts.h3}
-                                    activeItemTextStyle={[Fonts.h3, {color: Colors.primary}]}
-                                    onValueChange={(value) => setSelectedDay(value ? value : new Date().getDate())}
-                                />
-                            </View>
-                            <View style={styles.scrollPicker}>
-                                <ScrollPicker
-                                    dataSource={monthData}
-                                    selectedIndex={selectedMonth-1}
-                                    highlightBorderWidth={2}
-                                    itemTextStyle={Fonts.h3}
-                                    activeItemTextStyle={[Fonts.h3, {color: Colors.primary}]}
-                                    onValueChange={(value) => setSelectedMonth(value ? value : new Date().getMonth()+1)}
-                                />
-                            </View>
-                            <View style={styles.scrollPicker}>
-                                <ScrollPicker
-                                    dataSource={yearData}
-                                    selectedIndex={selectedYear-2024}
-                                    highlightBorderWidth={2}
-                                    itemTextStyle={Fonts.h3}
-                                    activeItemTextStyle={[Fonts.h3, {color: Colors.primary}]}
-                                    onValueChange={(value) => setSelectedYear(value ? value : new Date().getFullYear())}
-                                />
-                            </View>
+                            <StyledScrollPicker
+                                data={dayData}
+                                value={selectedDay}
+                                onValueChange={setSelectedDay}
+                                width={'30%'}
+                                visibleItemCount={5}
+                            />
+                            <StyledScrollPicker
+                                data={monthData}
+                                value={selectedMonth}
+                                onValueChange={setSelectedMonth}
+                                width={'30%'}
+                                visibleItemCount={5}
+                            />
+                            <StyledScrollPicker
+                                data={yearData}
+                                value={selectedYear}
+                                onValueChange={setSelectedYear}
+                                width={'30%'}
+                                visibleItemCount={5}
+                            />
                         </View>
                         <Button label={"OK"} onPress={() => setOpenDatePicker(false)} />
                     </View>
@@ -505,10 +496,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         gap: 5,
-    },
-    scrollPicker: {
-        width: 100,
-        height: 150,
     },
 });
 

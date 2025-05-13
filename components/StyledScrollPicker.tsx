@@ -1,60 +1,66 @@
-import { Text, View, DimensionValue } from 'react-native';
-import { ReactNode, useRef, useImperativeHandle, forwardRef } from "react";
+import { Text, View,} from 'react-native';
+import { ReactNode } from "react";
 import Colors from "@/constants/Colors";
 import Fonts from "@/constants/Fonts";
-import ScrollPicker, { ScrollPickerHandle } from "react-native-wheel-scrollview-picker";
+import WheelPicker from "@quidone/react-native-wheel-picker";
 
 type Props = {
     name?: string;
     data: any[];
-    selectedIndex: number;
-    onValueChange: (value: any, index: number) => void;
+    value: any;
+    onValueChange: (value: any) => void;
     color?: string;
     children?: ReactNode;
-    width?: DimensionValue;
+    width?: number | "auto" | `${number}%` | undefined;
     centered?: boolean;
+    itemHeight?: number;
+    visibleItemCount?: number;
+    centeredView?: boolean;
+    boldText?: boolean;
+    scrollerWidth?: number | "auto" | `${number}%` | undefined;
 };
 
-const StyledScrollPicker = forwardRef<ScrollPickerHandle, Props>(({
+const StyledScrollPicker = ({
     name=undefined,
     data,
-    selectedIndex,
+    value,
     onValueChange,
     color=Colors.primary,
     children,
-    width='50%',
+    width=200,
+    scrollerWidth='100%',
     centered=false,
-}, ref)=> {
-    const scrollRef = useRef<ScrollPickerHandle>(null)
-
-    useImperativeHandle(ref, () => scrollRef.current as ScrollPickerHandle);
+    itemHeight=35,
+    visibleItemCount=3,
+    centeredView=false,
+    boldText=true,
+}: Props)=> {
 
 
     return (
-        <View style={{width: width}}>
+        <View style={{alignItems: centeredView ? 'center' : 'flex-start', width: width, justifyContent: 'center'}}>
             {
                 name &&
                 <View style={{alignItems: centered ? 'center' : 'flex-start'}}>
-                    <Text style={Fonts.h3}>{name}</Text>
+                    <Text style={boldText ? Fonts.h3 : Fonts.plain}>{name}</Text>
                 </View>
             }
             { children }
-            <ScrollPicker
-                ref={scrollRef}
-                dataSource={data}
-                selectedIndex={selectedIndex}
-                wrapperHeight={70}
-                wrapperBackground="#FFFFFF"
-                itemHeight={35}
-                highlightColor={Colors.border}
-                highlightBorderWidth={2}
-                itemTextStyle={Fonts.h3}
-                activeItemTextStyle={[Fonts.h3, {color: color}]}
-                onValueChange={onValueChange}
-            />
+            <View style={{width: scrollerWidth, justifyContent: 'center'}} >
+                <WheelPicker
+                    data={data}
+                    value={value}
+                    onValueChanged={({item: { value }}) => onValueChange(value)}
+                    itemHeight={itemHeight}
+                    visibleItemCount={visibleItemCount}
+                    width={'100%'}
+                    itemTextStyle={[Fonts.h2, {color: color}]}
+                    overlayItemStyle={{opacity: 0.15}}
+                />
+            </View>
         </View>
     );
-});
+};
 
-StyledScrollPicker.displayName = "StyledScrollPicker";
+
 export default StyledScrollPicker;

@@ -1,4 +1,4 @@
-import {useEffect, useState, useContext, useRef} from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,7 +8,6 @@ import { BoulderContext } from "@/context/BoulderContext";
 import { apiURL } from '@/constants/Other';
 import { StarRatingClickable } from '@/components/StarRatingClickable';
 import { gradeIdToGradeName, attemptIdToAttemptName } from '@/scripts/utils';
-import { ScrollPickerHandle } from "react-native-wheel-scrollview-picker";
 import Colors from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';
 import StyledScrollPicker from "@/components/StyledScrollPicker";
@@ -34,12 +33,15 @@ export default function LogScreen() {
     const [ selectedAttempts, setSelectedAttempts ] = useState(0);
 
     const router = useRouter();
-    const angleData = Array.from({length: 46}).map((_, i) => i);
-    const gradeData = Array.from({length: 53}).map((_, i) => gradeIdToGradeName(i, settings.grading));
-    const attemptsData = Array.from({length: 12}).map((_, i) => attemptIdToAttemptName(i-1));
-    const angleRef = useRef<ScrollPickerHandle>(null);
-    const gradeRef = useRef<ScrollPickerHandle>(null);
-    const attemptsRef = useRef<ScrollPickerHandle>(null);
+    const angleData = Array.from({length: 46}).map((_, i) => ({value: i, label: i}));
+    const gradeData = Array.from({length: 53}).map((_, i) => ({
+        value: i,
+        label: gradeIdToGradeName(i, settings.grading)
+    }));
+    const attemptsData = Array.from({length: 12}).map((_, i) => ({
+        value: i,
+        label: attemptIdToAttemptName(i - 1)
+    }));
 
 
     const logSend = async () => {
@@ -73,7 +75,6 @@ export default function LogScreen() {
             return;
         }
         setReload(true);
-        setUserSavedAttempts({...userSavedAttempts, [String(id)]: 0});
         if (isQuest) {
             setBoulderQuest({...boulderQuest, [loggedUser]: {...boulderQuest[loggedUser], completed: true}})
         }
@@ -86,9 +87,6 @@ export default function LogScreen() {
         setSelectedRating(settings.rating);
         setSelectedGrade(currentBoulder?.average_grade === -1 ? 0 : (currentBoulder?.average_grade ?? 0));
         setSelectedAttempts(0);
-        angleRef.current && angleRef.current.scrollToTargetIndex(settings.angle);
-        gradeRef.current && gradeRef.current.scrollToTargetIndex(currentBoulder?.average_grade === -1 ? 0 : (currentBoulder?.average_grade ?? 0));
-        attemptsRef.current && attemptsRef.current.scrollToTargetIndex(0);
     }, [settings, id, currentBoulder]);
 
 
@@ -96,25 +94,22 @@ export default function LogScreen() {
         <SafeAreaView style={CommonStyles.paddedContainerHorizontal}>
             <ScrollView contentContainerStyle={styles.container}>
                 <StyledScrollPicker
-                    ref={angleRef}
                     name={"Úhel"}
                     data={angleData}
-                    selectedIndex={selectedAngle}
-                    onValueChange={(value) => setSelectedAngle(value)}
+                    value={selectedAngle}
+                    onValueChange={setSelectedAngle}
                 />
                 <StyledScrollPicker
-                    ref={gradeRef}
                     name={"Obtížnost"}
                     data={gradeData}
-                    selectedIndex={selectedGrade}
-                    onValueChange={(_, index) => setSelectedGrade(index)}
+                    value={selectedGrade}
+                    onValueChange={setSelectedGrade}
                 />
                 <StyledScrollPicker
-                    ref={attemptsRef}
                     name={"Počet pokusů"}
                     data={attemptsData}
-                    selectedIndex={selectedAttempts}
-                    onValueChange={(_, index) => setSelectedAttempts(index)}
+                    value={selectedAttempts}
+                    onValueChange={setSelectedAttempts}
                 >
                     <Text style={Fonts.plain}>Zatím pokusů: {userSavedAttempts[String(id)]}</Text>
                 </StyledScrollPicker>

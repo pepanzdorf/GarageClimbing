@@ -12,10 +12,10 @@ import { FontAwesome } from '@expo/vector-icons';
 import { CompSendType } from "@/types/compSendType";
 import { BoulderType } from "@/types/boulderType";
 import Fonts from '@/constants/Fonts';
-import ScrollPicker from "react-native-wheel-scrollview-picker";
 import Colors from '@/constants/Colors';
 import CommonStyles from "@/constants/CommonStyles";
 import Button from "@/components/HorizontalButton";
+import StyledScrollPicker from "@/components/StyledScrollPicker";
 
 
 export default function CompScreen() {
@@ -32,7 +32,10 @@ export default function CompScreen() {
 
     const router = useRouter();
     const attemptData =
-        Array.from({length: 12}, (_, i) => attemptIdToAttemptName(i-1));
+        Array.from({length: 12}, (_, i) => ({
+            value: i,
+            label: attemptIdToAttemptName(i - 1)
+    }));
 
 
     useEffect(() => {
@@ -143,6 +146,10 @@ export default function CompScreen() {
             return;
         }
 
+        if (currentCompetition) {
+            setZoneAttempts(Array(currentCompetition.boulders.length).fill(0));
+            setTopAttempts(Array(currentCompetition.boulders.length).fill(0));
+        }
         setShowModal(false);
         fetchCompSends().catch(console.error);
     }
@@ -230,32 +237,25 @@ export default function CompScreen() {
                         </View>
                         {
                             currentCompetition.boulders.map((_, pickerIndex) => (
-                                <View style={{width: '100%'}} key={pickerIndex}>
+                                <View key={pickerIndex}>
                                     <Text style={Fonts.h3}>Boulder {pickerIndex + 1}</Text>
                                     <View style={styles.scrollerContainer}>
-                                        <Text>Zóna:</Text>
-                                        <ScrollPicker
-                                            dataSource={attemptData}
-                                            selectedIndex={zoneAttempts[pickerIndex]}
-                                            wrapperHeight={50}
-                                            wrapperBackground={Colors.background}
-                                            itemHeight={25}
-                                            highlightColor={Colors.border}
-                                            itemTextStyle={Fonts.h3}
-                                            activeItemTextStyle={[Fonts.h3, {color: Colors.primary}]}
-                                            onValueChange={(_, index) => pickerSetZoneAttempts(pickerIndex, index)}
+                                        <StyledScrollPicker
+                                            name={"Zóna:"}
+                                            data={attemptData}
+                                            value={zoneAttempts[pickerIndex]}
+                                            onValueChange={(value) => pickerSetZoneAttempts(pickerIndex, value)}
+                                            width={'50%'}
+                                            boldText={false}
                                         />
-                                        <Text>Top:</Text>
-                                        <ScrollPicker
-                                            dataSource={attemptData}
-                                            selectedIndex={topAttempts[pickerIndex]}
-                                            wrapperHeight={50}
-                                            wrapperBackground={Colors.background}
-                                            itemHeight={25}
-                                            highlightColor={Colors.border}
-                                            itemTextStyle={Fonts.h3}
-                                            activeItemTextStyle={[Fonts.h3, {color: Colors.primary}]}
-                                            onValueChange={(_, index) => pickerSetTopAttempts(pickerIndex, index)}
+                                        <StyledScrollPicker
+                                            name={"Top:"}
+                                            data={attemptData}
+                                            value={topAttempts[pickerIndex]}
+                                            onValueChange={(value) => pickerSetTopAttempts(pickerIndex, value)}
+                                            width={'50%'}
+                                            boldText={false}
+
                                         />
                                     </View>
                                 </View>
@@ -285,8 +285,6 @@ const styles = StyleSheet.create({
     },
     modalView: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
         margin: 15,
         backgroundColor: 'white',
         borderRadius: 20,
@@ -302,8 +300,6 @@ const styles = StyleSheet.create({
     },
     scrollerContainer: {
         flexDirection: 'row',
-        width: '100%',
-        gap: 10,
         marginTop: 10,
     },
     allAttemptsContainer: {

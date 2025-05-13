@@ -14,6 +14,7 @@
     "@expo/vector-icons": "^14.1.0",
     "@openspacelabs/react-native-zoomable-view": "^2.4.2",
     "@ptomasroos/react-native-multi-slider": "^2.2.2",
+    "@quidone/react-native-wheel-picker": "^1.4.0",
     "@react-native-async-storage/async-storage": "2.1.2",
     "@react-navigation/bottom-tabs": "^7.3.10",
     "@react-navigation/elements": "^2.3.8",
@@ -22,6 +23,7 @@
     "expo-application": "~6.1.4",
     "expo-audio": "~0.4.4",
     "expo-blur": "~14.1.4",
+    "expo-build-properties": "~0.14.6",
     "expo-constants": "~17.1.6",
     "expo-font": "~13.3.1",
     "expo-haptics": "~14.1.4",
@@ -45,9 +47,7 @@
     "react-native-svg": "15.11.2",
     "react-native-web": "~0.20.0",
     "react-native-webview": "13.13.5",
-    "react-native-wheel-scrollview-picker": "^2.0.9",
-    "reanimated-color-picker": "^4.0.1",
-    "expo-build-properties": "~0.14.6"
+    "reanimated-color-picker": "^4.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

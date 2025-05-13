@@ -4,11 +4,11 @@ import { FontAwesome } from '@expo/vector-icons';
 import { ColorFormatsObject } from 'reanimated-color-picker';
 import { TimerIntervalType } from "@/types/timerIntervalType";
 import { StyledColorPicker } from "@/components/StyledColorPicker";
-import Fonts from '@/constants/Fonts'
 import Colors from '@/constants/Colors'
-import ScrollPicker from "react-native-wheel-scrollview-picker";
 import RowSwitch from "@/components/RowSwitch";
 import Button from "@/components/HorizontalButton";
+import StyledScrollPicker from "@/components/StyledScrollPicker";
+import CommonStyles from "@/constants/CommonStyles";
 
 
 type Props = {
@@ -100,40 +100,28 @@ const TimerInterval = (props: Props) => {
     return (
         <View style={styles.container}>
             <View style={styles.timeContainer}>
-                <ScrollPicker
-                    dataSource={Array.from({length: 100}, (_, i) => padNumbers(i))}
-                    selectedIndex={hours}
-                    wrapperHeight={65}
-                    wrapperBackground={Colors.primary}
-                    itemHeight={30}
-                    highlightColor={Colors.border}
-                    itemTextStyle={Fonts.h3}
-                    activeItemTextStyle={Fonts.h3}
-                    onValueChange={(_, index) => setHours(index)}
+                <StyledScrollPicker
+                    data={Array.from({length: 100}, (_, i) => ({value: i, label: padNumbers(i)}))}
+                    value={hours}
+                    onValueChange={setHours}
+                    width={'30%'}
+                    color={'black'}
                 />
                 <Text style={styles.colon}>:</Text>
-                <ScrollPicker
-                    dataSource={Array.from({length: 60}, (_, i) => padNumbers(i))}
-                    selectedIndex={minutes}
-                    wrapperHeight={65}
-                    wrapperBackground={Colors.primary}
-                    itemHeight={30}
-                    highlightColor={Colors.border}
-                    itemTextStyle={Fonts.h3}
-                    activeItemTextStyle={Fonts.h3}
-                    onValueChange={(_, index) => setMinutes(index)}
+                <StyledScrollPicker
+                    data={Array.from({length: 60}, (_, i) => ({value: i, label: padNumbers(i)}))}
+                    value={minutes}
+                    onValueChange={setMinutes}
+                    width={'30%'}
+                    color={'black'}
                 />
                 <Text style={styles.colon}>:</Text>
-                <ScrollPicker
-                    dataSource={Array.from({length: 60}, (_, i) => padNumbers(i))}
-                    selectedIndex={seconds}
-                    wrapperHeight={65}
-                    wrapperBackground={Colors.primary}
-                    itemHeight={30}
-                    highlightColor={Colors.border}
-                    itemTextStyle={Fonts.h3}
-                    activeItemTextStyle={Fonts.h3}
-                    onValueChange={(_, index) => setSeconds(index)}
+                <StyledScrollPicker
+                    data={Array.from({length: 60}, (_, i) => ({value: i, label: padNumbers(i)}))}
+                    value={seconds}
+                    onValueChange={setSeconds}
+                    width={'30%'}
+                    color={'black'}
                 />
             </View>
             <View style={styles.iconsContainer}>
@@ -160,52 +148,41 @@ const TimerInterval = (props: Props) => {
             </Modal>
 
             <Modal visible={alarmModalVisible} transparent={true}>
-                <View style={styles.modalView}>
-                    <View style={{flex: 1, alignItems: 'center'}}>
+                <View style={styles.modalViewOuter}>
+                    <View style={styles.modalViewInner}>
                         <RowSwitch label={"Zapnout pípnutí:"} value={alarmSet} onValueChange={setAlarmSet} />
                         {
                             alarmSet ? (
-                                    <View style={[styles.timeContainer, {maxHeight: 65}]}>
-                                        <ScrollPicker
-                                            dataSource={Array.from({length: 100}, (_, i) => padNumbers(i))}
-                                            selectedIndex={alarmHours}
-                                            wrapperHeight={65}
-                                            wrapperBackground={Colors.primary}
-                                            itemHeight={30}
-                                            highlightColor={Colors.border}
-                                            itemTextStyle={Fonts.h3}
-                                            activeItemTextStyle={Fonts.h3}
-                                            onValueChange={(_, index) => setAlarmHours(index)}
-                                        />
-                                        <Text style={styles.colon}>:</Text>
-                                        <ScrollPicker
-                                            dataSource={Array.from({length: 60}, (_, i) => padNumbers(i))}
-                                            selectedIndex={alarmMinutes}
-                                            wrapperHeight={65}
-                                            wrapperBackground={Colors.primary}
-                                            itemHeight={30}
-                                            highlightColor={Colors.border}
-                                            itemTextStyle={Fonts.h3}
-                                            activeItemTextStyle={Fonts.h3}
-                                            onValueChange={(_, index) => setAlarmMinutes(index)}
-                                        />
-                                        <Text style={styles.colon}>:</Text>
-                                        <ScrollPicker
-                                            dataSource={Array.from({length: 60}, (_, i) => padNumbers(i))}
-                                            selectedIndex={alarmSeconds}
-                                            wrapperHeight={65}
-                                            wrapperBackground={Colors.primary}
-                                            itemHeight={30}
-                                            highlightColor={Colors.border}
-                                            itemTextStyle={Fonts.h3}
-                                            activeItemTextStyle={Fonts.h3}
-                                            onValueChange={(_, index) => setAlarmSeconds(index)}
-                                        />
-                                    </View>
+                                (alarmSeconds !== -1 && alarmMinutes !== -1 && alarmHours !== -1) &&
+                                <View style={CommonStyles.justifiedRow}>
+                                    <StyledScrollPicker
+                                        data={Array.from({length: 100}, (_, i) => ({value: i, label: padNumbers(i)}))}
+                                        value={alarmHours}
+                                        onValueChange={setAlarmHours}
+                                        width={'30%'}
+                                        color={'black'}
+                                    />
+                                    <Text style={styles.colon}>:</Text>
+                                    <StyledScrollPicker
+                                        data={Array.from({length: 60}, (_, i) => ({value: i, label: padNumbers(i)}))}
+                                        value={alarmMinutes}
+                                        onValueChange={setAlarmMinutes}
+                                        width={'30%'}
+                                        color={'black'}
+                                    />
+                                    <Text style={styles.colon}>:</Text>
+                                    <StyledScrollPicker
+                                        data={Array.from({length: 60}, (_, i) => ({value: i, label: padNumbers(i)}))}
+                                        value={alarmSeconds}
+                                        onValueChange={setAlarmSeconds}
+                                        width={'30%'}
+                                        color={'black'}
+                                    />
+                                </View>
                             ) : null
                         }
+                        <Button label={"OK"} onPress={() => setAlarmModalVisible(false)} />
                     </View>
-                    <Button label={"OK"} onPress={() => setAlarmModalVisible(false)} />
                 </View>
             </Modal>
         </View>
@@ -224,7 +201,6 @@ const styles = StyleSheet.create({
     },
     timeContainer: {
         flexDirection: 'row',
-        flex: 1,
         maxWidth: 150,
     },
     iconsContainer: {
@@ -235,7 +211,7 @@ const styles = StyleSheet.create({
     },
     colon: {
         fontSize: 24,
-        paddingTop: 14,
+        paddingTop: 23,
     },
     modalView: {
         flex: 1,
@@ -248,6 +224,21 @@ const styles = StyleSheet.create({
             width: 0,
             height: 2,
         },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    modalViewOuter: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalViewInner: {
+        backgroundColor: Colors.background,
+        margin: 20,
+        borderRadius: 20,
+        padding: 35,
+        shadowColor: '#000',
         shadowOpacity: 0.25,
         shadowRadius: 4,
         elevation: 5,

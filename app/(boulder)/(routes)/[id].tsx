@@ -24,7 +24,7 @@ import Tag from "@/components/Tag";
 import Colors from '@/constants/Colors'
 import Fonts from '@/constants/Fonts'
 import BoulderSend from "@/components/BoulderSend";
-import ScrollPicker, { ScrollPickerHandle } from "react-native-wheel-scrollview-picker";
+import StyledScrollPicker from "@/components/StyledScrollPicker";
 
 
 export default function DetailsScreen() {
@@ -59,10 +59,11 @@ export default function DetailsScreen() {
     const [ isFavourite, setIsFavourite ] = useState(false);
     const [ show, setShow ] = useState(0);
     const [ completedChallenges, setCompletedChallenges ] = useState<{ ids: number[], rest: ChallengeType[] }>({ ids: [], rest: [] });
+    const [ currentAttempts, setCurrentAttempts ] = useState(-1);
 
+    const attemptsData = Array.from({length: 26}).map((_, i) => ({label: i, value: i}))
     const router = useRouter();
     const tabNames = [ "Zobrazit komentáře", "Zobrazit splněné výzvy", "Zobrazit výlezy" ];
-    const scrollRef = useRef<ScrollPickerHandle>(null);
 
 
     useEffect(() => {
@@ -70,7 +71,6 @@ export default function DetailsScreen() {
         fetchSends();
         fetchComments();
         fetchCompletedChallenges().catch(console.error);
-        scrollRef.current && scrollRef.current.scrollToTargetIndex(userSavedAttempts[String(id)]);
     }, [id]);
 
 
@@ -86,6 +86,7 @@ export default function DetailsScreen() {
             fetchCompletedChallenges().catch(console.error);
             fetchBoulderHolds();
             setReload(false);
+            setCurrentAttempts(0);
         }
     }, [reload]);
 
@@ -99,18 +100,24 @@ export default function DetailsScreen() {
     useEffect(() => {
         setSavedBoulderAttempts({...savedBoulderAttempts, [loggedUser]: userSavedAttempts});
         saveBoulderAttempts();
-        scrollRef.current && scrollRef.current.scrollToTargetIndex(userSavedAttempts[String(id)]);
     }, [userSavedAttempts]);
+
+
+    useEffect(() => {
+        setUserSavedAttempts({...userSavedAttempts, [String(id)]: currentAttempts});
+    }, [currentAttempts]);
 
 
     useEffect(() => {
         const usa = savedBoulderAttempts[loggedUser];
         if (!usa) {
             setUserSavedAttempts({});
+            setCurrentAttempts(0);
         } else {
             setUserSavedAttempts(usa);
+            setCurrentAttempts(usa[String(id)]);
         }
-    }, [loggedUser]);
+    }, [loggedUser, id]);
 
 
     const toggleFavourite = () => {
@@ -524,19 +531,16 @@ export default function DetailsScreen() {
                     </View>
                 }
                 {
-                    userSavedAttempts &&
+                    currentAttempts !== -1 &&
                     <View style={styles.picker}>
                         <Text style={Fonts.h3}>Zatím pokusů:</Text>
-                        <ScrollPicker
-                            ref={scrollRef}
-                            dataSource={Array.from({length: 26}).map((_, i) => i)}
-                            selectedIndex={userSavedAttempts[String(id)]}
-                            wrapperHeight={75}
-                            highlightColor={Colors.border}
-                            highlightBorderWidth={2}
-                            itemTextStyle={Fonts.h3}
-                            activeItemTextStyle={[Fonts.h3, {color: Colors.primary}]}
-                            onValueChange={(_, index) => {setUserSavedAttempts({...userSavedAttempts, [String(id)]: index})}}
+                        <StyledScrollPicker
+                            data={attemptsData}
+                            value={currentAttempts}
+                            onValueChange={setCurrentAttempts}
+                            width={'100%'}
+                            scrollerWidth={150}
+                            centeredView={true}
                         />
                     </View>
                 }
@@ -629,6 +633,5 @@ const styles = StyleSheet.create({
     },
     picker: {
         paddingHorizontal: 25,
-        gap: 10,
     },
 });

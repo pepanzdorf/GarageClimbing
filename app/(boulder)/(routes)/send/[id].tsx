@@ -23,7 +23,6 @@ export default function LogScreen() {
         setReload,
         currentChallenge,
         userSavedAttempts,
-        setUserSavedAttempts,
         boulderQuest,
         setBoulderQuest
     } = useContext(BoulderContext);

@@ -16,7 +16,7 @@ the average perceived difficulty and a button for logging a send (send means com
 6. Ranking - shows users ranking by awarding points based on difficulty of sent boulders
 7. Setting page - lets user filter boulder problems by different attributes
 
-The app is written using Expo framework - ReactNative and TypeScript. It is mainly aimed to be built for android.
+The app is written using [Expo framework](https://docs.expo.dev/get-started/introduction/) - ReactNative and TypeScript. It is mainly aimed to be built for android.
 
 ### The backend
 
@@ -28,7 +28,7 @@ First the backend API needs to be setup by following the [readme](https://github
 
 Then change the `apiURL` variable to the correct URL in [Other.ts](./constants/Other.ts)
 
-### Build APK using Expo
+### Build APK locally using Expo Application Services (EAS)
 
 ```bash
 npx eas-cli@latest build --platform android --profile production --local
@@ -36,59 +36,30 @@ npx eas-cli@latest build --platform android --profile production --local
 
 Then install the apk on your device.
 
-### Build a Signed APK from React Native (Ejected Expo)
+### Build a Signed APK without EAS
 
-If you want to build the app without using expo
 
+This command creates android folder in the root of the project.
 ```bash
-npx expo eject
+expo prebuild
 ```
 
-Select bare when prompted. This will create `android` directory.
+Follow [React Native guide](https://reactnative.dev/docs/signed-apk-android) to create a keystore and add it to the project.
+Follow the guide until Generating the release AAB heading (excluded).
 
-Install dependencies:
-```bash
-npm install
-# or
-yarn install
-```
-
-Generate keystore
-```bash
-keytool -genkeypair -v -keystore my-release-key.keystore -keyalg RSA -keysize 2048 -validity 10000 -alias my-key-alias
-```
-
-Inside `android/app/build.gradle`
-Add inside `android {}`
-```gradle
-signingConfigs {
-    release {
-        storeFile file("my-release-key.keystore")
-        storePassword "your-store-password"
-        keyAlias "my-key-alias"
-        keyPassword "your-key-password"
-    }
-}
-```
-
-```gradle
-buildTypes {
-    release {
-        signingConfig signingConfigs.release
-        minifyEnabled true
-        shrinkResources true
-        proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
-    }
-}
-```
-
-Build the apk. Run inside `android/`
+Then build the release apk using the following command inside the `android` folder:
 
 ```bash
 ./gradlew assembleRelease
 ```
 
-The apk should be found at `android/app/build/outputs/apk/release/app-release.apk`
+or by using expo cli:
+
+```bash
+expo run:android --variant release
+```
+
+The apk should be found at `android/app/build/outputs/apk/release/app-release.apk`.
 
 Lastly install the apk on your device.
 

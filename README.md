@@ -18,6 +18,13 @@ the average perceived difficulty and a button for logging a send (send means com
 
 The app is written using [Expo framework](https://docs.expo.dev/get-started/introduction/) - ReactNative and TypeScript. It is mainly aimed to be built for android.
 
+For development WebStorm IDE is used and Android Studio for testing the app on emulators. Developing the app should be possible on
+both Windows and Linux.
+
+Different packages are used from npm, all of them are listed in the package.json file.
+
+The app was tested on emulators with all android versions from 7 to 14 and on a real devices with androids 7, 7.1.1, 9 and 14.
+
 ### The backend
 
 A web backend is needed for the app to function, it's specification can be found [here](https://github.com/pepanzdorf/GarageClimbingAPI)

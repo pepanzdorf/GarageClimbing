@@ -23,6 +23,10 @@ const Fonts = StyleSheet.create({
     small: {
         fontSize: 14,
     },
+    smallBold: {
+        fontSize: 14,
+        fontWeight: 'bold',
+    },
 })
 
 export default Fonts;

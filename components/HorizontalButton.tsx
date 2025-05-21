@@ -1,4 +1,4 @@
-import {StyleSheet, Pressable, Text} from 'react-native';
+import { StyleSheet, Pressable, Text, DimensionValue } from 'react-native';
 import Fonts from "@/constants/Fonts";
 import React from "react";
 import Colors from "@/constants/Colors";
@@ -8,9 +8,11 @@ type Props = {
     theme?: 'tiny';
     color?: string;
     onPress?: () => void;
+    width?: DimensionValue;
+    smallFont?: boolean;
 };
 
-export default function Button({ label, theme, onPress, color }: Props) {
+export default function Button({ label, theme, onPress, color, width='100%', smallFont=false }: Props) {
     return (
         <Pressable
             onPress={onPress}
@@ -21,9 +23,10 @@ export default function Button({ label, theme, onPress, color }: Props) {
                     backgroundColor: color || Colors.primary,
                 },
                 theme === 'tiny' ? { paddingHorizontal: 10 } : { padding: 10 },
+                {width: width}
             ]}
         >
-            <Text style={Fonts.h3}>{label}</Text>
+            <Text style={smallFont ? Fonts.smallBold : Fonts.h3}>{label}</Text>
         </Pressable>
     );
 }

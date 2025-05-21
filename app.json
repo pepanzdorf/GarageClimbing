@@ -17,7 +17,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.anonymous.GarageBouldering",
-      "versionCode": 40
+      "versionCode": 41
     },
     "web": {
       "bundler": "metro",
@@ -48,7 +48,9 @@
       [
         "expo-font",
         {
-          "fonts": ["./assets/fonts/NotoColorEmoji.ttf"]
+          "fonts": [
+            "./assets/fonts/NotoColorEmoji.ttf"
+          ]
         }
       ]
     ],

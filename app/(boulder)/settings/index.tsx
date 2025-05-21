@@ -324,7 +324,7 @@ Zobrazit pouze nevylezené (sezóna): ${showUnsentSeasonal ? 'Ano' : 'Ne'}
                         <Text style={[Fonts.h3, {color: timerStateColor}]}>
                             {timerStatus}
                         </Text>
-                        <Button label={"Zkontrolovat stav"} onPress={pingTimer} theme={"tiny"} />
+                        <Button label={"Zkontrolovat stav"} onPress={pingTimer} theme={"tiny"} width={'auto'}/>
                     </View>
                 </View>
                 <View style={[CommonStyles.padded, CommonStyles.gapped]}>

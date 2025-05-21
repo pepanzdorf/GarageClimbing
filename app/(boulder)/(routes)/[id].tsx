@@ -63,7 +63,6 @@ export default function DetailsScreen() {
 
     const attemptsData = Array.from({length: 26}).map((_, i) => ({label: i, value: i}))
     const router = useRouter();
-    const tabNames = [ "Zobrazit komentáře", "Zobrazit splněné výzvy", "Zobrazit výlezy" ];
 
 
     useEffect(() => {
@@ -542,7 +541,11 @@ export default function DetailsScreen() {
                     </View>
                 }
                 <View style={styles.sendComContainer}>
-                    <Button label={tabNames[show]} onPress={() => setShow((show+1)%3)}/>
+                    <View style={CommonStyles.justifiedRow}>
+                        <Button label={`Výlezy (${sends.length})`} onPress={() => setShow(0)} width={'32%'} smallFont={true}/>
+                        <Button label={`Komentáře (${comments.length})`} onPress={() => setShow(1)} width={'32%'} smallFont={true}/>
+                        <Button label={`Výzvy (${completedChallenges["rest"].length})`} onPress={() => setShow(2)} width={'32%'} smallFont={true}/>
+                    </View>
                     <RenderSendsCommentsChallenges />
                 </View>
                 <View style={[CommonStyles.paddedContainerHorizontal, CommonStyles.smallGapped]}>

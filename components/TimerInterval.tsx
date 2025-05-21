@@ -181,7 +181,7 @@ const TimerInterval = (props: Props) => {
                                 </View>
                             ) : null
                         }
-                        <Button label={"OK"} onPress={() => setAlarmModalVisible(false)} />
+                        <Button label={"OK"} onPress={() => setAlarmModalVisible(false)} width={'auto'}/>
                     </View>
                 </View>
             </Modal>

@@ -400,7 +400,7 @@ export default function Home(){
                                 visibleItemCount={5}
                             />
                         </View>
-                        <Button label={"OK"} onPress={() => setOpenDatePicker(false)} />
+                        <Button label={"OK"} onPress={() => setOpenDatePicker(false)} width={'auto'}/>
                     </View>
                 </View>
             </Modal>

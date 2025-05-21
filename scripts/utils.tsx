@@ -48,25 +48,25 @@ export const crackIdToCrackName = (crackId: number) => {
 
 export const sortBoulderBy = (sorter: number, boulders: BoulderType[]) => {
     if(sorter == 1){
-        return boulders.sort((a, b) => b.average_grade - a.average_grade);
+        return [...boulders].sort((a, b) => b.average_grade - a.average_grade);
     } else if(sorter == 2){
-        return boulders.sort((a,b) => a.name.localeCompare(b.name));
+        return [...boulders].sort((a,b) => a.name.localeCompare(b.name));
     } else if(sorter == 3){
-        return boulders.sort((a,b) => a.average_grade - b.average_grade);
+        return [...boulders].sort((a,b) => a.average_grade - b.average_grade);
     } else if(sorter == 4){
-        return boulders.sort((a,b) => b.name.localeCompare(a.name));
+        return [...boulders].sort((a,b) => b.name.localeCompare(a.name));
     } else if(sorter == 5){
-        return boulders.sort((a,b) => b.build_time - a.build_time);
+        return [...boulders].sort((a,b) => b.build_time - a.build_time);
     } else if(sorter == 6){
-        return boulders.sort((a,b) => a.build_time - b.build_time);
+        return [...boulders].sort((a,b) => a.build_time - b.build_time);
     } else if(sorter == 7){
-        return boulders.sort((a,b) => b.average_rating - a.average_rating);
+        return [...boulders].sort((a,b) => b.average_rating - a.average_rating);
     } else if(sorter == 8){
-        return boulders.sort((a,b) => a.average_rating - b.average_rating);
+        return [...boulders].sort((a,b) => a.average_rating - b.average_rating);
     } else if(sorter == 9) {
-        return shuffle(boulders);
+        return shuffle([...boulders]);
     } else {
-        return boulders;
+        return [...boulders];
     }
 }
 

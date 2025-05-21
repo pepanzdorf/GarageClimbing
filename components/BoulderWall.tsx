@@ -3,9 +3,10 @@ import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-vi
 import { Svg, Path, Rect, ClipPath, Defs, G, Use, Mask, Pattern, Line } from 'react-native-svg'
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { apiURL } from "@/constants/Other";
-import { createRef, useCallback, useEffect, useState } from "react";
+import { createRef, useCallback, useEffect, useMemo, useState } from "react";
 import { HoldType, BoulderHoldType } from "@/types/holdType";
 import { mulberry32, numberToFillColor, numberToStrokeColor } from "@/scripts/utils";
+import { getImageMetaData } from "react-native-compressor";
 
 
 type Props = {
@@ -23,9 +24,6 @@ type Props = {
     colorsVolumes?: number[];
 }
 
-const imageAspectRatio = 820.5611 / 1198.3861;
-
-
 const BoulderWall = ({
     holds,
     lineWidth,
@@ -42,11 +40,15 @@ const BoulderWall = ({
 }: Props) => {
     const [ maxRank, setMaxRank ] = useState(1);
     const [ randomHold, setRandomHold ] = useState<null | number>(null);
+    const [ wallDimensions, setWallDimensions ] = useState({ width: 0, height: 0 });
 
     const windowAspectRatio = Dimensions.get('window').width / Dimensions.get('window').height;
     const tabBarHeight = useBottomTabBarHeight();
     const maxHeight = Dimensions.get('window').height - tabBarHeight * 2.5;
-    const isImageWider = windowAspectRatio < imageAspectRatio;
+    const isImageWider = useMemo(() =>
+        windowAspectRatio < (wallDimensions.width / wallDimensions.height)
+    , [windowAspectRatio, wallDimensions]);
+
     const zoomableViewRef = createRef<ReactNativeZoomableView>();
 
 
@@ -139,6 +141,16 @@ const BoulderWall = ({
     }, [isInfo, removeRandomHold, currentBoulderId, calculateMaxRank, chooseRandomHold]);
 
 
+    useEffect(() => {
+        getImageMetaData(`${apiURL}/static/stena.jpg`)
+            .then((metaData) => {
+                console.log('Image size .getImageMetaData:', metaData.ImageWidth, metaData.ImageHeight);
+                setWallDimensions({width: metaData.ImageWidth, height: metaData.ImageHeight});
+            })
+            .catch((error) => {console.error('Failed to get image size:', error);})
+    }, []);
+
+
     return (
         <ReactNativeZoomableView
             ref={zoomableViewRef}
@@ -152,7 +164,7 @@ const BoulderWall = ({
             animatePin={false}
         >
                 <ImageBackground
-                    style={[isImageWider ? styles.backgroundImageWider : styles.backgroundImageHigher, {maxHeight: maxHeight}]}
+                    style={[isImageWider ? styles.backgroundImageWider : styles.backgroundImageHigher, {maxHeight: maxHeight, aspectRatio: wallDimensions.width/wallDimensions.height}]}
                     source={{uri: `${apiURL}/static/stena.jpg`}}
                 >
                     <Svg height="100%" width="100%" viewBox="0 0 820.5611 1198.3861">
@@ -261,13 +273,11 @@ const styles = StyleSheet.create({
         resizeMode:'contain',
         width: undefined,
         height: '100%',
-        aspectRatio: imageAspectRatio,
     },
     backgroundImageWider: {
         resizeMode:'contain',
         width: '100%',
         height: undefined,
-        aspectRatio: imageAspectRatio,
     },
 });
 

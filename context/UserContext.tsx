@@ -89,7 +89,9 @@ export const UserContextProvider = ({ children } : Props) => {
 
 
     useEffect(() => {
-        loadToken().catch(console.error);
+        loadToken().then(() => {
+            whoami();
+        });
     }, []);
 
     return (

@@ -437,6 +437,7 @@ export const BoulderContextProvider = ({ children }: Props) => {
         fetchChallenges();
         fetchCompetitions().catch(console.error);
         loadSavedBoulderAttempts().catch(console.error);
+        rollBoulderQuest().catch(console.error);
     }, []);
 
 

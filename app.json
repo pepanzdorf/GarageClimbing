@@ -43,7 +43,8 @@
             "usesCleartextTraffic": true
           }
         }
-      ]
+      ],
+      "react-native-compressor"
     ],
     "experiments": {
       "typedRoutes": true

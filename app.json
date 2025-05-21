@@ -44,7 +44,13 @@
           }
         }
       ],
-      "react-native-compressor"
+      "react-native-compressor",
+      [
+        "expo-font",
+        {
+          "fonts": ["./assets/fonts/NotoColorEmoji.ttf"]
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

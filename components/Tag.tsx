@@ -1,5 +1,4 @@
 import { Pressable, StyleSheet, Text } from 'react-native';
-import { EmojiIcon } from "@/components/EmojiIcon";
 import Fonts from "@/constants/Fonts";
 import React from "react";
 import Colors from "@/constants/Colors";
@@ -89,7 +88,6 @@ export default function Tag({ active, onPress=()=>{}, id, name }: Props){
     return (
         <Pressable
             onPress={onPress}
-            key={id}
             style={({ pressed }) => [
                 styles.tag,
                 {
@@ -98,8 +96,9 @@ export default function Tag({ active, onPress=()=>{}, id, name }: Props){
                 }
             ]}
         >
-
-            <EmojiIcon emoji={tagIdToIconName(id)} size={30} color={active ? Colors.primary : Colors.borderDark}/>
+            <Text style={{fontSize: 30, color: active ? Colors.primary : Colors.borderDark, fontFamily: 'NotoColorEmoji'}}>
+                {tagIdToIconName(id)}
+            </Text>
             <Text style={[Fonts.h3, { color: active ? Colors.primary : Colors.borderDark }]}>{name}</Text>
         </Pressable>
     );

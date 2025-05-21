@@ -404,13 +404,6 @@ export default function DetailsScreen() {
         }
     }
 
-    const renderTag = (item: number) => {
-        const tag = tags.find(tag => tag.id === item);
-        if (!tag) return null;
-        return (
-            <Tag key={tag.id} id={tag.id} name={tag.name} active={true} />
-        )
-    }
 
     return (
         <SafeAreaView style={CommonStyles.container}>
@@ -521,14 +514,18 @@ export default function DetailsScreen() {
                     </View>
                 }
                 {
-                    currentBoulder &&
-                    currentBoulder.tags[0] &&
+                    currentBoulder ? (
                     <View style={styles.tagsContainer}>
                         {
-                            currentBoulder.tags.map(tag =>
-                                renderTag(tag))
+                            currentBoulder.tags.map((tagId, index) => {
+                                const tag = tags.find(tag => tag.id === tagId);
+                                if (!tag) return null;
+                                return (
+                                    <Tag key={index} id={tag.id} name={tag.name} active={true} />
+                                )
+                            })
                         }
-                    </View>
+                    </View> ) : null
                 }
                 {
                     currentAttempts !== -1 &&

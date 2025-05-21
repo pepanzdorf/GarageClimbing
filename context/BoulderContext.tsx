@@ -329,15 +329,19 @@ export const BoulderContextProvider = ({ children }: Props) => {
             boulderQuest[loggedUser].date !== stringDate ||
             boulderQuest[loggedUser].possibleBoulders === undefined
         ) {
-            const rng = mulberry32(Number(stringDate) + stringToSeed(loggedUser));
             const newDay = boulderQuest?.[loggedUser]?.date !== stringDate;
+            let completedToday = newDay ? 0 : (boulderQuest?.[loggedUser]?.completedToday || 0);
+            completedToday = boulderQuest[loggedUser]?.completed ? completedToday + 1 : completedToday;
+            const rng = mulberry32(Number(stringDate + String(completedToday)) + stringToSeed(loggedUser));
             const possibleBoulders = findPossibleBouldersForQuest(expectedGrade, boulderQuest?.[loggedUser]?.boulder, newDay);
-            const randomIndex = Math.floor(rng() * possibleBoulders.length);
+            const randomNumber = rng();
+            const randomIndex = Math.floor(randomNumber * possibleBoulders.length);
             setBoulderQuest({
                 ...boulderQuest,
                 [loggedUser]: {
                     boulder: possibleBoulders[randomIndex].id,
                     date: stringDate,
+                    completedToday: completedToday,
                     completed: false,
                     possibleBoulders: possibleBoulders
                         .filter(boulder => boulder.id !== possibleBoulders[randomIndex].id)

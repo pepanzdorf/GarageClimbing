@@ -144,7 +144,6 @@ const BoulderWall = ({
     useEffect(() => {
         getImageMetaData(`${apiURL}/static/stena.jpg`)
             .then((metaData) => {
-                console.log('Image size .getImageMetaData:', metaData.ImageWidth, metaData.ImageHeight);
                 setWallDimensions({width: metaData.ImageWidth, height: metaData.ImageHeight});
             })
             .catch((error) => {console.error('Failed to get image size:', error);})

@@ -9,7 +9,6 @@ export default function RouteStackLayout() {
             <Stack.Screen name="boulder_editor" options={{ headerShown: false }} />
             <Stack.Screen name="comp/[id]" options={{ headerShown: false }} />
             <Stack.Screen name="comp/comp_editor" options={{ headerShown: false }} />
-            <Stack.Screen name="timer" options={{ headerShown: false }} />
         </Stack>
     );
 }

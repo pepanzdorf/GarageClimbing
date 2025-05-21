@@ -41,17 +41,17 @@ export default function BoulderTabLayout() {
                             }}
                         />
                         <Tabs.Screen
+                            name="timer"
+                            options={{
+                                title: 'Časovač',
+                                tabBarIcon: ({ color }) => <FontAwesome5 size={28} name="clock" color={color} />,
+                            }}
+                        />
+                        <Tabs.Screen
                             name="settings"
                             options={{
                                 title: 'Nastavení',
                                 tabBarIcon: ({ color }) => <FontAwesome size={28} name="cog" color={color} />,
-                            }}
-                        />
-                        <Tabs.Screen
-                            name="profile"
-                            options={{
-                                title: 'Profil',
-                                tabBarIcon: ({ color }) => <FontAwesome size={28} name="user" color={color} />,
                             }}
                         />
                         <Tabs.Screen

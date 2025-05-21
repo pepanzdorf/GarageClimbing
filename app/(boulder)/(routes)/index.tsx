@@ -344,9 +344,6 @@ export default function Home(){
                     <IconDropdown
                         menuIcon={<FontAwesome name="chevron-down" color={Colors.primary}/>}
                         menuItems={[
-                            <TouchableOpacity onPress={() => router.push('/timer')} key={"clock"}>
-                                <FontAwesome5 name="clock" size={36} color={Colors.primary} />
-                            </TouchableOpacity>,
                             <TouchableOpacity onPress={() => setShowMode(0)} key={"list"}>
                                 <FontAwesome5 name="list" size={36} color={Colors.primary} />
                             </TouchableOpacity>,

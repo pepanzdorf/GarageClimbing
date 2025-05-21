@@ -10,6 +10,7 @@ import { gradeIdToGradeName } from '@/scripts/utils';
 import { StarRatingClickable } from '@/components/StarRatingClickable';
 import { apiURL } from '@/constants/Other';
 import { TagType } from '@/types/tagType';
+import { useRouter } from "expo-router";
 import Fonts from '@/constants/Fonts'
 import CommonStyles from "@/constants/CommonStyles";
 import Button from "@/components/HorizontalButton";
@@ -18,7 +19,7 @@ import RowSwitch from "@/components/RowSwitch";
 import Tag from "@/components/Tag";
 
 
-export default function Settings(){
+export default function SettingsIndex(){
     const {
         settings,
         setSettings,
@@ -48,6 +49,8 @@ export default function Settings(){
     const [ timerPort, setTimerPort ] = useState(settings.timerPort);
     const [ selectedShowTimerControls, setSelectedShowTimerControls ] = useState(settings.showTimerControls);
     const [ showUnsentSeasonal, setShowUnsentSeasonal ] = useState(settings.showUnsentSeasonal);
+
+    const router = useRouter();
 
     const options = [
             {key:'1', value: 'Nejtěžší'},
@@ -191,6 +194,9 @@ Zobrazit pouze nevylezené (sezóna): ${showUnsentSeasonal ? 'Ano' : 'Ne'}
                 </Text>
             </View>
             <ScrollView contentContainerStyle={CommonStyles.paddedHorizontal}>
+                <View style={{marginTop: 10}}>
+                    <Button label={'Profil'} onPress={() => router.push('/settings/profile')}/>
+                </View>
                 {
                     isAdmin &&
                     <View style={CommonStyles.padded}>

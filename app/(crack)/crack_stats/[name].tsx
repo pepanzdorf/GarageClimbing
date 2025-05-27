@@ -92,7 +92,6 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         borderWidth: 1,
         borderColor: Colors.border,
-        flex: 1
     },
     header: {
         alignItems: 'center',

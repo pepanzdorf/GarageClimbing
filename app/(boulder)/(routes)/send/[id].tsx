@@ -7,7 +7,7 @@ import { SettingsContext } from "@/context/SettingsContext";
 import { BoulderContext } from "@/context/BoulderContext";
 import { apiURL } from '@/constants/Other';
 import { StarRatingClickable } from '@/components/StarRatingClickable';
-import { gradeIdToGradeName, attemptIdToAttemptName } from '@/scripts/utils';
+import { gradeIdToGradeName, attemptIdToAttemptName, calculateBoulderScore } from '@/scripts/utils';
 import Colors from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';
 import StyledScrollPicker from "@/components/StyledScrollPicker";
@@ -98,6 +98,12 @@ export default function LogScreen() {
                     value={selectedAngle}
                     onValueChange={setSelectedAngle}
                 />
+                {
+                    selectedAngle !== wallConfig.angle &&
+                    <View style={{backgroundColor: Colors.highlight, padding: 10, borderRadius: 10, marginTop: 10}}>
+                        <Text style={Fonts.h3}>Vybraný úhel {selectedAngle} se liší od skutečného úhlu stěny {wallConfig.angle}!</Text>
+                    </View>
+                }
                 <StyledScrollPicker
                     name={"Obtížnost"}
                     data={gradeData}
@@ -112,13 +118,16 @@ export default function LogScreen() {
                 >
                     <Text style={Fonts.plain}>Zatím pokusů: {userSavedAttempts[String(id)]}</Text>
                 </StyledScrollPicker>
+                <Text style={Fonts.plain}>
+                    Bodů: {
+                        calculateBoulderScore(
+                            currentBoulder?.average_grade === -1 ? selectedGrade : currentBoulder?.average_grade ?? 0,
+                            selectedAttempts-1,
+                            currentChallenge.score
+                        )
+                    }
+                </Text>
                 <StarRatingClickable maxStars={5} initialRating={settings.rating} onRatingChange={setSelectedRating} size={48}/>
-                {
-                    selectedAngle !== wallConfig.angle &&
-                        <View style={{backgroundColor: Colors.highlight, padding: 10, borderRadius: 10, marginTop: 10}}>
-                            <Text style={Fonts.h3}>Vybraný úhel {selectedAngle} se liší od skutečného úhlu stěny {wallConfig.angle}!</Text>
-                        </View>
-                }
             </ScrollView>
             <View style={CommonStyles.smallGapped}>
                 <Button label={"Odeslat"} onPress={logSend} />

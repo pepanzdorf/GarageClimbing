@@ -163,7 +163,7 @@ export const calculateBoulderScore = (grade: number, attempts: number, score: nu
 
     let multiplier = Math.floor(grade / 3) + 1
 
-    return Math.max(Math.floor(((grade + 1) * multiplier * 3) * score - penalty), 0);
+    return Math.max(Math.floor(((grade + 1) * multiplier * 3) * score - penalty), 1);
 }
 
 

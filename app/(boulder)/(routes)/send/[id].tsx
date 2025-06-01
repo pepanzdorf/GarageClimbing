@@ -123,10 +123,19 @@ export default function LogScreen() {
                         calculateBoulderScore(
                             currentBoulder?.average_grade === -1 ? selectedGrade : currentBoulder?.average_grade ?? 0,
                             selectedAttempts-1,
-                            currentChallenge.score
+                            ([2, 5, 6, 9].includes(currentChallenge.id) && currentBoulder?.tags.includes(15)) ? 1 : currentChallenge.score
                         )
                     }
                 </Text>
+                {
+                    ([2, 5, 6, 9].includes(currentChallenge.id) && currentBoulder?.tags.includes(15)) ? (
+                        <View style={{backgroundColor: Colors.highlight, padding: 10, borderRadius: 10, marginTop: 10}}>
+                            <Text style={Fonts.plainBold}>
+                                Výzva '{currentChallenge.name}' nelze použít pro boulder s tagem 'Campus'. Výlez se počítá jako bez výzvy.
+                            </Text>
+                        </View>
+                    ) : null
+                }
                 <StarRatingClickable maxStars={5} initialRating={settings.rating} onRatingChange={setSelectedRating} size={48}/>
             </ScrollView>
             <View style={CommonStyles.smallGapped}>

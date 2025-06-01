@@ -470,18 +470,29 @@ export default function DetailsScreen() {
                         </Text>
                         {
                             currentChallenge.id === 1 ? null : (
-                                <View style={[CommonStyles.justifiedRow, {marginTop:20}]}>
-                                    {
-                                        completedChallenges["ids"].includes(currentChallenge.id) ? (
-                                            <FontAwesome5 name="crown" size={24} color='gold' />
-                                        ) : (
-                                            <FontAwesome5 name="crown" size={24} color={Colors.borderDark} />
-                                        )
-                                    }
-                                    <Text style={Fonts.plainBold}>
-                                        {currentChallenge.name}
-                                    </Text>
-                                </View>
+                                ([2, 5, 6, 9].includes(currentChallenge.id) && currentBoulder.tags.includes(15)) ? (
+                                    <View style={[CommonStyles.justifiedRow, { marginTop:20, flex: 1, gap: 30 }]}>
+                                        <FontAwesome5 name="ban" size={24} color='red' />
+                                        <View style={CommonStyles.container}>
+                                            <Text style={[Fonts.plainBold, { color: Colors.highlight }]}>
+                                                Výzva '{currentChallenge.name}' nelze použít pro boulder s tagem 'Campus'
+                                            </Text>
+                                        </View>
+                                    </View>
+                                ) : (
+                                    <View style={[CommonStyles.justifiedRow, { marginTop:20 }]}>
+                                        {
+                                            completedChallenges["ids"].includes(currentChallenge.id) ? (
+                                                <FontAwesome5 name="crown" size={24} color='gold' />
+                                            ) : (
+                                                <FontAwesome5 name="crown" size={24} color={Colors.borderDark} />
+                                            )
+                                        }
+                                        <Text style={Fonts.plainBold}>
+                                            {currentChallenge.name}
+                                        </Text>
+                                    </View>
+                                )
                             )
                         }
                         <View style={CommonStyles.justifiedRow}>

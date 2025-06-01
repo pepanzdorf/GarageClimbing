@@ -24,6 +24,11 @@ export default function Stats(){
                 1: require('@/assets/images/trophies/trophy_2024-2_1.png'),
                 2: require('@/assets/images/trophies/trophy_2024-2_2.png'),
                 3: require('@/assets/images/trophies/trophy_2024-2_3.png'),
+        },
+        '2025-1': {
+                1: require('@/assets/images/trophies/trophy_2025-1_1.png'),
+                2: require('@/assets/images/trophies/trophy_2025-1_2.png'),
+                3: require('@/assets/images/trophies/trophy_2025-1_3.png'),
         }
     }
 
@@ -58,24 +63,29 @@ export default function Stats(){
                             style={{width: viewWidth, height: viewWidth * imageAspectRatio, position: 'absolute'}}
                         />
                         {
-                            Object.entries(item[1]['previous_seasons']).map(([key, value], index) => {
-                                if (!trophies[key]?.[value['placement']]) {
-                                    return null;
-                                }
-                                return (
-                                    <Image source={trophies[key][value['placement']]}
-                                        resizeMode="contain"
-                                        style={{
-                                            width: viewWidth * iconSizeRatio,
-                                            height: viewWidth * iconSizeRatio,
-                                            position: 'absolute',
-                                            top: viewWidth * imageAspectRatio - viewWidth * iconSizeRatio - 2,
-                                            left: 20 + (1.1 * index * viewWidth * iconSizeRatio),
-                                        }}
-                                        key={key}
-                                    />
-                                )
-                            })
+                            (() => {
+                                let n = 0;
+                                return Object.entries(item[1]['previous_seasons']).map(([key, value]) => {
+                                    if (!trophies[key]?.[value['placement']]) {
+                                        return null;
+                                    }
+
+                                    return (
+                                        <Image
+                                            key={key}
+                                            source={trophies[key][value['placement']]}
+                                            resizeMode="contain"
+                                            style={{
+                                                width: viewWidth * iconSizeRatio,
+                                                height: viewWidth * iconSizeRatio,
+                                                position: 'absolute',
+                                                top: viewWidth * imageAspectRatio - viewWidth * iconSizeRatio - 2,
+                                                left: 20 + (1.1 * n++ * viewWidth * iconSizeRatio),
+                                            }}
+                                        />
+                                    );
+                                });
+                            })()
                         }
                     </View>
                 </TouchableOpacity>

@@ -59,7 +59,7 @@ export default function Stats(){
                         />
                         {
                             Object.entries(item[1]['previous_seasons']).map(([key, value], index) => {
-                                if (!trophies[key][value['placement']]) {
+                                if (!trophies[key]?.[value['placement']]) {
                                     return null;
                                 }
                                 return (
